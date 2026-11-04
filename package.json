@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/migrate.mjs && tsx scripts/seed.ts && next build",
+    "build": "node scripts/migrate.mjs && tsx scripts/seed.mts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
@@ -16,7 +16,7 @@
     "selfcheck": "node scripts/selfcheck.mjs",
     "typocheck": "node scripts/typocheck.mjs",
     "test": "tsx --test src/lib/lab/*.test.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.mts"
   },
   "dependencies": {
     "@neondatabase/auth": "^0.6.0-beta",
