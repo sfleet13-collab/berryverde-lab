@@ -202,7 +202,6 @@
   border-radius: var(--radius-s);
   display: grid;
   gap: var(--space-2);
-  transform: rotate(-1.5deg);
   box-shadow: var(--shadow-1);
 }
 .miniEtikettName {
@@ -409,8 +408,5 @@
   .heroText,
   .demoRahmen {
     animation: none;
-  }
-  .miniEtikett {
-    transform: none;
   }
 }
