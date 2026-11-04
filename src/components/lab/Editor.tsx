@@ -91,6 +91,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
   const [geaendert, setGeaendert] = useState(false);
   const [fehler, setFehler] = useState<string | null>(null);
   const [speichert, startSpeichern] = useTransition();
+  const [auswahl, setAuswahl] = useState("");
 
   const map = useMemo(() => new Map(rohstoffe.map((r) => [r.id, r as LabRohstoff])), [rohstoffe]);
   const gruppen = useMemo(
@@ -99,7 +100,14 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
     [rohstoffe],
   );
 
-  const labPositionen: LabPosition[] = zeilen.map((z) => ({ key: z.key, rohstoffId: z.rohstoffId, phase: z.phase, prozent: alsZahl(z.prozent), adHundert: z.adHundert }));
+  // Ungültige Eingaben (negativ, über 100, keine Zahl) rechnen als 0, bis sie korrigiert sind
+  const labPositionen: LabPosition[] = zeilen.map((z) => ({
+    key: z.key,
+    rohstoffId: z.rohstoffId,
+    phase: z.phase,
+    prozent: anteilGueltig(z.prozent) ? alsZahl(z.prozent) : 0,
+    adHundert: z.adHundert,
+  }));
   const charge = alsZahl(k.chargeG);
   const pruefung = pruefe(
     {
@@ -302,14 +310,8 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
               <label htmlFor={f("hinzu")} className="sr-only">
                 {L.editor.hinzufuegen}
               </label>
-              <select
-                ref={hinzuRef}
-                id={f("hinzu")}
-                value=""
-                onChange={(e) => {
-                  if (e.target.value) hinzu(Number(e.target.value));
-                }}
-              >
+              {/* Auswahl und Knopf getrennt: Pfeiltasten blättern nur, hinzugefügt wird erst mit dem Knopf */}
+              <select ref={hinzuRef} id={f("hinzu")} value={auswahl} onChange={(e) => setAuswahl(e.target.value)}>
                 <option value="">{L.editor.waehlen}</option>
                 {gruppen.map((g) => (
                   <optgroup key={g.kat} label={L.kategorie[g.kat]}>
@@ -322,6 +324,18 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                   </optgroup>
                 ))}
               </select>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                disabled={!auswahl}
+                onClick={() => {
+                  hinzu(Number(auswahl));
+                  setAuswahl("");
+                }}
+              >
+                <Icon name="plus" />
+                {L.editor.hinzufuegenKurz}
+              </button>
             </div>
           </div>
 
@@ -470,11 +484,11 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
           {anzahlFehler === 0 ? `${L.rezeptur.summe} ${zahl(b.summe, 2)} %` : anzahlFehler === 1 ? L.rezeptur.pruefungFehlerEins : fuelle(L.rezeptur.pruefungFehler, { n: anzahlFehler })}
         </a>
         <button type="button" className="btn btn-primary" onClick={speichern} disabled={speichert}>
-          {speichert ? L.editor.speichert : L.editor.speichern}
+          {speichert ? L.editor.speichert : L.editor.speichernKurz}
         </button>
       </div>
 
-      <aside className={styles.editorSeite} aria-label={L.rezeptur.pruefung} id={f("pruefung")}>
+      <aside className={styles.editorSeite} aria-label={L.rezeptur.pruefung} id={f("pruefung")} tabIndex={-1}>
         <div className={styles.seiteInnen}>
           <div className={styles.aktionen}>
             <button type="button" className="btn btn-primary" onClick={speichern} disabled={speichert}>

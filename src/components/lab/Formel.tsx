@@ -1,17 +1,11 @@
-import Icon from "@/components/Icon";
-import { L, nbsp } from "@/i18n/lab";
+import InfoKnopf from "./InfoKnopf";
+import { L } from "@/i18n/lab";
 import { mengeText, zahl, type Berechnung, type BerechnetePosition } from "@/lib/lab/rechner";
 import type { Phase } from "@/lib/lab/types";
 import styles from "./lab.module.css";
 
-export type RohstoffInfo = {
-  funktion: string | null;
-  hinweis: string | null;
-  was: string | null;
-  chemisch: string | null;
-  wirkung: string | null;
-  stufe: "anfaenger" | "mittel" | "profi";
-};
+import type { RohstoffInfo } from "./Steckbrief";
+export type { RohstoffInfo };
 
 const REIHENFOLGE: Phase[] = ["fett", "wasser", "kalt", "pulver"];
 
@@ -103,19 +97,7 @@ function Zeile({ p, info, markiert, id, druck }: { p: BerechnetePosition; info?:
         <span className={styles.stoffName}>
           {p.rohstoff.name}
           {p.adHundert && <span className={styles.ad}>{L.editor.adHundert}</span>}
-          {info && !druck && (info.was || info.hinweis) && (
-            <>
-              <button type="button" className={styles.infoBtn} popoverTarget={id} aria-label={`${L.rezeptur.steckbrief}: ${p.rohstoff.name}`}>
-                <Icon name="info" size={16} />
-              </button>
-              <div id={id} popover="auto" role="dialog" aria-labelledby={`${id}-t`} className={styles.steckbrief}>
-                <button type="button" className={styles.schliessen} popoverTarget={id} popoverTargetAction="hide" aria-label={L.rezeptur.schliessen}>
-                  <Icon name="x" size={18} />
-                </button>
-                <Steckbrief name={p.rohstoff.name} inci={p.rohstoff.inci} info={info} titelId={`${id}-t`} />
-              </div>
-            </>
-          )}
+          {info && !druck && (info.was || info.hinweis) && <InfoKnopf id={id} name={p.rohstoff.name} inci={p.rohstoff.inci} info={info} />}
         </span>
         {info?.funktion && <span className={styles.stoffFunktion}>{info.funktion}</span>}
       </th>
@@ -132,42 +114,5 @@ function Zeile({ p, info, markiert, id, druck }: { p: BerechnetePosition; info?:
         )}
       </td>
     </tr>
-  );
-}
-
-export function Steckbrief({ name, inci, info, titelId }: { name: string; inci: string; info: RohstoffInfo; titelId?: string }) {
-  return (
-    <div className={styles.steckbriefInhalt}>
-      <h2 id={titelId} className={styles.steckbriefName}>
-        {name}
-      </h2>
-      <p className={styles.steckbriefInci}>{inci}</p>
-      <dl>
-        {info.was && (
-          <>
-            <dt>{L.rohstoffe.was}</dt>
-            <dd>{nbsp(info.was)}</dd>
-          </>
-        )}
-        {info.chemisch && (
-          <>
-            <dt>{L.rohstoffe.chemisch}</dt>
-            <dd>{nbsp(info.chemisch)}</dd>
-          </>
-        )}
-        {info.wirkung && (
-          <>
-            <dt>{L.rohstoffe.wirkung}</dt>
-            <dd>{nbsp(info.wirkung)}</dd>
-          </>
-        )}
-        {info.hinweis && (
-          <>
-            <dt>{L.rohstoffe.hinweis}</dt>
-            <dd>{nbsp(info.hinweis)}</dd>
-          </>
-        )}
-      </dl>
-    </div>
   );
 }

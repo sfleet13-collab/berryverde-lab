@@ -59,7 +59,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         </a>
         <JsonLd lang={lang} />
         <Header lang={lang} t={t} />
-        <main id="inhalt">{children}</main>
+        <main id="inhalt" tabIndex={-1}>{children}</main>
         <Footer lang={lang} t={t} />
         {trackingEnabled && <ConsentBanner t={t.consent} />}
         {process.env.VERCEL && <Analytics />}

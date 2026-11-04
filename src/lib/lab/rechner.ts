@@ -78,6 +78,17 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
     return { ...p, rohstoff, prozentEffektiv, gramm: runde(gramm), menge: mengeFuer(rohstoff, gramm) };
   });
 
+  // Rundungsrest: Die gerundeten Gramm sollen sich genau zur Gesamtmenge addieren.
+  // Der Rest geht an den Ausgleichsposten, sonst an die größte Position (dort fällt er am wenigsten ins Gewicht).
+  const summeGerundet = positionen.reduce((s, p) => s + p.gramm, 0);
+  const sollG = runde((charge * (ausgleich ? summeOhneAusgleich + Math.max(0, rest) : summeOhneAusgleich)) / 100);
+  const restG = runde(sollG - summeGerundet);
+  if (restG !== 0 && positionen.length > 0) {
+    const ziel = positionen.find((p) => p.adHundert) ?? [...positionen].sort((a, c) => c.gramm - a.gramm)[0];
+    ziel.gramm = runde(ziel.gramm + restG);
+    ziel.menge = mengeFuer(ziel.rohstoff, ziel.gramm);
+  }
+
   const sum = (f: (p: BerechnetePosition) => boolean) =>
     runde(positionen.filter(f).reduce((s, p) => s + p.prozentEffektiv, 0), 3);
 

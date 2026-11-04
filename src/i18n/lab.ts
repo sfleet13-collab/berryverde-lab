@@ -160,6 +160,8 @@ export const L = {
     frischcreme: "Frischcreme ohne Konservierer (7 Tage im Kühlschrank)",
     formel: "Formel",
     hinzufuegen: "Rohstoff hinzufügen",
+    hinzufuegenKurz: "Hinzufügen",
+    speichernKurz: "Speichern",
     waehlen: "Rohstoff wählen …",
     phase: "Phase",
     anteil: "Anteil in %",

@@ -53,11 +53,14 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
   const [q, setQ] = useState("");
   const [kat, setKat] = useState("");
   const kategorien = useMemo(() => [...new Set(rohstoffe.map((r) => r.kategorie))], [rohstoffe]);
-  const suche = q.trim().toLowerCase();
+  // „oel“ findet „Öl“, „weisse“ findet „Weiße“
+  const norm = (t: string) =>
+    t.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+  const suche = norm(q.trim());
   const liste = rohstoffe.filter(
     (r) =>
       (!kat || r.kategorie === kat) &&
-      (!suche || [r.name, r.handelsnamen, r.inci, r.funktion].filter(Boolean).join(" ").toLowerCase().includes(suche)),
+      (!suche || norm([r.name, r.handelsnamen, r.inci, r.funktion].filter(Boolean).join(" ")).includes(suche)),
   );
 
   return (
@@ -218,6 +221,7 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
                     {r.kaufLink && (
                       <a href={r.kaufLink} target="_blank" rel={`noopener${r.kaufLinkAffiliate ? " sponsored" : ""}`} className={styles.extern}>
                         {L.rohstoffe.nachbestellen}
+                        <span className="sr-only">: {r.name}</span>
                         <Icon name="external" size={15} />
                         {r.kaufLinkAffiliate && <span className={styles.affiliate}>{L.rezeptur.affiliate}</span>}
                       </a>
@@ -226,6 +230,7 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
                       <Link href={`/de/app/rohstoffe/${r.id}`} className={styles.extern}>
                         <Icon name="edit" size={15} />
                         {L.rohstoffe.bearbeiten}
+                        <span className="sr-only">: {r.name}</span>
                       </Link>
                     )}
                   </div>

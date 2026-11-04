@@ -18,6 +18,9 @@
 }
 .links a,
 .links button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--text-muted);
   text-decoration: none;
   background: none;
@@ -34,6 +37,9 @@
   margin: 0;
 }
 .credit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;

@@ -120,8 +120,8 @@ export function Datenschutz() {
 
       <h2>Kontakt</h2>
       <p>
-        Wenn du mir schreibst, verarbeite ich deine Angaben (Name, E-Mail-Adresse, Nachricht), um deine Anfrage zu beantworten (Art. 6 Abs. 1
-        lit. b und f DSGVO). Nachrichten aus dem Kontaktformular werden über den E-Mail-Dienst Resend an mich zugestellt.
+        Wenn du mir per E-Mail schreibst, verarbeite ich deine Angaben (Name, E-Mail-Adresse, Nachricht), um deine Anfrage zu beantworten
+        (Art. 6 Abs. 1 lit. b und f DSGVO). Deine Nachricht lösche ich, sobald sie erledigt ist und keine Aufbewahrungspflicht besteht.
       </p>
 
       <h2>Statistik ohne Cookies</h2>

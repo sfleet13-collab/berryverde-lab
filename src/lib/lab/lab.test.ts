@@ -253,8 +253,11 @@ test("Negativer Anteil ist ein Fehler", () => {
 });
 
 test("Gesamtgewicht ohne Rundungsfehler", () => {
-  const b = berechne({ ...creme(), chargeG: 12.5 }, map);
-  assert.equal(b.gesamtG, 12.5);
+  for (const g of [12.5, 30, 33.3, 50, 77.7, 100]) {
+    const b = berechne({ ...creme(), chargeG: g }, map);
+    assert.equal(b.gesamtG, g);
+    assert.equal(Math.round(b.positionen.reduce((s, p) => s + p.gramm, 0) * 100) / 100, g);
+  }
 });
 
 test("Chargennummer", () => {

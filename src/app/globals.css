@@ -159,6 +159,11 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Sprungziele (#inhalt, #pruefung) nicht unter der festen Kopfzeile verstecken */
+  scroll-padding-top: 76px;
+}
+main:focus {
+  outline: none;
 }
 body {
   margin: 0;
@@ -257,7 +262,10 @@ html {
   left: var(--space-4);
   top: -100px;
   z-index: 100;
-  padding: var(--space-2) var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-4);
   background: var(--surface);
   color: var(--text);
   border-radius: var(--radius-s);

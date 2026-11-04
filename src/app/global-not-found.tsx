@@ -22,6 +22,9 @@ export default function GlobalNotFound() {
   return (
     <html lang={htmlLang.de} className={`${inter.variable} ${display.variable}`}>
       <body>
+        <header className={styles.kopf}>
+          <Link href="/de">{site.name}</Link>
+        </header>
         <main className={`container ${styles.status}`}>
           <p className={styles.code} aria-hidden="true">
             404

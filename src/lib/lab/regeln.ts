@@ -316,7 +316,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           titel: `${r.name} falsch dosiert`,
           text:
             p.prozentEffektiv < d.min
-              ? `${r.name} schützt erst ab ${pct(d.min)} zuverlässig (Bereich ${pct(d.min)} bis ${pct(d.max)}). Aktuell sind es ${pct(p.prozentEffektiv)}.`
+              ? `${r.name} schützt erst ab ${pct(d.min)} zuverlässig (Bereich ${pct(d.min)} bis ${pct(d.max)}).${r.slug === "cosgard" ? " Ausnahme: 0,5 % zusammen mit 0,2 % Kaliumsorbat." : ""} Aktuell sind es ${pct(p.prozentEffektiv)}.`
               : `${r.name} ist bis ${pct(d.max)} vorgesehen. Aktuell sind es ${pct(p.prozentEffektiv)}; mehr schützt nicht besser, reizt aber eher.`,
           zeilen: [p.key],
           korrektur: p.adHundert ? undefined : { label: `${r.name} auf ${pct(ziel)} setzen`, setze: [{ key: p.key, prozent: ziel }] },
