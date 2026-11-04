@@ -174,7 +174,7 @@ const de = {
     contact: {
       title: "Frag Susan: Kontakt und Hilfe zur Mitgliedschaft",
       description:
-        "Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft? Schreib Susan. Sie liest jede Nachricht persönlich und antwortet in zwei Werktagen.",
+        "Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft? Schreib mir. Ich lese jede Nachricht persönlich und antworte in zwei Werktagen.",
     },
     imprint: {
       title: "Impressum – Angaben zur Anbieterin berryverde",
@@ -201,6 +201,7 @@ const de = {
     title: "Frag Susan",
     description: "Schreib mir deine Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft.",
     formTitle: "Deine Nachricht",
+    directTitle: "Schreib mir eine E-Mail",
     direct: "Schreib mir direkt per E-Mail an",
     nextTitle: "So geht es weiter",
     next: ["Ich lese deine Nachricht persönlich.", "Du bekommst innerhalb von zwei Werktagen eine Antwort.", "Deine Angaben nutze ich nur für deine Anfrage."],

@@ -26,7 +26,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/kontakt
         <p className="muted" style={{ marginBottom: "var(--space-8)" }}>
           {t.contact.description}
         </p>
-        <h2 style={{ fontSize: "var(--step-1)", marginBottom: "var(--space-4)" }}>{t.contact.formTitle}</h2>
+        <h2 style={{ fontSize: "var(--step-1)", marginBottom: "var(--space-4)" }}>{mailConfigured ? t.contact.formTitle : t.contact.directTitle}</h2>
         {mailConfigured ? (
           <ContactForm t={t.contact} privacyHref={href(lang, "/datenschutz")} />
         ) : (

@@ -56,8 +56,8 @@ export const seedRohstoffe: SeedRohstoff[] = [
   {
     slug: "wasser", name: "Wasser, destilliert", inci: "Aqua", kategorie: "wasser", funktion: "Basis der Wasserphase",
     phase: "wasser", form: "fluessig", dichte: 1, loeslichkeit: "wasser", stufe: "anfaenger",
-    hinweis: "Immer destilliertes oder abgekochtes Wasser verwenden, kein Leitungswasser.",
-    was: "Die Grundlage jeder Creme und Lotion. Destilliertes Wasser enthält keine Keime und keine Mineralien, die eine Emulsion stören.",
+    hinweis: "Destilliertes Wasser verwenden, kein Leitungswasser. Angebrochene Flaschen bald verbrauchen.",
+    was: "Die Grundlage jeder Creme und Lotion. Destilliertes Wasser enthält keine Mineralien und Kalk, die eine Emulsion stören oder den Konservierer schwächen.",
     chemisch: "H₂O ohne gelöste Salze.",
     wirkung: "Lösungsmittel für wasserlösliche Wirkstoffe und Träger der Feuchtigkeit.",
   },

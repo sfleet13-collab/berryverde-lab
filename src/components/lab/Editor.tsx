@@ -127,6 +127,23 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
   const chargeOk = charge > 0 && charge <= 5000;
   const anzahlFehler = pruefung.meldungen.filter((m) => m.art === "fehler").length + ungueltig.size;
   const hinzuRef = useRef<HTMLSelectElement>(null);
+  const meldungen = ungueltig.size
+    ? [
+        {
+          code: "ungueltig",
+          art: "fehler" as const,
+          titel: L.editor.ungueltigTitel,
+          text: fuelle(L.editor.ungueltigText, {
+            namen: zeilen
+              .filter((z) => ungueltig.has(z.key))
+              .map((z) => map.get(z.rohstoffId)?.name ?? "")
+              .join(", "),
+          }),
+          zeilen: [...ungueltig],
+        },
+        ...pruefung.meldungen,
+      ]
+    : pruefung.meldungen;
 
   // Warnung beim Verlassen mit ungespeicherten Änderungen
   useEffect(() => {
@@ -149,8 +166,11 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
     if (!r) return;
     const phase: Phase = k.produkttyp === "wasserfrei" && r.phase === "kalt" ? "fett" : r.phase;
     const ersterWasser = r.kategorie === "wasser" && !zeilen.some((z) => z.adHundert);
-    setZeilen((alt) => [...alt, { key: neuerKey(), rohstoffId, phase, prozent: "", adHundert: ersterWasser }]);
+    const key = neuerKey();
+    setZeilen((alt) => [...alt, { key, rohstoffId, phase, prozent: "", adHundert: ersterWasser }]);
     setGeaendert(true);
+    // Fokus direkt in das Anteil-Feld der neuen Zeile
+    requestAnimationFrame(() => (document.getElementById(`${uid}-pz-${key}`) as HTMLElement | null)?.focus());
   }
   function entferne(key: string) {
     setZeilen((alt) => alt.filter((z) => z.key !== key));
@@ -401,6 +421,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                           <label className={styles.adSchalter} title={L.editor.adHundertHilfe}>
                             <input type="checkbox" checked={z.adHundert} onChange={(e) => zeile(z.key, { adHundert: e.target.checked })} />
                             {L.editor.adHundert}
+                            <span className="sr-only">: {r.name}</span>
                           </label>
                           {ungueltig.has(z.key) && (
                             <p id={f(`pz-${z.key}-f`)} className={styles.zeileFehler} role="alert">
@@ -534,7 +555,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
             </div>
           </dl>
 
-          <Meldungen meldungen={pruefung.meldungen} onKorrektur={korrigiere} />
+          <Meldungen meldungen={meldungen} onKorrektur={korrigiere} />
         </div>
       </aside>
     </div>

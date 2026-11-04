@@ -24,7 +24,7 @@ export const L = {
     emulgator: "Emulgatoren",
     konsistenzgeber: "Konsistenzgeber",
     oel: "Öle",
-    butter: "Buttern",
+    butter: "Pflanzenbutter",
     konservierer: "Konservierer",
     antioxidans: "Antioxidantien",
     feuchtigkeit: "Feuchtigkeit",
@@ -172,6 +172,8 @@ export const L = {
     kopfdaten: "Kopfdaten",
     zurPruefung: "Zur Prüfung",
     ungueltig: "Bitte eine Zahl von 0 bis 100 eingeben.",
+    ungueltigTitel: "Ungültiger Anteil",
+    ungueltigText: "{namen}: Bis du den Wert korrigierst, rechnet Dein Lab hier mit 0 %.",
     speichernGesperrt: "Bitte zuerst die markierten Felder korrigieren.",
     uebernehmen: "Übernehmen",
     herstellung: "Herstellung",
@@ -342,7 +344,10 @@ export type LabTexte = typeof L;
 
 /** Zahl und Einheit nicht trennen (0,2 % bleibt in einer Zeile). */
 export function nbsp(text: string): string {
-  return text.replace(/(\d) (%|g|ml|°C|Tropfen|Min\.)/g, "$1\u00a0$2");
+  return text
+    .replace(/(\d) (%|g|ml|°C|Tropfen|Min\.)/g, "$1\u00a0$2")
+    .replace(/\bpH (\d)/g, "pH\u00a0$1")
+    .replace(/(\d)–(\d)/g, "$1\u2060–\u2060$2");
 }
 
 /** Platzhalter {n} ersetzen. */

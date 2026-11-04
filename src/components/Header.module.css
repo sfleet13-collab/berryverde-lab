@@ -56,8 +56,10 @@
     background-color var(--dur-fast) var(--ease-out);
 }
 .navLeise {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--text-muted);
-  padding: var(--space-2) 0;
 }
 .navHaupt {
   color: var(--brand);
