@@ -51,6 +51,12 @@ const alsZahl = (s: string) => {
   return Number.isFinite(n) && s.trim() !== "" ? n : 0;
 };
 const alsText = (n: number | null) => (n == null ? "" : String(n).replace(".", ","));
+/** Gültiger Anteil: leer (= 0) oder Zahl von 0 bis 100. */
+const anteilGueltig = (s: string) => {
+  if (s.trim() === "") return true;
+  const n = Number(s.replace(",", "."));
+  return Number.isFinite(n) && n >= 0 && n <= 100;
+};
 
 export default function Editor({ start, rohstoffe, admin }: { start: EditorStart; rohstoffe: RohstoffClient[]; admin: boolean }) {
   const router = useRouter();
@@ -109,6 +115,10 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
   const b = pruefung.berechnung;
   const berechnet = new Map(b.positionen.map((p) => [p.key, p]));
   const markiert = new Set(pruefung.meldungen.filter((m) => m.art === "fehler").flatMap((m) => m.zeilen ?? []));
+  const ungueltig = new Set(zeilen.filter((z) => !z.adHundert && !anteilGueltig(z.prozent)).map((z) => z.key));
+  const chargeOk = charge > 0 && charge <= 5000;
+  const anzahlFehler = pruefung.meldungen.filter((m) => m.art === "fehler").length + ungueltig.size;
+  const hinzuRef = useRef<HTMLSelectElement>(null);
 
   // Warnung beim Verlassen mit ungespeicherten Änderungen
   useEffect(() => {
@@ -137,6 +147,8 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
   function entferne(key: string) {
     setZeilen((alt) => alt.filter((z) => z.key !== key));
     setGeaendert(true);
+    // Die Zeile mit dem Fokus verschwindet: Fokus auf die Rohstoff-Auswahl
+    requestAnimationFrame(() => hinzuRef.current?.focus());
   }
   function korrigiere(kor: Korrektur) {
     const neu = wendeAn(labPositionen, kor, map, neuerKey);
@@ -153,6 +165,10 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
 
   function speichern() {
     setFehler(null);
+    if (ungueltig.size > 0 || !chargeOk) {
+      setFehler(L.editor.speichernGesperrt);
+      return;
+    }
     startSpeichern(async () => {
       const ergebnis = await speichereRezeptur(start.id, {
         ...k,
@@ -182,7 +198,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
         {/* ---------- Kopfdaten ---------- */}
         <section className={styles.karte} aria-labelledby={f("kopf")}>
           <h2 id={f("kopf")} className="sr-only">
-            {L.editor.titelBearbeiten}
+            {L.editor.kopfdaten}
           </h2>
           <div className={styles.felder}>
             <div className={`${styles.feld} ${styles.breit}`}>
@@ -228,8 +244,18 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
             </div>
             <div className={styles.feld}>
               <label htmlFor={f("charge")}>{L.editor.charge}</label>
-              <input id={f("charge")} type="text" inputMode="decimal" value={k.chargeG} onChange={(e) => kopf("chargeG", e.target.value)} aria-describedby={f("charge-h")} />
-              <small id={f("charge-h")}>{L.editor.chargeVorschlag}</small>
+              <input
+                id={f("charge")}
+                type="text"
+                inputMode="decimal"
+                value={k.chargeG}
+                onChange={(e) => kopf("chargeG", e.target.value)}
+                aria-describedby={f("charge-h")}
+                aria-invalid={!chargeOk || undefined}
+              />
+              <small id={f("charge-h")} data-fehler={!chargeOk || undefined}>
+                {chargeOk ? L.editor.chargeVorschlag : fuelle(L.rezeptur.chargeUngueltig, { n: 30 }).split(".")[0] + "."}
+              </small>
             </div>
             {k.produkttyp !== "wasserfrei" && (
               <div className={styles.feld}>
@@ -277,6 +303,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                 {L.editor.hinzufuegen}
               </label>
               <select
+                ref={hinzuRef}
                 id={f("hinzu")}
                 value=""
                 onChange={(e) => {
@@ -318,7 +345,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                       const p = berechnet.get(z.key);
                       if (!r) return null;
                       return (
-                        <div key={z.key} className={styles.zeile} data-markiert={markiert.has(z.key) || undefined}>
+                        <div key={z.key} className={styles.zeile} data-markiert={markiert.has(z.key) || ungueltig.has(z.key) || undefined}>
                           <p className={styles.zeileName}>
                             {r.name}
                             <small>{(r as RohstoffClient).funktion}</small>
@@ -351,6 +378,8 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                                 value={z.prozent}
                                 placeholder="0"
                                 onChange={(e) => zeile(z.key, { prozent: e.target.value })}
+                                aria-invalid={ungueltig.has(z.key) || undefined}
+                                aria-describedby={ungueltig.has(z.key) ? f(`pz-${z.key}-f`) : undefined}
                               />
                             )}
                             <span aria-hidden="true">%</span>
@@ -359,6 +388,11 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
                             <input type="checkbox" checked={z.adHundert} onChange={(e) => zeile(z.key, { adHundert: e.target.checked })} />
                             {L.editor.adHundert}
                           </label>
+                          {ungueltig.has(z.key) && (
+                            <p id={f(`pz-${z.key}-f`)} className={styles.zeileFehler} role="alert">
+                              {L.editor.ungueltig}
+                            </p>
+                          )}
                           <p className={styles.zeileMenge}>
                             {p ? (
                               <>
@@ -429,8 +463,32 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
       </div>
 
       {/* ---------- Seitenleiste: Kennzahlen, Prüfung, Speichern ---------- */}
-      <aside className={styles.editorSeite} aria-label={L.rezeptur.pruefung}>
+      {/* Handy: Status und Speichern bleiben unten sichtbar */}
+      <div className={styles.mobilLeiste}>
+        <a href={`#${f("pruefung")}`} className={styles.mobilStatus} data-ok={anzahlFehler === 0 || undefined}>
+          <Icon name={anzahlFehler === 0 ? "check" : "alert"} size={16} />
+          {anzahlFehler === 0 ? `${L.rezeptur.summe} ${zahl(b.summe, 2)} %` : anzahlFehler === 1 ? L.rezeptur.pruefungFehlerEins : fuelle(L.rezeptur.pruefungFehler, { n: anzahlFehler })}
+        </a>
+        <button type="button" className="btn btn-primary" onClick={speichern} disabled={speichert}>
+          {speichert ? L.editor.speichert : L.editor.speichern}
+        </button>
+      </div>
+
+      <aside className={styles.editorSeite} aria-label={L.rezeptur.pruefung} id={f("pruefung")}>
         <div className={styles.seiteInnen}>
+          <div className={styles.aktionen}>
+            <button type="button" className="btn btn-primary" onClick={speichern} disabled={speichert}>
+              {speichert ? L.editor.speichert : L.editor.speichern}
+            </button>
+            <Link className="btn btn-ghost" href={start.id ? `/de/app/rezeptur/${start.id}` : "/de/app"}>
+              {L.editor.abbrechen}
+            </Link>
+          </div>
+          {fehler && (
+            <p className={styles.formFehler} role="alert">
+              {fehler}
+            </p>
+          )}
           <dl className={styles.kennzahlen} data-kompakt>
             <div data-falsch={(zeilen.length > 0 && Math.abs(b.summe - 100) > 0.005) || undefined}>
               <dt>{L.rezeptur.summe}</dt>
@@ -463,20 +521,6 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
           </dl>
 
           <Meldungen meldungen={pruefung.meldungen} onKorrektur={korrigiere} />
-
-          {fehler && (
-            <p className={styles.formFehler} role="alert">
-              {fehler}
-            </p>
-          )}
-          <div className={styles.aktionen}>
-            <button type="button" className="btn btn-primary" onClick={speichern} disabled={speichert}>
-              {speichert ? L.editor.speichert : L.editor.speichern}
-            </button>
-            <Link className="btn btn-ghost" href={start.id ? `/de/app/rezeptur/${start.id}` : "/de/app"}>
-              {L.editor.abbrechen}
-            </Link>
-          </div>
         </div>
       </aside>
     </div>

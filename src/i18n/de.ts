@@ -40,7 +40,7 @@ const de = {
       },
       {
         title: "Tropfen statt Rätselraten",
-        text: "Kleine Mengen flüssiger Rohstoffe gibt Dein Lab in Tropfen an, passend zur Pipette der Laborbox. Ab 20 Tropfen wird in Milliliter gemessen. Für Pulver unter einem Gramm sagt dir die Rezeptur, dass du die Feinwaage brauchst.",
+        text: "Kleine Mengen flüssiger Rohstoffe gibt Dein Lab in Tropfen an, passend zur Pipette der Laborbox. Über 20 Tropfen wird in Milliliter abgemessen. Für Pulver unter einem Gramm sagt dir die Rezeptur, dass du die Feinwaage brauchst.",
       },
       {
         title: "Rezeptkarte, INCI und Etikett",
@@ -52,12 +52,12 @@ const de = {
       kind: "Fehler",
       title: "Xyliance außerhalb des Bereichs",
       text: "Xyliance arbeitet zuverlässig bei 3 % bis 5 %. Aktuell sind es 2 %.",
-      fix: "Xyliance auf 3 % setzen",
+      fix: "Vorschlag: Xyliance auf 3 % setzen",
     },
     drops: [
       { name: "Tocopherol", amount: "3 Tropfen" },
       { name: "Panthenol", amount: "11 Tropfen" },
-      { name: "Mandelöl", amount: "6,5 ml" },
+      { name: "Mandelöl", amount: "6,6 ml" },
       { name: "Xanthan", amount: "0,10 g · Feinwaage" },
     ],
     libraryTitle: "Eine Bibliothek, die mit dir wächst",
@@ -174,7 +174,7 @@ const de = {
     contact: {
       title: "Frag Susan: Kontakt und Hilfe zur Mitgliedschaft",
       description:
-        "Du hast eine Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft? Schreib Susan über das Formular. Sie liest jede Nachricht persönlich.",
+        "Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft? Schreib Susan. Sie liest jede Nachricht persönlich und antwortet in zwei Werktagen.",
     },
     imprint: {
       title: "Impressum – Angaben zur Anbieterin berryverde",
@@ -192,7 +192,7 @@ const de = {
         "Die Nutzungsbedingungen von Dein Lab: Leistungsumfang, Nutzung nur für den Eigengebrauch, Haftung und Hinweise zu Provisions-Links. Jederzeit hier abrufbar.",
     },
     notFound: {
-      title: "Seite nicht gefunden – zur Startseite",
+      title: "Seite nicht gefunden – zurück zur Startseite",
       description:
         "Diese Seite gibt es nicht oder nicht mehr. Vielleicht hat sich die Adresse geändert. Über die Startseite findest du schnell wieder alles, was du suchst.",
     },

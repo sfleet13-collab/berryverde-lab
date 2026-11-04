@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { inter, display } from "./fonts";
-import { site } from "@/config/site";
+import { htmlLang, site } from "@/config/site";
 import { getDictionary } from "@/i18n";
 import styles from "./[lang]/status.module.css";
 
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="de" className={`${inter.variable} ${display.variable}`}>
+    <html lang={htmlLang.de} className={`${inter.variable} ${display.variable}`}>
       <body>
         <main className={`container ${styles.status}`}>
           <p className={styles.code} aria-hidden="true">
@@ -36,6 +36,8 @@ export default function GlobalNotFound() {
           <nav aria-label="Rechtliches">
             <Link href="/de/impressum">{t.legal.imprint}</Link>
             <Link href="/de/datenschutz">{t.legal.privacy}</Link>
+            <Link href="/de/agb">{t.legal.terms}</Link>
+            <Link href="/de/kontakt">{t.contact.title}</Link>
           </nav>
           <a href={site.credit.url} target="_blank" rel="noopener">
             {site.credit.label}

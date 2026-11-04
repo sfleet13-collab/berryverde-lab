@@ -1838,3 +1838,115 @@
     display: none;
   }
 }
+
+/* ---------- Ergänzungen nach Prüfrunde 1 ---------- */
+.summeMobil {
+  display: none;
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .summeMobil {
+    display: inline;
+  }
+}
+.ad {
+  white-space: nowrap;
+}
+.chargeHilfe[data-fehler],
+.feld small[data-fehler] {
+  color: var(--err);
+  font-weight: 600;
+}
+.zeileFehler {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--err);
+}
+.pruefStatus[data-warnung] {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+.pruefStatus:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.korrektur,
+.extern,
+.textBtn {
+  min-height: 44px;
+}
+.infoBtn::after {
+  inset: -10px;
+}
+.steckbrief {
+  position: fixed;
+}
+.schliessen {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.schliessen:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.steckbriefName {
+  padding-right: 44px;
+}
+.legende {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+.mobilLeiste {
+  display: none;
+}
+@media (max-width: 1040px) {
+  .mobilLeiste {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-inline: calc(var(--space-4) * -1);
+    padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -6px 20px rgb(74 32 44 / 0.08);
+    order: 3;
+  }
+  .editorSeite {
+    order: 2;
+  }
+}
+.mobilStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--err);
+  text-decoration: none;
+}
+.mobilStatus[data-ok] {
+  color: var(--ok);
+}

@@ -75,6 +75,19 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   const aktiv = b.positionen.filter((p) => p.prozentEffektiv > 0);
   const nachSlug = (slug: string) => aktiv.find((p) => p.rohstoff.slug === slug);
 
+  // ---------- 0. Ungültige Anteile ----------
+  const negativ = b.positionen.filter((p) => !p.adHundert && p.prozent < 0);
+  if (negativ.length > 0) {
+    m.push({
+      code: "negativ",
+      art: "fehler",
+      titel: "Negativer Anteil",
+      text: `Ein Anteil kann nicht unter 0 % liegen (${negativ.map((p) => p.rohstoff.name).join(", ")}).`,
+      zeilen: negativ.map((p) => p.key),
+      korrektur: { label: "Auf 0 % setzen", setze: negativ.map((p) => ({ key: p.key, prozent: 0 })) },
+    });
+  }
+
   // ---------- 1. Summe ----------
   if (b.positionen.length === 0) {
     m.push({ code: "leer", art: "hinweis", titel: "Noch keine Rohstoffe", text: "Füge den ersten Rohstoff hinzu, dann rechnet und prüft Dein Lab mit." });

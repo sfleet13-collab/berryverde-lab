@@ -22,6 +22,13 @@ const LOCALE_HOME = new RegExp(`^/(${locales.join("|")})/?$`);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Dein Lab ist nur deutsch: alte oder geratene /en-Adressen auf Deutsch umleiten
+  if (pathname === "/en" || pathname.startsWith("/en/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/de${pathname.slice(3)}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   if (privateMode) {
     // Startseite ist im Privat-Modus direkt der App-Bereich
     const home = LOCALE_HOME.exec(pathname);

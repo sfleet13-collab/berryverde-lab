@@ -99,7 +99,7 @@ test("Tropfen-Regel: bis 20 Tropfen, darüber ml, Festes in Gramm", () => {
   const ml = mengeFuer(R("mandeloel"), 6);
   assert.equal(ml.art, "ml");
   assert.equal(mengeText(ml), "6,6 ml");
-  assert.equal(mengeText(mengeFuer(R("glycerin"), 2.52)), "2 ml");
+  assert.equal(mengeText(mengeFuer(R("glycerin"), 2.52)), "2,0 ml");
   assert.deepEqual(mengeFuer(R("papain"), 0.3), { art: "gramm", gramm: 0.3, feinwaage: true });
   assert.equal(mengeText(mengeFuer(R("sheabutter"), 2)), "2,00 g");
 });
@@ -244,6 +244,17 @@ test("Stufe der Rezeptur = höchste Stufe der Rohstoffe", () => {
   const r = creme();
   r.positionen = r.positionen.map((p) => (p.rohstoffId === id("xyliance") ? { ...p, rohstoffId: id("dermofeel-gsc"), prozent: 3 } : p));
   assert.equal(pruefe(r, map).stufe, "profi");
+});
+
+test("Negativer Anteil ist ein Fehler", () => {
+  const r = creme();
+  r.positionen.find((p) => p.rohstoffId === id("glycerin"))!.prozent = -4;
+  assert.ok(codes(r).includes("negativ"));
+});
+
+test("Gesamtgewicht ohne Rundungsfehler", () => {
+  const b = berechne({ ...creme(), chargeG: 12.5 }, map);
+  assert.equal(b.gesamtG, 12.5);
 });
 
 test("Chargennummer", () => {

@@ -67,8 +67,8 @@ export default function Rechner({
           <Icon name="print" />
           {L.rezeptur.karte}
         </Link>
-        <p id="charge-hilfe" className={styles.chargeHilfe}>
-          {L.rezeptur.chargeHilfe}
+        <p id="charge-hilfe" className={styles.chargeHilfe} data-fehler={!gueltig || undefined} role={gueltig ? undefined : "alert"}>
+          {gueltig ? L.rezeptur.chargeHilfe : fuelle(L.rezeptur.chargeUngueltig, { n: zahl(rezeptur.chargeG, 2) })}
         </p>
       </div>
 

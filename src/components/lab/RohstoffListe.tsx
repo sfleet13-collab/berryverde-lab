@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import Icon from "@/components/Icon";
-import { L, fuelle } from "@/i18n/lab";
+import { L, fuelle, nbsp } from "@/i18n/lab";
 import { zahl } from "@/lib/lab/rechner";
 import styles from "./lab.module.css";
 
@@ -80,7 +80,7 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
         </div>
       </div>
       <p className={styles.treffer} role="status">
-        {fuelle(L.rohstoffe.anzahl, { n: liste.length })}
+        {liste.length === 1 ? L.rohstoffe.anzahlEins : fuelle(L.rohstoffe.anzahl, { n: liste.length })}
       </p>
 
       {liste.length === 0 ? (
@@ -111,25 +111,25 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
                       {r.was && (
                         <>
                           <dt>{L.rohstoffe.was}</dt>
-                          <dd>{r.was}</dd>
+                          <dd>{nbsp(r.was)}</dd>
                         </>
                       )}
                       {r.chemisch && (
                         <>
                           <dt>{L.rohstoffe.chemisch}</dt>
-                          <dd>{r.chemisch}</dd>
+                          <dd>{nbsp(r.chemisch)}</dd>
                         </>
                       )}
                       {r.wirkung && (
                         <>
                           <dt>{L.rohstoffe.wirkung}</dt>
-                          <dd>{r.wirkung}</dd>
+                          <dd>{nbsp(r.wirkung)}</dd>
                         </>
                       )}
                       {r.hinweis && (
                         <>
                           <dt>{L.rohstoffe.hinweis}</dt>
-                          <dd>{r.hinweis}</dd>
+                          <dd>{nbsp(r.hinweis)}</dd>
                         </>
                       )}
                     </dl>
@@ -186,6 +186,7 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
                             <span>
                               {L.rohstoffe.schimmel} {r.wirk[2]}
                             </span>
+                            <small className={styles.legende}>{L.rohstoffe.legende}</small>
                           </dd>
                         </div>
                       )}

@@ -83,6 +83,7 @@ export const L = {
     zurueck: "Alle Rezepturen",
     charge: "Menge",
     chargeHilfe: "Gesamtmenge in Gramm. Alle Angaben rechnen sofort um.",
+    chargeUngueltig: "Bitte eine Menge zwischen 1 und 5000 g eingeben. Bis dahin rechnet Dein Lab mit {n} g.",
     gramm: "g",
     formel: "Formel",
     rohstoff: "Rohstoff",
@@ -100,6 +101,8 @@ export const L = {
       "Tropfen gelten für die Pipette der Laborbox. Bis 20 Tropfen wird getropft, darüber in Milliliter abgemessen. Die Werte sind vorläufig, bis die Pipette kalibriert ist.",
     pruefung: "Prüfung",
     pruefungOk: "Die Rezeptur besteht alle Prüfregeln.",
+    pruefungOkWarnungen: "Keine Fehler. {n} Warnungen solltest du dir ansehen.",
+    pruefungOkWarnung: "Keine Fehler. 1 Warnung solltest du dir ansehen.",
     pruefungFehler: "{n} Punkte müssen korrigiert werden",
     pruefungFehlerEins: "1 Punkt muss korrigiert werden",
     herstellung: "Herstellung",
@@ -131,6 +134,7 @@ export const L = {
     blogSo: "So geht es",
     blogAnwendung: "Anwendung",
     steckbrief: "Steckbrief",
+    schliessen: "Schließen",
     notiz: "Notizen",
     varianteVon: "Variante von",
     nichtGefunden: "Diese Rezeptur gibt es nicht oder sie gehört nicht zu deinem Bereich.",
@@ -163,6 +167,10 @@ export const L = {
     adHundertHilfe: "Füllt automatisch auf 100 % auf (meist das Wasser).",
     entfernen: "Entfernen",
     leer: "Noch keine Rohstoffe. Wähle oben den ersten aus.",
+    kopfdaten: "Kopfdaten",
+    zurPruefung: "Zur Prüfung",
+    ungueltig: "Bitte eine Zahl von 0 bis 100 eingeben.",
+    speichernGesperrt: "Bitte zuerst die markierten Felder korrigieren.",
     uebernehmen: "Übernehmen",
     herstellung: "Herstellung",
     herstellungHilfe: "Ein Schritt pro Zeile.",
@@ -227,6 +235,8 @@ export const L = {
     lieferant: "Lieferant",
     keine: "Kein Rohstoff passt zu dieser Suche.",
     anzahl: "{n} Rohstoffe",
+    anzahlEins: "1 Rohstoff",
+    legende: "++ sehr gut · + gut · o schwach · – keine Wirkung",
   },
 
   admin: {
@@ -302,6 +312,7 @@ export const L = {
     hautgefuehl: "Hautgefühl",
     konsistenz: "Konsistenzgeber nötig",
     steckbrief: "Steckbrief",
+    schliessen: "Schließen",
     hinweis: "Hinweis",
     einkauf: "Einkauf",
     lieferant: "Lieferant",
@@ -326,6 +337,11 @@ export const L = {
 } as const;
 
 export type LabTexte = typeof L;
+
+/** Zahl und Einheit nicht trennen (0,2 % bleibt in einer Zeile). */
+export function nbsp(text: string): string {
+  return text.replace(/(\d) (%|g|ml|°C|Tropfen|Min\.)/g, "$1\u00a0$2");
+}
 
 /** Platzhalter {n} ersetzen. */
 export function fuelle(text: string, werte: Record<string, string | number>): string {

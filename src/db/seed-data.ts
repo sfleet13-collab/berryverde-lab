@@ -110,7 +110,7 @@ export const seedRohstoffe: SeedRohstoff[] = [
     was: "Emulgator für Wasser-in-Öl-Cremes, also sehr reichhaltige, schützende Pflege.",
     chemisch: "Ester aus Sorbitan und den Fettsäuren des Olivenöls.",
     wirkung: "Bindet Wasser in einer Fettgrundlage und ergibt einen schützenden Film.",
-    dos: [["emulsion", 10, 13, "Prozent der Fettphase"]],
+    dos: [["emulsion", 10, 13, "der Fettphase"]],
   },
 
   // ---------- Konsistenzgeber ----------

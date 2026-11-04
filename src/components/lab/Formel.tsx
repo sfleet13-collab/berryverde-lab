@@ -1,5 +1,5 @@
 import Icon from "@/components/Icon";
-import { L } from "@/i18n/lab";
+import { L, nbsp } from "@/i18n/lab";
 import { mengeText, zahl, type Berechnung, type BerechnetePosition } from "@/lib/lab/rechner";
 import type { Phase } from "@/lib/lab/types";
 import styles from "./lab.module.css";
@@ -34,7 +34,6 @@ export default function Formel({
   druck?: boolean;
 }) {
   const phasen = REIHENFOLGE.filter((ph) => b.positionen.some((p) => p.phase === ph));
-  const gesamtG = b.positionen.reduce((s, p) => s + p.gramm, 0);
   const mehrerePhasen = phasen.length > 1;
 
   return (
@@ -80,11 +79,14 @@ export default function Formel({
         })}
         <tfoot>
           <tr>
-            <th scope="row">{L.rezeptur.summe}</th>
+            <th scope="row">
+              {L.rezeptur.summe}
+              <span className={styles.summeMobil}> {zahl(b.summe, 2)} %</span>
+            </th>
             <td className={styles.num} data-falsch={Math.abs(b.summe - 100) > 0.005 || undefined}>
               {zahl(b.summe, 2)} %
             </td>
-            <td className={styles.num}>{zahl(gesamtG, 2, true)} g</td>
+            <td className={styles.num}>{zahl(b.gesamtG, 2, true)} g</td>
             <td />
           </tr>
         </tfoot>
@@ -106,8 +108,11 @@ function Zeile({ p, info, markiert, id, druck }: { p: BerechnetePosition; info?:
               <button type="button" className={styles.infoBtn} popoverTarget={id} aria-label={`${L.rezeptur.steckbrief}: ${p.rohstoff.name}`}>
                 <Icon name="info" size={16} />
               </button>
-              <div id={id} popover="auto" className={styles.steckbrief}>
-                <Steckbrief name={p.rohstoff.name} inci={p.rohstoff.inci} info={info} />
+              <div id={id} popover="auto" role="dialog" aria-labelledby={`${id}-t`} className={styles.steckbrief}>
+                <button type="button" className={styles.schliessen} popoverTarget={id} popoverTargetAction="hide" aria-label={L.rezeptur.schliessen}>
+                  <Icon name="x" size={18} />
+                </button>
+                <Steckbrief name={p.rohstoff.name} inci={p.rohstoff.inci} info={info} titelId={`${id}-t`} />
               </div>
             </>
           )}
@@ -130,34 +135,36 @@ function Zeile({ p, info, markiert, id, druck }: { p: BerechnetePosition; info?:
   );
 }
 
-export function Steckbrief({ name, inci, info }: { name: string; inci: string; info: RohstoffInfo }) {
+export function Steckbrief({ name, inci, info, titelId }: { name: string; inci: string; info: RohstoffInfo; titelId?: string }) {
   return (
     <div className={styles.steckbriefInhalt}>
-      <p className={styles.steckbriefName}>{name}</p>
+      <h2 id={titelId} className={styles.steckbriefName}>
+        {name}
+      </h2>
       <p className={styles.steckbriefInci}>{inci}</p>
       <dl>
         {info.was && (
           <>
             <dt>{L.rohstoffe.was}</dt>
-            <dd>{info.was}</dd>
+            <dd>{nbsp(info.was)}</dd>
           </>
         )}
         {info.chemisch && (
           <>
             <dt>{L.rohstoffe.chemisch}</dt>
-            <dd>{info.chemisch}</dd>
+            <dd>{nbsp(info.chemisch)}</dd>
           </>
         )}
         {info.wirkung && (
           <>
             <dt>{L.rohstoffe.wirkung}</dt>
-            <dd>{info.wirkung}</dd>
+            <dd>{nbsp(info.wirkung)}</dd>
           </>
         )}
         {info.hinweis && (
           <>
             <dt>{L.rohstoffe.hinweis}</dt>
-            <dd>{info.hinweis}</dd>
+            <dd>{nbsp(info.hinweis)}</dd>
           </>
         )}
       </dl>

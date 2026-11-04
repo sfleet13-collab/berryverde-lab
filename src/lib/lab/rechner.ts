@@ -25,6 +25,8 @@ export type Berechnung = {
   summeOhneAusgleich: number;
   /** Summe aller Anteile (mit Ausgleich = 100, sonst die echte Summe). */
   summe: number;
+  /** Gesamtgewicht aus Menge und Summe (nicht aus gerundeten Zeilen addiert). */
+  gesamtG: number;
   hatAusgleich: boolean;
   fettphase: number;
   wasserphase: number;
@@ -90,6 +92,7 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
     positionen,
     summeOhneAusgleich,
     summe: ausgleich ? runde(summeOhneAusgleich + Math.max(0, rest), 3) : summeOhneAusgleich,
+    gesamtG: runde((charge * (ausgleich ? runde(summeOhneAusgleich + Math.max(0, rest), 3) : summeOhneAusgleich)) / 100),
     hatAusgleich: Boolean(ausgleich),
     fettphase,
     wasserphase,
@@ -136,7 +139,7 @@ export function zahl(wert: number, stellen = 2, fest = false): string {
 /** „12 Tropfen“, „3,2 ml“ oder „4,50 g“. */
 export function mengeText(m: Mengenangabe): string {
   if (m.art === "tropfen") return `${m.tropfen} Tropfen`;
-  if (m.art === "ml") return `${zahl(m.ml, 1)} ml`;
+  if (m.art === "ml") return `${zahl(m.ml, 1, true)} ml`;
   return `${zahl(m.gramm, 2, true)} g`;
 }
 

@@ -29,7 +29,7 @@
   font-size: var(--step-4);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--accent);
+  color: var(--brand);
   margin: 0;
 }
 .footer {

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { locales, site } from "@/config/site";
+import { locales, ogLocale, site } from "@/config/site";
 
 /** Öffentliche Seiten für Google. Neue öffentliche Seite? Hier ergänzen. */
 const publicPaths = ["/", "/kontakt", "/impressum", "/datenschutz", "/agb"];
@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: path === "/" ? 1 : 0.5,
       alternates: {
-        languages: Object.fromEntries(locales.map((l) => [l, `${site.url}/${l}${path === "/" ? "" : path}`])),
+        languages: Object.fromEntries(locales.map((l) => [ogLocale[l].replace("_", "-"), `${site.url}/${l}${path === "/" ? "" : path}`])),
       },
     })),
   );
