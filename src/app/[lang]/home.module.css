@@ -1,0 +1,318 @@
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  padding-block: clamp(var(--space-8), 6vw, var(--space-16)) clamp(var(--space-12), 7vw, var(--space-24));
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+  align-items: center;
+}
+.heroText h1 {
+  font-size: var(--step-4);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  max-width: 11ch;
+  margin-bottom: var(--space-6);
+  color: var(--brand);
+}
+.lead {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 44ch;
+  margin-bottom: var(--space-8);
+}
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.in {
+  animation: enter 760ms var(--ease-out) both;
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(6px);
+  }
+}
+
+/* ---------- Abschnitte ---------- */
+.sectionTitle {
+  font-size: var(--step-3);
+  max-width: 16ch;
+  margin-bottom: var(--space-12);
+}
+
+/* ---------- Bento: Kacheln mit echten Mini-Ansichten ---------- */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-4);
+}
+.tile {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(var(--space-6), 3vw, var(--space-8));
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.tile h3 {
+  font-size: var(--step-2);
+  margin-bottom: var(--space-2);
+}
+.tile p {
+  color: var(--text-muted);
+  max-width: 42ch;
+  margin-bottom: var(--space-6);
+}
+.tileAuth {
+  grid-column: span 7;
+}
+.tileSeo {
+  grid-column: span 5;
+  background: var(--brand-soft);
+  border-color: transparent;
+}
+/* Petrol-Kachel bleibt in Hell und Dunkel gleich */
+.tilePrivacy {
+  grid-column: span 5;
+  background: linear-gradient(160deg, #0e5a61, #083a3f);
+  border-color: transparent;
+  color: #ffffff;
+}
+.tilePrivacy p {
+  color: rgb(255 255 255 / 0.82);
+}
+.tilePrivacy .tileIcon,
+.tilePrivacy .checks svg {
+  color: #ff8a6e;
+}
+.tileLang {
+  grid-column: span 7;
+}
+.tileIcon {
+  color: var(--accent);
+  margin-bottom: var(--space-4);
+}
+
+/* Personen mit Rollen */
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.people li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-m);
+  background: var(--surface-2);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .people li:hover {
+    transform: translateX(4px);
+  }
+}
+.initial {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 700;
+}
+.personName {
+  font-weight: 600;
+}
+.badge,
+.badgeAdmin {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.badgeAdmin {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Google-Vorschau */
+.serp {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.serpBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.serpBar span {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.serpUrl {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.serpTitle {
+  font-size: 1.15rem;
+  color: #1a0dab;
+  margin-block: 2px 4px;
+}
+:global([data-theme="dark"]) .serpTitle {
+  color: #8ab4f8;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .serpTitle {
+    color: #8ab4f8;
+  }
+}
+.serpText {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Datenschutz */
+.checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+.checks li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.checks svg {
+  color: var(--accent);
+}
+
+/* Zweisprachig */
+.flip {
+  display: grid;
+  gap: var(--space-2);
+}
+.flip span {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-2);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+.flip span + span {
+  color: var(--text-muted);
+}
+.flip b {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  translate: 0 -0.3em;
+}
+
+/* ---------- Schritte ---------- */
+.stepsSection {
+  background: var(--surface-2);
+}
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-8);
+}
+.step {
+  padding-top: var(--space-6);
+  border-top: 2px solid color-mix(in srgb, var(--brand) 25%, transparent);
+}
+.stepNum {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-4);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+  margin-bottom: var(--space-4);
+}
+.step p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ---------- Abschluss ---------- */
+.ctaBand {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: clamp(var(--space-12), 8vw, 6rem) var(--space-6);
+  border-radius: var(--radius-l);
+  background:
+    radial-gradient(60% 90% at 100% 0%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 60%),
+    linear-gradient(160deg, #0e5a61, #083a3f);
+  color: #ffffff;
+}
+.ctaBand h2 {
+  font-size: var(--step-3);
+  margin-inline: auto;
+  max-width: 16ch;
+}
+.ctaBand p {
+  color: rgb(255 255 255 / 0.85);
+  font-size: var(--step-1);
+  margin-bottom: var(--space-8);
+}
+
+/* ---------- Mobil ---------- */
+@media (max-width: 960px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+  .tileAuth,
+  .tileSeo,
+  .tilePrivacy,
+  .tileLang {
+    grid-column: span 12;
+  }
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}

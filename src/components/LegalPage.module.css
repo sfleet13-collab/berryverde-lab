@@ -1,0 +1,24 @@
+.legal {
+  max-width: 760px;
+  padding-block: clamp(var(--space-12), 8vw, var(--space-16));
+}
+.legal h1 {
+  font-size: var(--step-3);
+}
+.legal h2 {
+  font-size: var(--step-2);
+  margin-top: var(--space-12);
+}
+.placeholder {
+  padding: var(--space-6);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.placeholder p:last-child {
+  margin: 0;
+}
+.placeholderTitle {
+  font-size: var(--step-1);
+  margin: 0 0 var(--space-2);
+}

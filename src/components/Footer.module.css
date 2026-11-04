@@ -1,0 +1,43 @@
+.footer {
+  border-top: 1px solid var(--border);
+  padding-block: var(--space-8);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+.inner {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  text-align: center;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+}
+.links a,
+.links button {
+  color: var(--text-muted);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.links a:hover,
+.links button:hover {
+  color: var(--text);
+}
+.copy {
+  margin: 0;
+}
+.credit {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+.credit:hover {
+  color: var(--accent);
+}

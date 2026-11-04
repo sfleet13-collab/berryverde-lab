@@ -1,0 +1,327 @@
+/* =========================================================
+   DESIGN-VARIABLEN – hier passt Du jede App an die Marke an.
+   Farben, Radien, Abstände und Bewegung an einer Stelle.
+   ========================================================= */
+/* =========================================================
+   DESIGN-VARIABLEN – hier passt Du jede App an die Marke an.
+   Farbwelt "Hell & frisch": Off-White, kräftiges Petrol, Koralle.
+   ========================================================= */
+:root {
+  /* Marke */
+  --brand: #0e5a61;
+  --brand-strong: #0a464c;
+  --brand-soft: #e2efee;
+  --brand-ink: #e9f6f4; /* Text auf Petrol-Flächen */
+  --accent: #ff6b4a;
+  --accent-strong: #e8532f;
+  --accent-soft: #ffe7e0;
+  --accent-ink: #2a0d05; /* Text auf Koralle */
+
+  /* Flächen & Text */
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --surface-2: #f2f0ea;
+  --text: #10201f;
+  --text-muted: #4a5a58;
+  --border: #e3e0d6;
+  --focus: #ff6b4a;
+  --on-brand: #ffffff;
+
+  /* Schriften (lokal eingebunden, siehe src/app/fonts.ts) */
+  --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-display-face), var(--font-inter), system-ui, sans-serif;
+
+  /* Grössen (fliessend Handy -> Desktop) */
+  --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --step-2: clamp(1.55rem, 1.3rem + 1.1vw, 2.2rem);
+  --step-3: clamp(2.2rem, 1.6rem + 2.6vw, 3.8rem);
+  --step-4: clamp(2.9rem, 1.8rem + 4.8vw, 5.9rem);
+
+  /* Abstände & Formen */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --radius-s: 10px;
+  --radius-m: 18px;
+  --radius-l: 28px;
+  --container: 1180px;
+  --shadow-1: 0 1px 2px rgb(16 32 31 / 0.06), 0 6px 20px rgb(16 32 31 / 0.06);
+  --shadow-2: 0 2px 6px rgb(16 32 31 / 0.08), 0 24px 60px rgb(14 90 97 / 0.18);
+
+  /* Bewegung (nach Emil Kowalski: kurz, weich, nie träge) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 600ms;
+
+  color-scheme: light;
+}
+
+/* Dunkles Design: automatisch nach System, oder per Schalter (data-theme) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand: #4fb3b8;
+    --brand-strong: #7fd0d3;
+    --brand-soft: #12302f;
+    --brand-ink: #062022;
+    --accent: #ff7a5c;
+    --accent-strong: #ff9479;
+    --accent-soft: #3a1c14;
+    --bg: #0b1615;
+    --surface: #11201f;
+    --surface-2: #172a28;
+    --text: #edf3f1;
+    --text-muted: #a4b4b1;
+    --border: #23403d;
+    --focus: #ff7a5c;
+    --on-brand: #062022;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --brand: #4fb3b8;
+  --brand-strong: #7fd0d3;
+  --brand-soft: #12302f;
+  --brand-ink: #062022;
+  --accent: #ff7a5c;
+  --accent-strong: #ff9479;
+  --accent-soft: #3a1c14;
+  --bg: #0b1615;
+  --surface: #11201f;
+  --surface-2: #172a28;
+  --text: #edf3f1;
+  --text-muted: #a4b4b1;
+  --border: #23403d;
+  --focus: #ff7a5c;
+  --on-brand: #062022;
+  color-scheme: dark;
+}
+
+/* ---------- Basis ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+main {
+  flex: 1;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+a {
+  color: var(--brand);
+  text-underline-offset: 0.18em;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0 0 var(--space-4);
+}
+h1 {
+  font-size: var(--step-4);
+  letter-spacing: -0.03em;
+}
+h2 {
+  font-size: var(--step-3);
+}
+h3 {
+  font-size: var(--step-1);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+p {
+  margin: 0 0 var(--space-4);
+  text-wrap: pretty;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+input,
+textarea {
+  caret-color: var(--accent);
+}
+html {
+  scrollbar-color: color-mix(in srgb, var(--brand) 45%, transparent) transparent;
+}
+
+/* ---------- Hilfsklassen ---------- */
+.container {
+  width: min(100% - 2rem, var(--container));
+  margin-inline: auto;
+}
+.section {
+  padding-block: clamp(var(--space-12), 8vw, var(--space-24));
+}
+.muted {
+  color: var(--text-muted);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-1);
+}
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* ---------- Buttons ---------- */
+.btn svg {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover svg {
+    transform: translateX(3px);
+  }
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font: 600 var(--step-0) / 1 var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--shadow-1);
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 1px 2px rgb(16 32 31 / 0.1), 0 10px 26px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--brand-strong);
+    box-shadow: var(--shadow-2);
+  }
+  .btn-ghost:hover {
+    background: var(--surface-2);
+  }
+  .btn-accent:hover {
+    background: var(--accent-strong);
+    transform: translateY(-1px);
+  }
+}
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ---------- Karten ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: var(--space-6);
+}
+
+/* ---------- Einblenden beim Scrollen ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+  transition-delay: var(--delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+html:not(.js) .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
