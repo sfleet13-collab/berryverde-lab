@@ -1,0 +1,1840 @@
+/* =========================================================
+   DEIN LAB – App-Bereich (Arbeitsoberfläche)
+   Ruhig und dicht wie ein Laborprotokoll: feste Schriftgrössen,
+   Zahlen in Tabellenziffern, Farbe nur für Zustand und Aktion.
+   ========================================================= */
+
+/* ---------- Seitenrahmen ---------- */
+.seite {
+  padding-block: var(--space-8) var(--space-16);
+}
+.schmal {
+  max-width: 860px;
+}
+.seitenKopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.seitenTitel {
+  font-size: 2rem;
+  line-height: 1.15;
+  margin: 0;
+}
+.schmal > .seitenTitel {
+  margin-bottom: var(--space-6);
+}
+.seitenLead {
+  color: var(--text-muted);
+  margin: var(--space-2) 0 0;
+  max-width: 60ch;
+}
+.untertitel {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin: var(--space-1) 0 0;
+}
+.nummer {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+  margin: 0 0 var(--space-1);
+}
+.zurueck {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+.zurueck:hover {
+  color: var(--text);
+}
+.pfeilLinks {
+  transform: rotate(180deg);
+}
+.fussnote {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: var(--space-3) 0 0;
+  max-width: 70ch;
+}
+.leer {
+  padding: var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+  margin: var(--space-4) 0;
+}
+.leerBox {
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  max-width: 640px;
+}
+.leerBox h2 {
+  font-size: 1.4rem;
+}
+.leerBox p {
+  color: var(--text-muted);
+}
+.aktionen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ---------- Navigation im App-Bereich ---------- */
+.labNav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.labNavInnen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 52px;
+}
+.labNav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+}
+.labNav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding-inline: var(--space-3);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-bottom: 2px solid transparent;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.labNav a:hover {
+  color: var(--text);
+}
+.labNav a[aria-current="page"] {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+.labNavKonto {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.labNavKonto button,
+.textBtn {
+  font: inherit;
+  font-weight: 500;
+  color: var(--brand);
+  background: none;
+  border: 0;
+  padding: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, var(--brand) 40%, transparent);
+}
+.textBtn[data-gefahr] {
+  color: var(--err);
+  text-decoration-color: color-mix(in srgb, var(--err) 40%, transparent);
+}
+@media (max-width: 640px) {
+  .labNavMail {
+    display: none;
+  }
+  .labNav a {
+    padding-inline: var(--space-2);
+  }
+}
+
+/* ---------- Reiter und Filter ---------- */
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-6);
+}
+.tabs a {
+  padding: var(--space-3) var(--space-4);
+  min-height: 44px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tabs a[aria-current="page"] {
+  color: var(--text);
+  border-bottom-color: var(--brand);
+}
+.filter {
+  display: grid;
+  grid-template-columns: 2fr repeat(4, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+  margin-bottom: var(--space-4);
+}
+.filter:not(form) {
+  grid-template-columns: 2fr 1fr;
+  max-width: 640px;
+}
+@media (max-width: 900px) {
+  .filter {
+    grid-template-columns: 1fr 1fr;
+  }
+  .filterSuche {
+    grid-column: 1 / -1;
+  }
+}
+.treffer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-3);
+}
+.zurueckLink {
+  color: var(--brand);
+}
+
+/* ---------- Formularfelder ---------- */
+.feld {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  align-content: start;
+}
+.feld > label,
+.feld > legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0;
+}
+.feld > legend {
+  margin-bottom: 6px;
+}
+.feld small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.feld input,
+.feld select,
+.feld textarea,
+.zeile input,
+.zeile select,
+.hinzu select,
+.dosZeile input,
+.zugangStufe select {
+  width: 100%;
+  min-height: 44px;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: var(--space-2) var(--space-3);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.feld textarea {
+  line-height: 1.5;
+  resize: vertical;
+}
+.feld input:hover,
+.feld select:hover,
+.feld textarea:hover,
+.zeile input:hover,
+.zeile select:hover {
+  border-color: color-mix(in srgb, var(--text) 35%, var(--border));
+}
+.feld input:focus-visible,
+.feld select:focus-visible,
+.feld textarea:focus-visible,
+.zeile input:focus-visible,
+.zeile select:focus-visible,
+.hinzu select:focus-visible,
+.dosZeile input:focus-visible,
+.zugangStufe select:focus-visible {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+.feld [aria-invalid="true"] {
+  border-color: var(--err);
+}
+.felder {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+.breit {
+  grid-column: 1 / -1;
+}
+@media (max-width: 560px) {
+  .felder {
+    grid-template-columns: 1fr;
+  }
+}
+.haken {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.haken input,
+.adSchalter input,
+.demoSchalter input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand);
+  flex: none;
+}
+.formFehler {
+  color: var(--err);
+  background: var(--err-soft);
+  border-radius: var(--radius-s);
+  padding: var(--space-3) var(--space-4);
+  margin: 0;
+  font-size: 0.92rem;
+}
+.formOk {
+  color: var(--ok);
+  font-size: 0.92rem;
+  margin: 0;
+  min-height: 1.4em;
+}
+.formOk:empty,
+.formFehler:empty {
+  display: none;
+}
+
+/* Auswahl in Segmenten (Produkttyp) und Chips (Hautbedürfnis) */
+.segment {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+.segment label {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.segment label,
+.chips label {
+  position: relative;
+}
+.segment input,
+.chips input {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.segment span {
+  font-weight: 600;
+}
+.segment small {
+  line-height: 1.35;
+}
+.segment label[data-aktiv],
+.chips label[data-aktiv] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.segment label:focus-within,
+.chips label:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  .segment {
+    grid-template-columns: 1fr;
+  }
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chips label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+/* ---------- Flächen ---------- */
+.karte {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: var(--space-6);
+  display: grid;
+  gap: var(--space-4);
+}
+.karte h2,
+.block h2 {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  margin: 0;
+}
+.karte > p {
+  margin: 0;
+}
+.karteKopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.block {
+  margin-top: var(--space-8);
+  display: grid;
+  gap: var(--space-3);
+}
+.block > p {
+  margin: 0;
+  max-width: 68ch;
+}
+@media (max-width: 560px) {
+  .karte {
+    padding: var(--space-4);
+  }
+}
+
+/* ---------- Bibliothek: Liste der Rezepturen ---------- */
+.rezeptListe {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.rezeptListe li {
+  border-bottom: 1px solid var(--border);
+}
+.rezeptLink {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1.4fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-3);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.rezeptNummer {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+}
+.rezeptName {
+  display: grid;
+  gap: 2px;
+}
+.rezeptName strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+.rezeptName span {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+.rezeptMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-4);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.entwurf {
+  color: var(--warn);
+  background: var(--warn-soft);
+  padding: 0 var(--space-2);
+  border-radius: 4px;
+  font-weight: 600;
+}
+.rezeptPfeil {
+  color: var(--text-muted);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rezeptLink:hover {
+    background: var(--surface);
+  }
+  .rezeptLink:hover .rezeptPfeil {
+    transform: translateX(3px);
+    color: var(--brand);
+  }
+}
+@media (max-width: 760px) {
+  .rezeptLink {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-3);
+  }
+  .rezeptNummer:empty {
+    display: none;
+  }
+  .rezeptNummer,
+  .rezeptName,
+  .rezeptMeta {
+    grid-column: 1;
+  }
+  .rezeptPfeil {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+}
+
+/* ---------- Rezeptur-Ansicht ---------- */
+.rezepturKopf {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-2) 0 var(--space-6);
+}
+.eckdaten,
+.blattDaten {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-8);
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-block: 1px solid var(--border);
+}
+.eckdaten dt,
+.blattDaten dt,
+.kennzahlen dt,
+.werte dt {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.eckdaten dd,
+.blattDaten dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.rezepturRaster {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--space-12);
+  align-items: start;
+}
+.rezepturText > .block:first-child {
+  margin-top: 0;
+}
+@media (max-width: 960px) {
+  .rezepturRaster {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .rezepturText > .block:first-child {
+    margin-top: var(--space-8);
+  }
+}
+.schritte {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: var(--space-3);
+  max-width: 68ch;
+}
+.schritte li::marker {
+  font-weight: 700;
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+.eigengebrauch {
+  margin: var(--space-8) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.rezepturAktionen {
+  margin-top: var(--space-6);
+}
+.loeschen {
+  font-size: 0.92rem;
+}
+.loeschen summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-2);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.loeschen form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--err-soft);
+  border-radius: var(--radius-s);
+}
+.loeschen p {
+  margin: 0;
+}
+.loeschenBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--err);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* ---------- Rechner: Menge ---------- */
+.chargeLeiste {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: end;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.chargeFeld {
+  display: grid;
+  gap: 6px;
+}
+.chargeFeld label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.chargeEingabe {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  padding-right: var(--space-3);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.chargeEingabe:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+.chargeEingabe input {
+  width: 5.5rem;
+  min-height: 48px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  padding: 0 0 0 var(--space-3);
+  text-align: right;
+}
+.chargeEingabe input:focus {
+  outline: none;
+}
+.chargeEingabe input[aria-invalid="true"] {
+  color: var(--err);
+}
+.chargeEingabe span {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.schnell {
+  display: flex;
+  gap: var(--space-1);
+}
+.schnell button {
+  min-height: 48px;
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.schnell button:active {
+  transform: scale(0.97);
+}
+.schnell button[aria-pressed="true"] {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.kartenBtn {
+  justify-self: end;
+}
+.chargeHilfe {
+  grid-column: 1 / -1;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .chargeLeiste {
+    grid-template-columns: auto 1fr;
+  }
+  .kartenBtn {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+}
+
+/* ---------- Formel-Tabelle (Laborprotokoll) ---------- */
+.formelWrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.formel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.formel thead th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: left;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+.formel td,
+.formel tbody th {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  vertical-align: top;
+  text-align: left;
+  font-weight: 400;
+}
+.formel .num {
+  text-align: right;
+  white-space: nowrap;
+}
+.formel tbody tr[data-markiert] {
+  background: var(--err-soft);
+}
+.phaseRow th {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-2);
+  background: var(--surface-2);
+}
+.phaseKopf {
+  display: flex;
+  align-items: center;
+  margin: 0 0 var(--space-2);
+}
+.phaseTag {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-right: var(--space-2);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  vertical-align: middle;
+}
+.phaseTag[data-phase="fett"] {
+  background: var(--phase-fett);
+}
+.phaseTag[data-phase="wasser"] {
+  background: var(--phase-wasser);
+}
+.phaseTag[data-phase="kalt"] {
+  background: var(--phase-kalt);
+}
+.phaseTag[data-phase="pulver"] {
+  background: var(--phase-pulver);
+}
+.phaseName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+.phaseHilfe {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+.phaseSumme {
+  float: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.6rem;
+}
+.stoff {
+  min-width: 0;
+}
+.stoffName {
+  display: block;
+  font-weight: 600;
+}
+.stoffName .ad,
+.stoffName .infoBtn {
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+.stoffFunktion {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.ad {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--info);
+  background: var(--info-soft);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.abmessen {
+  font-weight: 600;
+}
+.tropfen {
+  color: var(--brand);
+}
+.waage {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--warn);
+}
+.formel tfoot th,
+.formel tfoot td {
+  padding: var(--space-3) var(--space-4);
+  font-weight: 700;
+  text-align: left;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.formel tfoot td[data-falsch] {
+  color: var(--err);
+}
+@media (max-width: 560px) {
+  .formel {
+    font-size: 0.88rem;
+  }
+  .formel td,
+  .formel tbody th,
+  .formel thead th,
+  .formel tfoot th,
+  .formel tfoot td {
+    padding-inline: var(--space-2);
+  }
+  .phaseHilfe {
+    display: none;
+  }
+  /* Der Anteil in % ist am Handy nachrangig: Gramm und Abmessen zählen beim Rühren */
+  .formel thead th:nth-child(2),
+  .formel tbody td:nth-child(2),
+  .formel tfoot td:nth-child(2) {
+    display: none;
+  }
+  .phaseRow th {
+    padding-inline: var(--space-2);
+  }
+}
+
+/* Info-Knopf und Steckbrief (Popover) */
+.infoBtn {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-block: -4px;
+  padding: 0;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+.infoBtn::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+.infoBtn:hover {
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+.steckbrief {
+  width: min(92vw, 26rem);
+  max-height: 80dvh;
+  overflow: auto;
+  margin: auto;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-2);
+  font-weight: 400;
+  text-align: left;
+  white-space: normal;
+}
+.steckbrief::backdrop {
+  background: rgb(42 20 28 / 0.32);
+}
+.steckbrief:popover-open {
+  animation: auf var(--dur-base) var(--ease-out);
+}
+@keyframes auf {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.steckbriefName {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.steckbriefInci {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 2px 0 var(--space-4);
+}
+.steckbriefInhalt dl,
+.steckbriefText {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+}
+.steckbriefInhalt dt,
+.steckbriefText dt {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: var(--space-3);
+}
+.steckbriefInhalt dt:first-child,
+.steckbriefText dt:first-child {
+  margin-top: 0;
+}
+.steckbriefInhalt dd,
+.steckbriefText dd {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ---------- Kennzahlen ---------- */
+.kennzahlen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-8);
+  margin: var(--space-4) 0 0;
+}
+.kennzahlen dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.kennzahlen small {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.kennzahlen[data-kompakt] {
+  margin: 0;
+  gap: var(--space-3) var(--space-6);
+}
+.kennzahlen [data-falsch] dd {
+  color: var(--err);
+}
+
+/* ---------- Prüfung ---------- */
+.pruefung {
+  display: grid;
+  gap: var(--space-3);
+}
+.pruefStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-s);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--err);
+  background: var(--err-soft);
+}
+.pruefStatus[data-ok] {
+  color: var(--ok);
+  background: var(--ok-soft);
+}
+.meldungen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.meldungen li {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  animation: rein var(--dur-base) var(--ease-out);
+}
+@keyframes rein {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.meldungArt {
+  align-self: start;
+  justify-self: start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.meldungen li[data-art="fehler"] .meldungArt {
+  color: var(--err);
+  background: var(--err-soft);
+}
+.meldungen li[data-art="warnung"] .meldungArt {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+.meldungen li[data-art="hinweis"] .meldungArt {
+  color: var(--info);
+  background: var(--info-soft);
+}
+.meldungen li[data-art="fehler"] {
+  border-color: color-mix(in srgb, var(--err) 45%, var(--border));
+}
+.meldungTitel {
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.35;
+}
+.meldungText {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.korrektur {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  min-height: 40px;
+  padding: var(--space-2) var(--space-4);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  color: var(--on-brand);
+  background: var(--brand);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.korrektur:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .korrektur:hover {
+    background: var(--brand-strong);
+  }
+}
+@media (max-width: 420px) {
+  .meldungen li {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+}
+
+/* ---------- Geräte ---------- */
+.geraete {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.geraete li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  color: var(--text-muted);
+}
+.geraetName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+.geraetArt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 4px;
+  color: var(--info);
+  background: var(--info-soft);
+}
+.geraetArt[data-pflicht] {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+.geraetGrund {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.extern {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--brand);
+}
+.affiliate {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 6px;
+  text-decoration: none;
+}
+
+/* ---------- Kopier-Kästchen ---------- */
+.copyBox {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  overflow: hidden;
+}
+.copyKopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.copyBtn:active {
+  transform: scale(0.97);
+}
+.copyBtn[data-kopiert] {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.copyText {
+  margin: 0;
+  padding: var(--space-4);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 26rem;
+  overflow: auto;
+}
+
+/* ---------- Editor ---------- */
+.editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: var(--space-6);
+  align-items: start;
+  margin-top: var(--space-6);
+}
+.editorHaupt {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.editorSeite {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100dvh - 92px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.seiteInnen {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+}
+.seiteInnen .meldungen li {
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+@media (max-width: 1040px) {
+  .editor {
+    grid-template-columns: 1fr;
+  }
+  .editorSeite {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+.hinzu {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+.zeilen {
+  display: grid;
+  gap: var(--space-4);
+}
+.phaseGruppe {
+  display: grid;
+  gap: var(--space-2);
+}
+.zeile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10.5rem 6.5rem auto 6.5rem 44px;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--bg);
+}
+.zeile[data-markiert] {
+  border-color: var(--err);
+  background: var(--err-soft);
+}
+.zeileName {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
+  min-width: 0;
+}
+.zeileName small {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.zeileProzent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.zeileProzent input,
+.adWert {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.adWert {
+  flex: 1;
+  min-height: 44px;
+  display: grid;
+  align-items: center;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-s);
+  background: var(--info-soft);
+  color: var(--info);
+}
+.adSchalter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.zeileMenge {
+  margin: 0;
+  display: grid;
+  text-align: right;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+.zeileMenge span {
+  color: var(--brand);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.entfernen {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+.entfernen:hover {
+  color: var(--err);
+  background: var(--err-soft);
+}
+@media (max-width: 760px) {
+  .zeile {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name weg"
+      "phase phase"
+      "prozent ad"
+      "menge menge";
+    padding: var(--space-3);
+  }
+  .zeileName {
+    grid-area: name;
+  }
+  .entfernen {
+    grid-area: weg;
+  }
+  .zeilePhase {
+    grid-area: phase;
+  }
+  .zeileProzent {
+    grid-area: prozent;
+  }
+  .adSchalter {
+    grid-area: ad;
+  }
+  .zeileMenge {
+    grid-area: menge;
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+/* ---------- Rohstoff-Liste ---------- */
+.stoffListe {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.stoffListe > li {
+  border-bottom: 1px solid var(--border);
+}
+.stoffListe summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  min-height: 56px;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.stoffListe summary::-webkit-details-marker {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .stoffListe summary:hover {
+    background: var(--surface);
+  }
+}
+.stoffListe details[open] > summary {
+  background: var(--surface);
+}
+.stoffKopf {
+  display: grid;
+  gap: 2px;
+}
+.stoffKopf strong {
+  font-size: 1.02rem;
+}
+.stoffKopf span {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.stoffMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px var(--space-4);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.stoffDetail {
+  padding: var(--space-2) var(--space-3) var(--space-6);
+  background: var(--surface);
+}
+.stoffSpalten {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--space-8);
+}
+.steckbriefText {
+  max-width: 60ch;
+}
+.werte {
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+.werte dd {
+  margin: 0;
+  display: grid;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.stoffAktionen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+@media (max-width: 700px) {
+  .stoffSpalten {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .stoffListe summary {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+  .stoffMeta {
+    justify-content: flex-start;
+  }
+}
+
+/* ---------- Rohstoff-Formular ---------- */
+.dosierung {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.dosierung legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+.dosZeile {
+  display: grid;
+  grid-template-columns: 6.5rem 5rem 5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+.dosTyp {
+  font-size: 0.9rem;
+}
+@media (max-width: 520px) {
+  .dosZeile {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dosTyp,
+  .dosZeile input:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- Verwaltung ---------- */
+.zugangForm {
+  display: grid;
+  grid-template-columns: 2fr 1.3fr 1fr 1.3fr auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+.zugangForm > p {
+  grid-column: 1 / -1;
+}
+@media (max-width: 860px) {
+  .zugangForm {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .zugangForm {
+    grid-template-columns: 1fr;
+  }
+}
+.zugaenge {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.zugaenge li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.zugaenge li[data-aus] .zugangWer {
+  opacity: 0.6;
+}
+.zugangWer {
+  flex: 1 1 14rem;
+  display: grid;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.zugangWer span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.zugangStufe {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.zugangStufe select {
+  width: auto;
+}
+.zugangStatus {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.zugangStatus[data-aktiv] {
+  color: var(--ok);
+  background: var(--ok-soft);
+}
+.geraeteAdmin {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.geraeteAdmin form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: var(--space-3);
+}
+@media (max-width: 640px) {
+  .geraeteAdmin form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Mini-Rechner auf der Startseite ---------- */
+.demo {
+  display: grid;
+  gap: var(--space-3);
+}
+.demoKopf {
+  display: grid;
+  gap: var(--space-2);
+}
+.demoTitel {
+  font-weight: 600;
+  margin: 0;
+}
+.demoMenge {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 3.6rem;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9rem;
+}
+.demoMenge label {
+  color: var(--text-muted);
+}
+.demoMenge input {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--brand);
+}
+.demoMenge output {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.demoSchalter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.demo .formel {
+  font-size: 0.88rem;
+}
+.demo .formel td,
+.demo .formel tbody th {
+  padding-block: 5px;
+}
+.demo .phaseHilfe {
+  display: none;
+}
+
+/* ---------- Rezeptkarte (Bildschirm und Druck) ---------- */
+.kartenLeiste {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+.kartenForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--space-3);
+}
+.kartenForm .feld {
+  width: 11rem;
+}
+.blatt {
+  max-width: 820px;
+  margin-inline: auto;
+  padding: clamp(var(--space-4), 5vw, var(--space-12));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-1);
+  display: grid;
+  gap: var(--space-6);
+}
+.blatt h1 {
+  font-size: 2rem;
+  line-height: 1.15;
+  margin: 0;
+}
+.blatt h2 {
+  font-size: 1.15rem;
+  margin: 0 0 var(--space-2);
+}
+.blatt section > p {
+  margin: 0;
+}
+.blattKopf {
+  display: grid;
+  gap: var(--space-3);
+}
+.blattMarke {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--brand);
+  margin: 0;
+}
+.etikettBereich {
+  break-inside: avoid;
+}
+.etikett {
+  width: min(100%, 22rem);
+  padding: var(--space-4);
+  border: 1.5px dashed color-mix(in srgb, var(--text) 45%, transparent);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: var(--space-2);
+}
+.etikettName {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.etikettFrisch {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.etikett dl {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.etikett dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.etikett dt {
+  color: var(--text-muted);
+}
+.etikett dd {
+  margin: 0;
+  font-weight: 600;
+}
+.etikettInci {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+.etikettHinweis {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+@media print {
+  .seite {
+    padding: 0;
+  }
+  .blatt {
+    max-width: none;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    gap: 14pt;
+    font-size: 10.5pt;
+    color: #000;
+    background: #fff;
+  }
+  .blatt h1 {
+    font-size: 20pt;
+  }
+  .blatt h2 {
+    font-size: 12pt;
+  }
+  .formelWrap {
+    border-color: #999;
+    break-inside: avoid;
+  }
+  .phaseRow th,
+  .formel tfoot th,
+  .formel tfoot td {
+    background: #f1f1f1;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .tropfen,
+  .blattMarke,
+  .nummer {
+    color: #000;
+  }
+  .formel thead th:nth-child(2),
+  .formel tbody td:nth-child(2),
+  .formel tfoot td:nth-child(2) {
+    display: table-cell;
+  }
+  :global(html[data-druck="etikett"]) .blatt > :not(.etikettBereich) {
+    display: none;
+  }
+  :global(html[data-druck="etikett"]) .etikettBereich h2 {
+    display: none;
+  }
+}

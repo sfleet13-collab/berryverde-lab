@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { isLocale, site, type Locale } from "@/config/site";
 import de, { type Dictionary } from "./de";
-import en from "./en";
 
 export type { Dictionary };
 
@@ -18,7 +17,7 @@ function swissify<T>(value: T): T {
 }
 
 const deFinal = site.spelling === "de-CH" ? swissify(de) : de;
-const dictionaries: Record<Locale, Dictionary> = { de: deFinal, en };
+const dictionaries: Record<Locale, Dictionary> = { de: deFinal };
 
 export function getDictionary(lang: string): Dictionary {
   if (!isLocale(lang)) notFound();

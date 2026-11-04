@@ -9,10 +9,8 @@ import styles from "./[lang]/status.module.css";
 /**
  * 404 für alle unbekannten Adressen (echter Status 404, Inhalt direkt im HTML).
  * Eigenes Dokument, weil das Hauptlayout unter /[lang] liegt (siehe Next-Doku global-not-found).
- * Sprache: Hauptsprache der Seite, Englisch als Zusatz.
  */
 const t = getDictionary("de");
-const en = getDictionary("en");
 
 export const metadata: Metadata = {
   title: `${t.seo.notFound.title} | ${site.name}`,
@@ -29,16 +27,9 @@ export default function GlobalNotFound() {
             404
           </p>
           <h1>{t.notFound.title}</h1>
-          <p className="muted">
-            {t.notFound.text}
-            <br />
-            <span lang="en">{en.notFound.text}</span>
-          </p>
+          <p className="muted">{t.notFound.text}</p>
           <Link className="btn btn-primary" href="/de">
             {t.notFound.back}
-          </Link>
-          <Link href="/en" lang="en" className="muted">
-            {en.notFound.back}
           </Link>
         </main>
         <footer className={`container ${styles.footer}`}>

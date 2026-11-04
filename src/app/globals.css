@@ -1,43 +1,57 @@
 /* =========================================================
-   DESIGN-VARIABLEN – hier passt Du jede App an die Marke an.
-   Farben, Radien, Abstände und Bewegung an einer Stelle.
-   ========================================================= */
-/* =========================================================
-   DESIGN-VARIABLEN – hier passt Du jede App an die Marke an.
-   Farbwelt "Hell & frisch": Off-White, kräftiges Petrol, Koralle.
+   DESIGN-VARIABLEN – Dein Lab (berryverde).
+   Farbwelt der Website: Blush-Papier, Beere, Altrosa, Schiefer.
+   Dazu Zustandsfarben für die Prüfung (ok, Warnung, Fehler, Hinweis)
+   und zarte Töne für die Phasen der Rezeptur.
    ========================================================= */
 :root {
   /* Marke */
-  --brand: #0e5a61;
-  --brand-strong: #0a464c;
-  --brand-soft: #e2efee;
-  --brand-ink: #e9f6f4; /* Text auf Petrol-Flächen */
-  --accent: #ff6b4a;
-  --accent-strong: #e8532f;
-  --accent-soft: #ffe7e0;
-  --accent-ink: #2a0d05; /* Text auf Koralle */
+  --brand: #9e254d;
+  --brand-strong: #7d1a3b;
+  --brand-soft: #f7e3e8;
+  --brand-ink: #fdf1f4; /* Text auf Beeren-Flächen */
+  --accent: #c2a09e;
+  --accent-strong: #ad8785;
+  --accent-soft: #f4e6e3;
+  --accent-ink: #2f1c1b; /* Text auf Altrosa */
 
   /* Flächen & Text */
-  --bg: #fbfaf7;
+  --bg: #fcf5f2;
   --surface: #ffffff;
-  --surface-2: #f2f0ea;
-  --text: #10201f;
-  --text-muted: #4a5a58;
-  --border: #e3e0d6;
-  --focus: #ff6b4a;
+  --surface-2: #f7ece8;
+  --text: #2a2e30;
+  --text-muted: #5d6062;
+  --border: #e9dcd6;
+  --focus: #9e254d;
   --on-brand: #ffffff;
+
+  /* Zustände der Prüfung */
+  --ok: #2c6549;
+  --ok-soft: #e4f0e9;
+  --warn: #7f5204;
+  --warn-soft: #fbefd4;
+  --err: #ab2219;
+  --err-soft: #fbe7e4;
+  --info: #3b5866;
+  --info-soft: #e7eef1;
+
+  /* Phasen der Rezeptur */
+  --phase-fett: #f7ecd2;
+  --phase-wasser: #e3eef3;
+  --phase-kalt: #ece8f4;
+  --phase-pulver: #f1ebe6;
 
   /* Schriften (lokal eingebunden, siehe src/app/fonts.ts) */
   --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--font-display-face), var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-display-face), Georgia, "Times New Roman", serif;
 
   /* Grössen (fliessend Handy -> Desktop) */
   --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
   --step-1: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
   --step-2: clamp(1.55rem, 1.3rem + 1.1vw, 2.2rem);
-  --step-3: clamp(2.2rem, 1.6rem + 2.6vw, 3.8rem);
-  --step-4: clamp(2.9rem, 1.8rem + 4.8vw, 5.9rem);
+  --step-3: clamp(2.1rem, 1.6rem + 2.3vw, 3.5rem);
+  --step-4: clamp(2.5rem, 1.7rem + 3.6vw, 4.6rem);
 
   /* Abstände & Formen */
   --space-1: 0.25rem;
@@ -49,12 +63,12 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --space-24: 6rem;
-  --radius-s: 10px;
-  --radius-m: 18px;
-  --radius-l: 28px;
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 24px;
   --container: 1180px;
-  --shadow-1: 0 1px 2px rgb(16 32 31 / 0.06), 0 6px 20px rgb(16 32 31 / 0.06);
-  --shadow-2: 0 2px 6px rgb(16 32 31 / 0.08), 0 24px 60px rgb(14 90 97 / 0.18);
+  --shadow-1: 0 1px 2px rgb(74 32 44 / 0.06), 0 6px 20px rgb(74 32 44 / 0.06);
+  --shadow-2: 0 2px 6px rgb(74 32 44 / 0.08), 0 24px 60px rgb(158 37 77 / 0.14);
 
   /* Bewegung (nach Emil Kowalski: kurz, weich, nie träge) */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -69,40 +83,70 @@
 /* Dunkles Design: automatisch nach System, oder per Schalter (data-theme) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --brand: #4fb3b8;
-    --brand-strong: #7fd0d3;
-    --brand-soft: #12302f;
-    --brand-ink: #062022;
-    --accent: #ff7a5c;
-    --accent-strong: #ff9479;
-    --accent-soft: #3a1c14;
-    --bg: #0b1615;
-    --surface: #11201f;
-    --surface-2: #172a28;
-    --text: #edf3f1;
-    --text-muted: #a4b4b1;
-    --border: #23403d;
-    --focus: #ff7a5c;
-    --on-brand: #062022;
+    --brand: #ec9bb2;
+    --brand-strong: #f5bccb;
+    --brand-soft: #3b2029;
+    --brand-ink: #2b0a15;
+    --accent: #c2a09e;
+    --accent-strong: #d6b9b7;
+    --accent-soft: #382a29;
+    --accent-ink: #2f1c1b;
+    --bg: #1b1617;
+    --surface: #241d1f;
+    --surface-2: #2e2528;
+    --text: #f4ebe8;
+    --text-muted: #bdaeaa;
+    --border: #413437;
+    --focus: #ec9bb2;
+    --on-brand: #2b0a15;
+    --ok: #86c9a6;
+    --ok-soft: #1c3229;
+    --warn: #e6bc62;
+    --warn-soft: #382c13;
+    --err: #f29c93;
+    --err-soft: #3c1d1a;
+    --info: #a3c3d1;
+    --info-soft: #1d2c33;
+    --phase-fett: #3a301c;
+    --phase-wasser: #1d2e36;
+    --phase-kalt: #2c2838;
+    --phase-pulver: #332b28;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.25);
+    --shadow-2: 0 2px 6px rgb(0 0 0 / 0.35), 0 24px 60px rgb(0 0 0 / 0.35);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --brand: #4fb3b8;
-  --brand-strong: #7fd0d3;
-  --brand-soft: #12302f;
-  --brand-ink: #062022;
-  --accent: #ff7a5c;
-  --accent-strong: #ff9479;
-  --accent-soft: #3a1c14;
-  --bg: #0b1615;
-  --surface: #11201f;
-  --surface-2: #172a28;
-  --text: #edf3f1;
-  --text-muted: #a4b4b1;
-  --border: #23403d;
-  --focus: #ff7a5c;
-  --on-brand: #062022;
+  --brand: #ec9bb2;
+  --brand-strong: #f5bccb;
+  --brand-soft: #3b2029;
+  --brand-ink: #2b0a15;
+  --accent: #c2a09e;
+  --accent-strong: #d6b9b7;
+  --accent-soft: #382a29;
+  --accent-ink: #2f1c1b;
+  --bg: #1b1617;
+  --surface: #241d1f;
+  --surface-2: #2e2528;
+  --text: #f4ebe8;
+  --text-muted: #bdaeaa;
+  --border: #413437;
+  --focus: #ec9bb2;
+  --on-brand: #2b0a15;
+  --ok: #86c9a6;
+  --ok-soft: #1c3229;
+  --warn: #e6bc62;
+  --warn-soft: #382c13;
+  --err: #f29c93;
+  --err-soft: #3c1d1a;
+  --info: #a3c3d1;
+  --info-soft: #1d2c33;
+  --phase-fett: #3a301c;
+  --phase-wasser: #1d2e36;
+  --phase-kalt: #2c2838;
+  --phase-pulver: #332b28;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.25);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.35), 0 24px 60px rgb(0 0 0 / 0.35);
   color-scheme: dark;
 }
 
@@ -147,15 +191,15 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 700;
-  line-height: 1.02;
+  font-weight: 600;
+  line-height: 1.08;
   letter-spacing: -0.015em;
   text-wrap: balance;
   margin: 0 0 var(--space-4);
 }
 h1 {
   font-size: var(--step-4);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.015em;
 }
 h2 {
   font-size: var(--step-3);
@@ -175,12 +219,12 @@ p {
   border-radius: 4px;
 }
 ::selection {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 input,
 textarea {
-  caret-color: var(--accent);
+  caret-color: var(--brand);
 }
 html {
   scrollbar-color: color-mix(in srgb, var(--brand) 45%, transparent) transparent;
@@ -260,7 +304,7 @@ html {
 .btn-accent {
   background: var(--accent);
   color: var(--accent-ink);
-  box-shadow: 0 1px 2px rgb(16 32 31 / 0.1), 0 10px 26px color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: var(--shadow-1);
 }
 .btn-ghost {
   background: transparent;
@@ -323,5 +367,22 @@ html:not(.js) .reveal {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ---------- Drucken (Rezeptkarte, Etikett) ---------- */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  body > header,
+  body > footer,
+  .skip-link,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    flex: none;
   }
 }

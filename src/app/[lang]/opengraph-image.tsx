@@ -24,12 +24,12 @@ export default async function OgImage({ params }: { params: Promise<{ lang: stri
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(150deg, #0e5a61 0%, #083a3f 55%, #ff6b4a 150%)",
+          background: "linear-gradient(150deg, #9e254d 0%, #7d1a3b 60%, #c2a09e 160%)",
           color: "#fff",
         }}
       >
-        <div style={{ fontSize: 30, opacity: 0.85, letterSpacing: 4, textTransform: "uppercase" }}>{site.name}</div>
-        <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.05, maxWidth: 950 }}>{t.home.title}</div>
+        <div style={{ fontSize: 34, opacity: 0.9 }}>{`${site.name} · berryverde`}</div>
+        <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.08, maxWidth: 1000 }}>{t.home.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 26, opacity: 0.85 }}>
           Made with
           {/* Herz als Grafik, damit beim Erzeugen keine Emoji-Schrift nachgeladen werden muss */}

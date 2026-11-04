@@ -16,20 +16,27 @@ Alles in `src/app/globals.css` unter `:root`:
 4. `themeColor` in `src/config/site.ts` = `--brand`
 5. Icon: `public/icon.svg` ersetzen, PNGs neu erzeugen
 
-## Farbwelt "Hell & frisch" (Standard)
-- Hintergrund Off-White `#FBFAF7`, Text `#10201F`
-- Marke: kräftiges Petrol `#0E5A61` (Überschrift Hero, Bühnen, Abschluss)
-- Akzent: Koralle `#FF6B4A` (Hauptknopf, Zahlen, Admin-Badge) – sparsam
-- Petrol-Flächen bleiben in Hell und Dunkel gleich
+## Farbwelt Dein Lab (berryverde)
+Übernommen von berryverde.com, damit App und Website wie eine Marke wirken.
+- Hintergrund Blush-Papier `#FCF5F2`, Text Schiefer `#2A2E30`
+- Marke: Beere `#9E254D` (Hauptknopf, Links, aktive Zustände, Tropfen-Angaben)
+- Altrosa `#C2A09E` nur als Fläche und Schmuck, nie für Text
+- Zustände der Prüfung: `--ok` (grün), `--warn` (Ocker), `--err` (Rot), `--info` (Schiefer-Blau), jeweils mit `-soft`-Fläche
+- Phasen der Rezeptur: `--phase-fett`, `--phase-wasser`, `--phase-kalt`, `--phase-pulver` (zarte Flächen hinter den Buchstaben A, B, C, P)
+- Dunkelmodus: warmes Dunkel, Beere wird zu hellem Rosé
+
+## Zwei Arbeitsweisen
+- **Startseite (überzeugen):** Playfair Display, fliessende Grössen, der Mini-Rechner ist der inszenierte Moment.
+- **App-Bereich (arbeiten):** feste Schriftgrössen, Inter für alles ausser Seitentitel, Tabellenziffern, Farbe nur für Zustand und Aktion. Bewegung nur als Rückmeldung (Meldung erscheint, Knopf gibt nach).
 
 ## Gestaltungsregeln (Impeccable)
 - Keine Mini-Überschriften (Eyebrows) über Überschriften
 - Keine gleich grossen Icon-Karten als Seitenstruktur: Kacheln zeigen echte Mini-Ansichten
 - Keine Emoji oder Sonderzeichen als Icons: nur `src/components/Icon.tsx`
-- Ein inszenierter Moment pro Seite (Startseite: Login-Bühne), der Rest ruhig
+- Ein inszenierter Moment pro Seite (Startseite: der Mini-Rechner), der Rest ruhig
 
 ## Typografie
-- Überschriften: Bricolage Grotesque (serifenlos, markant), fett, `text-wrap: balance`
+- Überschriften: Playfair Display (wie berryverde.com), Stärke 600, `text-wrap: balance`
 - Fliesstext: Inter, Zeilenhöhe 1.6, max. ca. 65 Zeichen pro Zeile
 - Grössen nur über `--step-…` Variablen (fliessend zwischen Handy und Desktop)
 

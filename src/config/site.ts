@@ -4,15 +4,16 @@
  * oder in den Umgebungsvariablen (.env.local / Vercel).
  */
 
-export const locales = ["de", "en"] as const;
+/** Dein Lab ist in Version 1 nur deutsch. Weitere Sprache: hier ergänzen und src/i18n/<sprache>.ts anlegen. */
+export const locales = ["de"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "de";
 
 export const site = {
   /** Name der App (Titel, Manifest, Vorschaubild) */
-  name: "Susan App Starter",
+  name: "Dein Lab",
   /** Kurzname für den Homescreen (max. ca. 12 Zeichen) */
-  shortName: "App Starter",
+  shortName: "Dein Lab",
   /** Öffentliche Adresse ohne Schrägstrich am Ende. Auf Vercel per NEXT_PUBLIC_SITE_URL setzen. */
   url: (
     process.env.NEXT_PUBLIC_SITE_URL ??
@@ -29,13 +30,13 @@ export const site = {
   spelling: "de-DE" as "de-DE" | "de-CH",
 
   /** Markenfarbe für Browser-Leiste und Homescreen-Icon (gleiche Farbe wie --brand in globals.css) */
-  themeColor: "#0e5a61",
+  themeColor: "#9e254d",
 
   /** Betreiber (Impressum, strukturierte Daten). Bei Kunden-Apps die Daten des Kunden eintragen. */
   owner: {
-    name: "Susan Fleet · Digital Business",
-    url: "https://susanfleet.de",
-    email: "hallo@example.com",
+    name: "berryverde · Susan Fleet",
+    url: "https://berryverde.com",
+    email: "susan@berryverde.com",
   },
 
   /** Footer-Signatur – bleibt in jeder App */
@@ -70,13 +71,21 @@ export const trackingEnabled = Boolean(tracking.googleAnalyticsId || tracking.go
 
 export const htmlLang: Record<Locale, string> = {
   de: site.spelling === "de-CH" ? "de-CH" : "de-DE",
-  en: "en",
 };
 
 export const ogLocale: Record<Locale, string> = {
   de: site.spelling === "de-CH" ? "de_CH" : "de_DE",
-  en: "en_US",
 };
+
+/** Dein Lab: Verkaufsseite der Mitgliedschaft und Admin-Adressen (bekommen automatisch die Rolle Admin). */
+export const lab = {
+  mitgliedschaftUrl: process.env.NEXT_PUBLIC_MITGLIEDSCHAFT_URL ?? "https://berryverde.com/",
+  blogUrl: "https://berryverde.com",
+};
+export const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);

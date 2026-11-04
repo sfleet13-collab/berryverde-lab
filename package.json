@@ -1,20 +1,22 @@
 {
-  "name": "susan-app-starter",
+  "name": "berryverde-lab",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/migrate.mjs && next build",
+    "build": "node scripts/migrate.mjs && tsx scripts/seed.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "check": "npm run lint && npm run typocheck && npm run typecheck && next build",
+    "check": "npm run lint && npm run typocheck && npm run test && npm run typecheck && next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
     "selfcheck": "node scripts/selfcheck.mjs",
-    "typocheck": "node scripts/typocheck.mjs"
+    "typocheck": "node scripts/typocheck.mjs",
+    "test": "tsx --test src/lib/lab/*.test.ts",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@neondatabase/auth": "^0.6.0-beta",
@@ -24,7 +26,8 @@
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@types/node": "^20",
