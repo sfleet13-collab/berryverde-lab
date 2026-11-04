@@ -132,17 +132,17 @@ const de = {
         "Die Rezeptur-Bibliothek von Dein Lab: geprüfte Naturkosmetik-Rezepturen filtern, öffnen, umrechnen und als eigene Variante speichern. Nur für Mitglieder.",
     },
     rezeptur: {
-      title: "Rezeptur mit Rechner, Prüfung und INCI",
+      title: "Rezeptur mit Rechner, Prüfung und INCI-Liste",
       description:
         "Rezeptur in Dein Lab: Menge eingeben, Formel in Gramm und Tropfen ablesen, Prüfung ansehen und Rezeptkarte mit Etikett ausdrucken. Nur für Mitglieder.",
     },
     editor: {
-      title: "Rezeptur berechnen und prüfen lassen",
+      title: "Eigene Rezeptur berechnen und prüfen lassen",
       description:
         "Eigene Naturkosmetik-Rezeptur in Dein Lab anlegen: Rohstoffe wählen, Anteile eintragen, live prüfen lassen und Korrekturen mit einem Klick übernehmen.",
     },
     karte: {
-      title: "Rezeptkarte und Etikett zum Ausdrucken",
+      title: "Rezeptkarte und Etikett drucken oder als PDF",
       description:
         "Rezeptkarte aus Dein Lab mit Formel, Herstellung, Anwendung, INCI und Etikett. Drucken oder als PDF speichern und beim Rühren danebenlegen. Für Mitglieder.",
     },
@@ -152,7 +152,7 @@ const de = {
         "Die Rohstoff-Datenbank von Dein Lab: Emulgatoren, Konservierer, Öle und Wirkstoffe mit INCI, Einsatzmenge, pH-Bereich und Steckbrief. Nur für Mitglieder.",
     },
     rohstoffForm: {
-      title: "Rohstoff pflegen: Werte und Steckbrief",
+      title: "Rohstoff pflegen: Werte, Steckbrief, Einkauf",
       description:
         "Verwaltung der Rohstoff-Datenbank von Dein Lab: Werte, Einsatzmengen, Steckbrief, Tropfenfaktor und Nachbestell-Link eines Rohstoffs bearbeiten. Nur Admin.",
     },
@@ -162,7 +162,7 @@ const de = {
         "Verwaltung von Dein Lab: Mitglieder freischalten oder ausschalten, Stufen vergeben und die Empfehlungs-Links für Geräte pflegen. Nur für die Betreiberin.",
     },
     keinZugang: {
-      title: "Zugang nicht freigeschaltet – Dein Lab",
+      title: "Dein Zugang ist noch nicht freigeschaltet",
       description:
         "Für diese E-Mail-Adresse gibt es keinen aktiven Zugang zu Dein Lab. Hier erfährst du, wie du Mitglied wirst oder wen du bei Fragen erreichst.",
     },
@@ -172,12 +172,12 @@ const de = {
         "Melde dich in Dein Lab an: E-Mail-Adresse deiner Mitgliedschaft eingeben, Code aus der E-Mail eintippen, fertig. Ein Passwort brauchst du dafür nicht.",
     },
     contact: {
-      title: "Frag Susan – Kontakt zu Dein Lab",
+      title: "Frag Susan: Kontakt und Hilfe zur Mitgliedschaft",
       description:
         "Du hast eine Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft? Schreib Susan über das Formular. Sie liest jede Nachricht persönlich.",
     },
     imprint: {
-      title: "Impressum – Angaben zum Anbieter",
+      title: "Impressum – Angaben zur Anbieterin berryverde",
       description:
         "Impressum von Dein Lab, dem Rezeptur-Rechner von berryverde: Anbieterin, Anschrift, Kontakt und verantwortliche Person nach § 5 DDG auf einen Blick.",
     },
@@ -187,7 +187,7 @@ const de = {
         "Welche Daten Dein Lab speichert, wofür sie gebraucht werden und welche Rechte du hast: die Datenschutzerklärung, klar und verständlich formuliert.",
     },
     terms: {
-      title: "Nutzungsbedingungen für Dein Lab",
+      title: "Nutzungsbedingungen für den Rezeptur-Rechner",
       description:
         "Die Nutzungsbedingungen von Dein Lab: Leistungsumfang, Nutzung nur für den Eigengebrauch, Haftung und Hinweise zu Provisions-Links. Jederzeit hier abrufbar.",
     },

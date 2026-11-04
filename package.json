@@ -15,7 +15,7 @@
     "db:migrate": "node scripts/migrate.mjs",
     "selfcheck": "node scripts/selfcheck.mjs",
     "typocheck": "node scripts/typocheck.mjs",
-    "test": "tsx --test src/lib/lab/*.test.ts",
+    "test": "tsx --conditions=react-server --test src/lib/lab/*.test.ts src/lib/*.test.ts",
     "db:seed": "tsx scripts/seed.mts"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "tsx": "^4.23.15"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
