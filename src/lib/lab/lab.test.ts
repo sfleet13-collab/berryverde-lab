@@ -1,0 +1,682 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { seedRezepturen, seedRohstoffe } from "../../db/seed-data";
+import {
+  berechne,
+  chargenNummer,
+  inciListe,
+  mengeFuer,
+  mengeText,
+} from "./rechner";
+import { pruefe, wendeAn } from "./regeln";
+import { ohneMengen, slugAus, veroeffentlichung, warumVorschlag } from "./blog";
+import type { LabPosition, LabRezeptur, LabRohstoff, Phase } from "./types";
+
+const liste: LabRohstoff[] = seedRohstoffe.map((s, i) => ({
+  id: i + 1,
+  slug: s.slug,
+  name: s.name,
+  inci: s.inci,
+  kategorie: s.kategorie,
+  phase: s.phase,
+  form: s.form,
+  dichte: s.dichte ?? null,
+  tropfenfaktor: null,
+  phMin: s.phMin ?? null,
+  phMax: s.phMax ?? null,
+  tempMax: s.tempMax ?? null,
+  stufe: s.stufe,
+  konsStatus: s.konsStatus ?? null,
+  konsRolle: s.konsRolle ?? null,
+  kombiPartner: s.kombiPartner ?? null,
+  nichtWaessrig: s.nichtWaessrig ?? false,
+  emulgatorTyp: s.emulgatorTyp ?? null,
+  fettphaseMin: s.fettphase?.[0] ?? null,
+  fettphaseMax: s.fettphase?.[1] ?? null,
+  emulgatorBezug: s.emulgatorBezug ?? null,
+  tensidKlasse: s.tensidKlasse ?? null,
+  wasProzent: s.wasProzent ?? null,
+  dosierungen: (s.dos ?? []).map(([produkttyp, min, max, hinweis]) => ({
+    produkttyp,
+    min,
+    max,
+    hinweis,
+  })),
+}));
+const map = new Map(liste.map((r) => [r.id, r]));
+const id = (slug: string) => liste.find((r) => r.slug === slug)!.id;
+const R = (slug: string) => liste.find((r) => r.slug === slug)!;
+
+let n = 0;
+function pos(
+  slug: string,
+  prozent: number,
+  opt: { phase?: Phase; ad?: boolean } = {},
+): LabPosition {
+  return {
+    key: `k${++n}`,
+    rohstoffId: id(slug),
+    phase: opt.phase ?? R(slug).phase,
+    prozent,
+    adHundert: opt.ad ?? false,
+  };
+}
+function rez(
+  p: Partial<LabRezeptur> & { positionen: LabPosition[] },
+): LabRezeptur {
+  return {
+    produkttyp: "emulsion",
+    bereich: "gesicht",
+    chargeG: 50,
+    phZiel: 5.2,
+    frischcreme: false,
+    ...p,
+  };
+}
+const codes = (r: LabRezeptur) =>
+  pruefe(r, map)
+    .meldungen.filter((m) => m.art !== "hinweis")
+    .map((m) => m.code);
+
+/** Saubere Standard-Creme: 22 % Fettphase mit Xyliance, Xanthan, Cosgard. */
+const creme = () =>
+  rez({
+    positionen: [
+      pos("wasser", 0, { ad: true }),
+      pos("glycerin", 3),
+      pos("xanthan", 0.2),
+      pos("xyliance", 4),
+      pos("mandeloel", 12),
+      pos("sheabutter", 4),
+      pos("cetylalkohol", 1.7),
+      pos("tocopherol", 0.3),
+      pos("panthenol", 1),
+      pos("cosgard", 1),
+    ],
+  });
+
+test("R-001: Summe 100, Gramm stimmen, keine Fehler, Feinwaage nötig", () => {
+  const s = seedRezepturen[0];
+  const r = rez({
+    produkttyp: "wasserfrei",
+    chargeG: 30,
+    phZiel: null,
+    positionen: s.positionen.map(([slug, p]) => pos(slug, p)),
+  });
+  const p = pruefe(r, map);
+  assert.equal(p.berechnung.summe, 100);
+  assert.deepEqual(
+    p.berechnung.positionen.map((x) => x.gramm),
+    [15, 6, 4.5, 4.2, 0.3],
+  );
+  assert.equal(p.ok, true);
+  assert.deepEqual(
+    p.meldungen.filter((m) => m.art !== "hinweis"),
+    [],
+  );
+  assert.equal(p.stufe, "anfaenger");
+  assert.ok(p.geraete.some((g) => g.slug === "feinwaage" && g.pflicht));
+  assert.deepEqual(inciListe(p.berechnung), [
+    "Kaolin",
+    "Zea Mays Starch",
+    "Illite",
+    "Sodium Chloride",
+    "Papain",
+  ]);
+});
+
+test("R-001 sensibel: Summe 100 ohne Salz", () => {
+  const s = seedRezepturen[1];
+  const p = pruefe(
+    rez({
+      produkttyp: "wasserfrei",
+      chargeG: 30,
+      phZiel: null,
+      positionen: s.positionen.map(([slug, x]) => pos(slug, x)),
+    }),
+    map,
+  );
+  assert.equal(p.berechnung.summe, 100);
+  assert.equal(p.ok, true);
+});
+
+test("ad 100: Wasser füllt auf, Fettphase und Emulgatoranteil", () => {
+  const b = berechne(creme(), map);
+  assert.equal(b.summe, 100);
+  assert.equal(b.positionen[0].prozentEffektiv, 72.8);
+  assert.equal(b.positionen[0].gramm, 36.4);
+  assert.equal(b.fettphase, 22);
+  assert.deepEqual(b.emulgator, { gesamt: 4, aufFettphase: 18.2 });
+  assert.equal(b.konserviererGesamt, 1);
+});
+
+test("Standard-Creme besteht die Prüfung", () => {
+  assert.deepEqual(codes(creme()), []);
+});
+
+test("Tropfen-Regel: bis 20 Tropfen, darüber ml, Festes in Gramm", () => {
+  assert.deepEqual(mengeFuer(R("tocopherol"), 0.15), {
+    art: "tropfen",
+    tropfen: 3,
+    gramm: 0.15,
+  });
+  assert.equal(mengeText(mengeFuer(R("cosgard"), 0.9)), "20 Tropfen");
+  const ml = mengeFuer(R("mandeloel"), 6);
+  assert.equal(ml.art, "ml");
+  assert.equal(mengeText(ml), "6,6 ml");
+  assert.equal(mengeText(mengeFuer(R("glycerin"), 2.52)), "2,0 ml");
+  assert.deepEqual(mengeFuer(R("papain"), 0.3), {
+    art: "gramm",
+    gramm: 0.3,
+    feinwaage: true,
+  });
+  assert.equal(mengeText(mengeFuer(R("sheabutter"), 2)), "2,00 g");
+});
+
+test("Emulgator außerhalb des Bereichs: Vorschlag ist der nächste gültige Wert", () => {
+  const r = creme();
+  r.positionen.find((p) => p.rohstoffId === id("xyliance"))!.prozent = 2;
+  const m = pruefe(r, map).meldungen.find((x) => x.code === "emulgator-menge")!;
+  assert.equal(m.art, "fehler");
+  assert.equal(m.korrektur!.setze![0].prozent, 3);
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  assert.ok(!codes({ ...r, positionen: neu }).includes("emulgator-menge"));
+});
+
+test("Fettphase zu klein: Vorschlag hebt das größte Öl an", () => {
+  const r = creme();
+  r.positionen.find((p) => p.rohstoffId === id("mandeloel"))!.prozent = 5;
+  const p = pruefe(r, map);
+  const m = p.meldungen.find((x) => x.code === "fettphase")!;
+  assert.equal(p.berechnung.fettphase, 15);
+  assert.equal(m.korrektur!.setze![0].prozent, 10);
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  assert.equal(berechne({ ...r, positionen: neu }, map).fettphase, 20);
+});
+
+test("Xyliance unter 25 % Fettphase ohne Xanthan: Warnung mit Ergänzung", () => {
+  const r = creme();
+  r.positionen = r.positionen.filter((p) => p.rohstoffId !== id("xanthan"));
+  const m = pruefe(r, map).meldungen.find(
+    (x) => x.code === "xyliance-xanthan",
+  )!;
+  assert.equal(m.art, "warnung");
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  assert.ok(
+    neu.some((p) => p.rohstoffId === id("xanthan") && p.prozent === 0.2),
+  );
+  assert.equal(berechne({ ...r, positionen: neu }, map).summe, 100);
+});
+
+test("Wasser ohne Konservierer: Fehler, als Frischcreme nur Warnung mit 7 Tagen", () => {
+  const r = creme();
+  r.positionen = r.positionen.filter((p) => p.rohstoffId !== id("cosgard"));
+  const p = pruefe(r, map);
+  assert.ok(!p.ok);
+  const m = p.meldungen.find((x) => x.code === "kons-fehlt")!;
+  assert.equal(m.korrektur!.hinzu![0].slug, "cosgard");
+  const frisch = pruefe({ ...r, frischcreme: true }, map);
+  assert.ok(frisch.ok);
+  assert.equal(
+    frisch.meldungen.find((x) => x.code === "frischcreme")!.art,
+    "warnung",
+  );
+  assert.equal(frisch.haltbarkeitMaxTage, 7);
+});
+
+test("Konservierer: Dosierung, pH, Kaltphase", () => {
+  const r = creme();
+  const c = r.positionen.find((p) => p.rohstoffId === id("cosgard"))!;
+  c.prozent = 0.6;
+  assert.ok(codes(r).includes("kons-menge"));
+  // 0,5 % Cosgard + 0,2 % Kaliumsorbat ist erlaubt
+  c.prozent = 0.5;
+  r.positionen.push(pos("kaliumsorbat", 0.2));
+  assert.ok(!codes(r).includes("kons-menge"));
+  // zu hoher pH
+  assert.ok(codes({ ...creme(), phZiel: 7.5 }).includes("kons-ph"));
+  // in der Wasserphase mit erhitzt
+  const heiss = creme();
+  heiss.positionen.find((p) => p.rohstoffId === id("cosgard"))!.phase =
+    "wasser";
+  const m = pruefe(heiss, map).meldungen.find((x) => x.code === "zu-heiss")!;
+  assert.equal(m.korrektur!.phase![0].phase, "kalt");
+});
+
+test("Rokonsal: nur unter pH 5,4", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((p) =>
+    p.rohstoffId === id("cosgard")
+      ? { ...p, rohstoffId: id("rokonsal-bsb-n") }
+      : p,
+  );
+  assert.deepEqual(codes({ ...r, phZiel: 5.2 }), []);
+  assert.ok(codes({ ...r, phZiel: 5.5 }).includes("kons-ph"));
+});
+
+test("Wässrig: Cosgard löst sich nicht, Ersatz Verstatil BL", () => {
+  const r = rez({
+    produkttyp: "waessrig",
+    chargeG: 100,
+    phZiel: 5,
+    positionen: [
+      pos("wasser", 0, { ad: true }),
+      pos("glycerin", 3),
+      pos("cosgard", 1),
+    ],
+  });
+  const m = pruefe(r, map).meldungen.find((x) => x.code === "kons-loeslich")!;
+  assert.equal(m.art, "fehler");
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  assert.deepEqual(codes({ ...r, positionen: neu }), []);
+});
+
+test("Additiv allein reicht nicht, Kombi-Partner wird verlangt", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((p) =>
+    p.rohstoffId === id("cosgard")
+      ? { ...p, rohstoffId: id("dermosoft-1388-eco"), prozent: 3.5 }
+      : p,
+  );
+  const c = codes(r);
+  assert.ok(c.includes("kons-nicht-ausreichend"));
+  assert.ok(c.includes("kombi-partner"));
+  r.positionen.push(pos("dermosoft-gmcy", 0.5));
+  const c2 = codes(r);
+  assert.ok(
+    !c2.includes("kons-nicht-ausreichend") && !c2.includes("kombi-partner"),
+  );
+  assert.ok(c2.includes("kons-additiv"));
+});
+
+test("Kaliumsorbat allein ist nur Ko-Konservierer", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((p) =>
+    p.rohstoffId === id("cosgard")
+      ? { ...p, rohstoffId: id("kaliumsorbat"), prozent: 0.2 }
+      : p,
+  );
+  assert.ok(codes(r).includes("kons-nicht-ausreichend"));
+});
+
+test("Alkohol konserviert ab 12 % der Wasserphase", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((p) =>
+    p.rohstoffId === id("cosgard")
+      ? { ...p, rohstoffId: id("alkohol"), prozent: 5 }
+      : p,
+  );
+  assert.ok(codes(r).includes("alkohol-zu-wenig"));
+  r.positionen.find((p) => p.rohstoffId === id("alkohol"))!.prozent = 12;
+  // Wasserphase = Wasser 61,8 + Glycerin 3 + Xanthan 0,2 = 65 → 12/65 = 18,5 %
+  assert.ok(
+    !codes(r).includes("alkohol-zu-wenig") && !codes(r).includes("kons-fehlt"),
+  );
+});
+
+test("Ätherisches Öl: 0,5 % im Gesicht, 1 % am Körper", () => {
+  const r = creme();
+  r.positionen.push(pos("aetherisches-oel", 0.8));
+  const m = pruefe(r, map).meldungen.find((x) => x.code === "aetherisch")!;
+  assert.equal(m.korrektur!.setze![0].prozent, 0.5);
+  assert.ok(!codes({ ...r, bereich: "koerper" }).includes("aetherisch"));
+});
+
+test("Summe ohne Ausgleich: Fehler mit Vorschlag", () => {
+  const r = rez({
+    produkttyp: "wasserfrei",
+    phZiel: null,
+    positionen: [
+      pos("jojobaoel", 60),
+      pos("mandeloel", 30),
+      pos("tocopherol", 0.3),
+    ],
+  });
+  const p = pruefe(r, map);
+  const m = p.meldungen.find((x) => x.code === "summe")!;
+  assert.equal(m.korrektur!.setze![0].prozent, 69.7);
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  assert.deepEqual(codes({ ...r, positionen: neu }), []);
+});
+
+test("Gesichtsöl ohne Tocopherol: Warnung, Ergänzung hält die Summe bei 100", () => {
+  const r = rez({
+    produkttyp: "wasserfrei",
+    phZiel: null,
+    positionen: [pos("jojobaoel", 60), pos("squalan", 40)],
+  });
+  const m = pruefe(r, map).meldungen.find((x) => x.code === "antioxidans")!;
+  const neu = wendeAn(r.positionen, m.korrektur!, map, () => "neu");
+  const b = berechne({ ...r, positionen: neu }, map);
+  assert.equal(b.summe, 100);
+  assert.deepEqual(codes({ ...r, positionen: neu }), []);
+});
+
+test("Wasser in wasserfreier Rezeptur ist ein Fehler", () => {
+  const r = rez({
+    produkttyp: "wasserfrei",
+    phZiel: null,
+    positionen: [
+      pos("jojobaoel", 89.7),
+      pos("wasser", 10),
+      pos("tocopherol", 0.3),
+    ],
+  });
+  assert.ok(codes(r).includes("wasser-in-wasserfrei"));
+});
+
+test("Stufe der Rezeptur = höchste Stufe der Rohstoffe", () => {
+  assert.equal(pruefe(creme(), map).stufe, "mittel"); // Xanthan
+  const r = creme();
+  r.positionen = r.positionen.map((p) =>
+    p.rohstoffId === id("xyliance")
+      ? { ...p, rohstoffId: id("dermofeel-gsc"), prozent: 3 }
+      : p,
+  );
+  assert.equal(pruefe(r, map).stufe, "profi");
+});
+
+test("Negativer Anteil ist ein Fehler", () => {
+  const r = creme();
+  r.positionen.find((p) => p.rohstoffId === id("glycerin"))!.prozent = -4;
+  assert.ok(codes(r).includes("negativ"));
+});
+
+test("Gesamtgewicht ohne Rundungsfehler", () => {
+  for (const g of [12.5, 30, 33.3, 50, 77.7, 100]) {
+    const b = berechne({ ...creme(), chargeG: g }, map);
+    assert.equal(b.gesamtG, g);
+    assert.equal(
+      Math.round(b.positionen.reduce((s, p) => s + p.gramm, 0) * 100) / 100,
+      g,
+    );
+  }
+});
+
+test("Chargennummer", () => {
+  assert.equal(chargenNummer(new Date(2026, 10, 15), "R-001"), "261115-R001");
+});
+
+// ---------- Emulsionstyp, Co-Emulgatoren, Tenside ----------
+
+test("W/O-Creme mit O/W-Emulgator: Fehler mit Ersatz durch Olivem 900", () => {
+  const r = creme();
+  const p = pruefe({ ...r, emulsionstyp: "wo" }, map);
+  const f = p.meldungen.find((m) => m.code === "emulgator-typ");
+  assert.ok(f, "emulgator-typ erwartet");
+  assert.equal(f.art, "fehler");
+  assert.equal(f.korrektur?.ersetze?.[0].slug, "olivem-900");
+  assert.ok(p.meldungen.some((m) => m.code === "wo-herstellung"));
+  assert.ok(
+    !p.meldungen.some((m) => m.code === "xyliance-xanthan"),
+    "Xanthan-Regel gilt nur für O/W",
+  );
+});
+
+test("O/W-Creme mit W/O-Emulgator: Fehler, Ersatz durch Xyliance", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((x) =>
+    x.rohstoffId === id("xyliance")
+      ? { ...x, rohstoffId: id("dermofeel-pgpr"), prozent: 3 }
+      : x,
+  );
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "emulgator-typ");
+  assert.ok(f);
+  assert.equal(f.korrektur?.ersetze?.[0].slug, "xyliance");
+});
+
+test("Co-Emulgator allein zählt nicht als Emulgator", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((x) =>
+    x.rohstoffId === id("xyliance")
+      ? { ...x, rohstoffId: id("glyceryl-stearate"), prozent: 3 }
+      : x,
+  );
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "emulgator-fehlt");
+  assert.ok(f, "emulgator-fehlt erwartet");
+  assert.match(f.text, /Co-Emulgator/);
+});
+
+test("Alle neuen Rohstoffe: Pflichtfelder und gültige Dosierungen", () => {
+  const slugs = new Set<string>();
+  for (const s of seedRohstoffe) {
+    assert.ok(!slugs.has(s.slug), `doppelter slug ${s.slug}`);
+    slugs.add(s.slug);
+    assert.ok(
+      s.name && s.inci && s.was && s.funktion,
+      `Pflichtfeld fehlt bei ${s.slug}`,
+    );
+    for (const [, min, max] of s.dos ?? [])
+      assert.ok(min >= 0 && max >= min, `Dosierung ${s.slug}`);
+    if (s.kategorie === "emulgator")
+      assert.ok(s.emulgatorTyp, `Emulgatortyp fehlt bei ${s.slug}`);
+  }
+  assert.ok(
+    slugs.has("kokosglucosid"),
+    "Korrektur tensid-fehlt braucht kokosglucosid",
+  );
+  assert.ok(seedRohstoffe.filter((s) => s.kategorie === "oel").length >= 20);
+  assert.ok(
+    seedRohstoffe.some(
+      (s) => s.emulgatorTyp === "wo" && s.slug !== "olivem-900",
+    ),
+  );
+});
+
+/** Mildes Duschgel: Kokosglucosid + SCI + Betain, WAS ≈ 12 %. */
+const duschgel = (extra: LabPosition[] = []) =>
+  rez({
+    produkttyp: "tensid",
+    bereich: "koerper",
+    chargeG: 200,
+    phZiel: 5.2,
+    positionen: [
+      pos("wasser", 0, { ad: true }),
+      pos("kokosglucosid", 12),
+      pos("sci", 4),
+      pos("kokosbetain", 3),
+      pos("glycerin", 2),
+      pos("cosgard", 1, { phase: "kalt" }),
+      ...extra,
+    ],
+  });
+
+test("Duschgel: WAS wird aus dem Aktivgehalt gerechnet, keine Fehler", () => {
+  const p = pruefe(duschgel(), map);
+  // 12·52 % + 4·80 % + 3·30 % = 6,24 + 3,2 + 0,9 = 10,34
+  assert.equal(Math.round(p.berechnung.wasGesamt * 100) / 100, 10.34);
+  assert.deepEqual(
+    codes(duschgel()).filter(
+      (c) => c === "was" || c === "tensid-fehlt" || c === "emulgator-fehlt",
+    ),
+    [],
+  );
+});
+
+test("Duschgel ohne Tensid: Fehler mit Kokosglucosid-Vorschlag", () => {
+  const r = rez({
+    produkttyp: "tensid",
+    bereich: "koerper",
+    positionen: [
+      pos("wasser", 0, { ad: true }),
+      pos("glycerin", 3),
+      pos("cosgard", 1, { phase: "kalt" }),
+    ],
+  });
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "tensid-fehlt");
+  assert.ok(f);
+  const neu = wendeAn(r.positionen, f.korrektur!, map, () => `k${++n}`);
+  assert.ok(neu.some((x) => x.rohstoffId === id("kokosglucosid")));
+});
+
+test("Zu viel WAS: Fehler, Korrektur bringt WAS in den Bereich", () => {
+  const r = duschgel();
+  r.positionen = r.positionen.map((x) =>
+    x.rohstoffId === id("kokosglucosid") ? { ...x, prozent: 40 } : x,
+  );
+  const p = pruefe(r, map);
+  const f = p.meldungen.find((m) => m.code === "was");
+  assert.ok(f);
+  assert.equal(f.art, "fehler");
+  const neu = pruefe(
+    {
+      ...r,
+      positionen: wendeAn(r.positionen, f.korrektur!, map, () => `k${++n}`),
+    },
+    map,
+  );
+  assert.ok(
+    neu.berechnung.wasGesamt <= 20.001 && neu.berechnung.wasGesamt >= 8,
+  );
+});
+
+test("Betain zu Aniontensid außerhalb 1:4 bis 1:3: Warnung", () => {
+  const r = duschgel();
+  r.positionen = r.positionen.map((x) =>
+    x.rohstoffId === id("kokosbetain") ? { ...x, prozent: 8 } : x,
+  );
+  assert.ok(codes(r).includes("betain"));
+});
+
+test("pH außerhalb 4,5–6 im Tensidprodukt: Warnung", () => {
+  assert.ok(codes({ ...duschgel(), phZiel: 7 }).includes("ph-tensid"));
+});
+
+test("Tensid in einer Creme: Hinweis", () => {
+  const r = creme();
+  r.positionen.push(pos("kokosglucosid", 2));
+  assert.ok(pruefe(r, map).meldungen.some((m) => m.code === "tensid-in-creme"));
+});
+
+test("Olivem 900 nach Herstellerangabe: 3–10 % gesamt, Fettphase ab 50 %", () => {
+  const wo = (fett: number, oliv: number) =>
+    rez({
+      emulsionstyp: "wo",
+      phZiel: 5.5,
+      positionen: [
+        pos("wasser", 0, { ad: true }),
+        pos("olivem-900", oliv),
+        pos("mandeloel", fett - oliv),
+        pos("cosgard", 1, { phase: "kalt" }),
+      ],
+    });
+  assert.ok(!codes(wo(55, 5)).includes("emulgator-menge"));
+  assert.ok(!codes(wo(55, 5)).includes("fettphase"));
+  assert.ok(codes(wo(55, 12)).includes("emulgator-menge"));
+  const f = pruefe(wo(40, 5), map).meldungen.find(
+    (m) => m.code === "fettphase",
+  );
+  assert.ok(f);
+  assert.match(f.text, /mindestens 50/);
+});
+
+// ---------- Blog-Entwurf und Pin-Texte ----------
+
+const veroeff = (
+  extra: Partial<Parameters<typeof veroeffentlichung>[0]> = {},
+) => {
+  const b = berechne(creme(), map);
+  return veroeffentlichung({
+    name: "Leichte Tagescreme",
+    untertitel: "Für jeden Tag",
+    suchbegriff: "Gesichtscreme selber machen",
+    idee: "Eine leichte Creme mit 12 % Mandelöl, die schnell einzieht. Ideal für den Morgen.",
+    warum: null,
+    herstellung:
+      "Fettphase mit 4 g Xyliance auf 70 °C erwärmen.\nUnter 40 °C 1 % Cosgard zugeben.",
+    anwendung: "Morgens auf die gereinigte Haut auftragen.",
+    zielLink: null,
+    fotoUrl: "https://x.public.blob.vercel-storage.com/rezepturen/1.webp",
+    haut: "trockene Haut",
+    labUrl: "https://lab.berryverde.com",
+    b,
+    funktionen: Object.fromEntries(
+      liste.map((r) => [
+        r.id,
+        seedRohstoffe.find((s) => s.slug === r.slug)?.funktion ?? null,
+      ]),
+    ),
+    ...extra,
+  });
+};
+
+test("Blog: genau eine H1 mit Suchbegriff, H2/H3, keine Mengen, Schlusssatz", () => {
+  const v = veroeff();
+  assert.equal(v.titel, "Gesichtscreme selber machen: Leichte Tagescreme");
+  assert.equal((v.html.match(/<h1>/g) ?? []).length, 1);
+  assert.equal((v.markdown.match(/^# /gm) ?? []).length, 1);
+  for (const h2 of [
+    "Die Idee",
+    "Die Zutaten",
+    "Warum die Zutaten zusammenpassen",
+    "So stellst du es her",
+    "Anwendung",
+  ]) {
+    assert.ok(v.html.includes(`<h2>${h2}</h2>`), h2);
+  }
+  assert.ok(
+    v.html.includes("<h3>Fettphase</h3>") &&
+      v.html.includes("<h3>Wasserphase</h3>"),
+  );
+  {
+    const m = v.html
+      .replace(/<strong>[^<]*<\/strong>/g, "")
+      .match(/.{0,40}\d\s*(g|%)(?![a-zäöü]).{0,10}/i);
+    assert.equal(m?.[0], undefined, "keine Mengen im HTML");
+  }
+  assert.doesNotMatch(
+    v.markdown.replace(/\*\*[^*]*\*\*/g, ""),
+    /\d\s*(g|%)(?![a-zäöü])/i,
+    "keine Mengen im Markdown",
+  );
+  assert.ok(v.html.includes("70 °C"), "Temperaturen bleiben stehen");
+  assert.ok(v.html.includes('<img src="https://x.public.blob'));
+  assert.match(
+    v.markdown,
+    /Die genaue Rezeptur mit allen Mengen findest du in Dein Lab\. \[Zu Dein Lab\]\(https:\/\/lab\.berryverde\.com\)$/,
+  );
+});
+
+test("Pin: Titel, Beschreibung und Alt-Text in den Längen, Ziel-Link aus dem Suchbegriff", () => {
+  const v = veroeff();
+  assert.ok(v.pin.titel.length <= 100);
+  assert.ok(v.pin.beschreibung.length <= 500);
+  assert.equal(
+    v.pin.link,
+    "https://berryverde.com/gesichtscreme-selber-machen/",
+  );
+  assert.match(v.pin.beschreibung, /Für trockene Haut\./);
+  assert.match(v.pin.beschreibung, /berryverde\.com/);
+  assert.doesNotMatch(v.pin.beschreibung, /\d\s*%/);
+  assert.equal(
+    veroeff({ zielLink: "https://berryverde.com/mein-artikel/" }).pin.link,
+    "https://berryverde.com/mein-artikel/",
+  );
+  const lang = veroeff({ suchbegriff: "x".repeat(150) });
+  assert.ok(lang.pin.titel.length <= 100 && lang.pin.titel.endsWith("…"));
+});
+
+test("Warum-Vorschlag nennt Emulgator, Öle und Konservierer, eigener Text hat Vorrang", () => {
+  const w = warumVorschlag(berechne(creme(), map).positionen);
+  assert.match(w, /Xyliance verbindet Öl und Wasser/);
+  assert.match(w, /Mandelöl und Sheabutter bilden die pflegende Basis/);
+  assert.match(w, /Cosgard hält das Produkt frisch/);
+  assert.doesNotMatch(w, /Wasser, destilliert/);
+  assert.ok(
+    veroeff({ warum: "Mein eigener Text." }).html.includes(
+      "<p>Mein eigener Text.</p>",
+    ),
+  );
+});
+
+test("Hilfsfunktionen: Mengen entfernen, Slug mit Umlauten", () => {
+  assert.equal(
+    ohneMengen("Mit 2,5 % Panthenol (ca. 1,25 g) und 3 Tropfen Öl"),
+    "Mit Panthenol und Öl",
+  );
+  assert.equal(ohneMengen("Gramm-Waage"), "Gramm-Waage");
+  assert.equal(
+    slugAus("Fußbalsam für müde Füße"),
+    "fussbalsam-fuer-muede-fuesse",
+  );
+});

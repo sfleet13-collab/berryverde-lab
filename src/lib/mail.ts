@@ -5,6 +5,9 @@ import "server-only";
  * Ohne RESEND_API_KEY wird nichts verschickt, sondern nur im Server-Log ausgegeben
  * – praktisch beim Entwickeln.
  */
+/** Ist der Versand eingerichtet? Ohne Schlüssel zeigt die Kontaktseite die E-Mail-Adresse statt des Formulars. */
+export const mailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_TO_EMAIL);
+
 export async function sendMail({
   subject,
   text,

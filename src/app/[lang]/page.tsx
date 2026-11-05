@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, href } from "@/i18n";
-import { isLocale } from "@/config/site";
+import { isLocale, lab, site } from "@/config/site";
 import { pageMetadata } from "@/lib/seo";
+import { seedRohstoffe } from "@/db/seed-data";
+import type { LabPosition, LabRohstoff } from "@/lib/lab/types";
 import Reveal from "@/components/Reveal";
-import HeroDemo from "@/components/HeroDemo";
 import Icon from "@/components/Icon";
+import HeroRechner from "@/components/lab/HeroRechner";
 import styles from "./home.module.css";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
@@ -16,40 +18,103 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
   return pageMetadata({ lang, description: t.meta.description });
 }
 
+/** Beispiel für den Rechner auf der Startseite (keine Rezeptur aus der Bibliothek). */
+const DEMO: [string, number, boolean?][] = [
+  ["wasser", 0, true],
+  ["glycerin", 3],
+  ["xanthan", 0.2],
+  ["xyliance", 4],
+  ["mandeloel", 12],
+  ["sheabutter", 4],
+  ["cetylalkohol", 1.7],
+  ["tocopherol", 0.3],
+  ["panthenol", 1],
+  ["cosgard", 1],
+];
+
+function demoDaten(): { rohstoffe: LabRohstoff[]; start: LabPosition[] } {
+  const rohstoffe: LabRohstoff[] = DEMO.map(([slug], i) => {
+    const s = seedRohstoffe.find((r) => r.slug === slug)!;
+    return {
+      id: i + 1,
+      slug: s.slug,
+      name: s.name,
+      inci: s.inci,
+      kategorie: s.kategorie,
+      phase: s.phase,
+      form: s.form,
+      dichte: s.dichte ?? null,
+      tropfenfaktor: null,
+      phMin: s.phMin ?? null,
+      phMax: s.phMax ?? null,
+      tempMax: s.tempMax ?? null,
+      stufe: s.stufe,
+      konsStatus: s.konsStatus ?? null,
+      konsRolle: s.konsRolle ?? null,
+      kombiPartner: s.kombiPartner ?? null,
+      nichtWaessrig: s.nichtWaessrig ?? false,
+      emulgatorTyp: s.emulgatorTyp ?? null,
+      fettphaseMin: s.fettphase?.[0] ?? null,
+      fettphaseMax: s.fettphase?.[1] ?? null,
+      emulgatorBezug: s.emulgatorBezug ?? null,
+  tensidKlasse: s.tensidKlasse ?? null,
+  wasProzent: s.wasProzent ?? null,
+      dosierungen: (s.dos ?? []).map(([produkttyp, min, max, hinweis]) => ({ produkttyp, min, max, hinweis })),
+    };
+  });
+  const start: LabPosition[] = DEMO.map(([, prozent, ad], i) => ({
+    key: `d${i}`,
+    rohstoffId: i + 1,
+    phase: rohstoffe[i].phase,
+    prozent,
+    adHundert: Boolean(ad),
+  }));
+  return { rohstoffe, start };
+}
+
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
   const h = t.home;
+  const demo = demoDaten();
+
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: h.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />
+
       {/* HERO – genau eine H1 pro Seite */}
       <section className={styles.hero}>
         <div className={`container ${styles.heroGrid}`}>
           <div className={styles.heroText}>
-            <h1 className={styles.in}>{h.title}</h1>
-            <p className={`${styles.lead} ${styles.in}`} style={{ animationDelay: "90ms" }}>
-              {h.lead}
-            </p>
-            <div className={`${styles.ctas} ${styles.in}`} style={{ animationDelay: "170ms" }}>
-              <Link className="btn btn-accent" href={href(lang, "/app")}>
+            <h1>{h.title}</h1>
+            <p className={styles.lead}>{h.lead}</p>
+            <div className={styles.ctas}>
+              <a className="btn btn-primary" href={lab.mitgliedschaftUrl}>
                 {h.ctaPrimary}
                 <Icon name="arrow" />
-              </Link>
-              <Link className="btn btn-ghost" href={href(lang, "/kontakt")}>
+              </a>
+              <Link className="btn btn-ghost" href={href(lang, "/anmelden")}>
                 {h.ctaSecondary}
               </Link>
             </div>
+            <p className={styles.preis}>{h.priceNote}</p>
           </div>
-          <div className={`${styles.in} ${styles.demo}`} style={{ animationDelay: "120ms" }}>
-            <HeroDemo d={h.demo} />
+          <div className={styles.demoRahmen}>
+            <h2 className={styles.demoTitel}>{h.demo.title}</h2>
+            <HeroRechner rohstoffe={demo.rohstoffe} start={demo.start} t={h.demo} />
           </div>
         </div>
       </section>
 
-      {/* FUNKTIONEN – jede Kachel zeigt ein echtes Stück der Vorlage */}
-      <section className="section" aria-labelledby="features-title">
+      {/* WAS DEIN LAB KANN – jeder Punkt mit einem echten Stück der App */}
+      <section className={styles.features} aria-labelledby="features-title">
         <div className="container">
           <Reveal>
             <h2 id="features-title" className={styles.sectionTitle}>
@@ -57,79 +122,100 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             </h2>
           </Reveal>
 
-          <div className={styles.bento}>
-            <Reveal className={`${styles.tile} ${styles.tileAuth}`}>
-              <h3>{h.auth.title}</h3>
-              <p>{h.auth.text}</p>
-              <ul className={styles.people}>
-                {h.auth.people.map((p) => (
-                  <li key={p.name}>
-                    <span className={styles.initial}>{p.name[0]}</span>
-                    <span className={styles.personName}>{p.name}</span>
-                    <span className={p.role === "Admin" ? styles.badgeAdmin : styles.badge}>{p.role}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className={styles.feature}>
+            <Reveal className={styles.featureText}>
+              <h3>{h.features[0].title}</h3>
+              <p>{h.features[0].text}</p>
             </Reveal>
-
-            <Reveal className={`${styles.tile} ${styles.tileSeo}`} delay={80}>
-              <h3>{h.seo.title}</h3>
-              <p>{h.seo.text}</p>
-              <div className={styles.serp}>
-                <div className={styles.serpBar}>
-                  <Icon name="search" size={16} />
-                  <span>{h.seo.serpQuery}</span>
-                </div>
-                <div className={styles.serpUrl}>{h.seo.serpUrl}</div>
-                <div className={styles.serpTitle}>{h.seo.serpTitle}</div>
-                <div className={styles.serpText}>{h.seo.serpText}</div>
+            <Reveal className={styles.featureBild} delay={80}>
+              <div className={styles.miniMeldung}>
+                <span className={styles.miniArt}>{h.check.kind}</span>
+                <p className={styles.miniTitel}>{h.check.title}</p>
+                <p>{h.check.text}</p>
+                <span className={styles.miniFix}>
+                  <Icon name="check" size={16} />
+                  {h.check.fix}
+                </span>
               </div>
             </Reveal>
+          </div>
 
-            <Reveal className={`${styles.tile} ${styles.tilePrivacy}`} delay={60}>
-              <Icon name="shield" size={34} className={styles.tileIcon} />
-              <h3>{h.privacy.title}</h3>
-              <p>{h.privacy.text}</p>
-              <ul className={styles.checks}>
-                {h.privacy.stats.map((s) => (
-                  <li key={s.label}>
-                    <Icon name="check" size={16} />
-                    {s.value} {s.label}
+          <div className={`${styles.feature} ${styles.featureGedreht}`}>
+            <Reveal className={styles.featureText}>
+              <h3>{h.features[1].title}</h3>
+              <p>{h.features[1].text}</p>
+            </Reveal>
+            <Reveal className={styles.featureBild} delay={80}>
+              <ul className={styles.miniTropfen}>
+                {h.drops.map((d) => (
+                  <li key={d.name}>
+                    <span>{d.name}</span>
+                    <strong>{d.amount}</strong>
                   </li>
                 ))}
               </ul>
             </Reveal>
+          </div>
 
-            <Reveal className={`${styles.tile} ${styles.tileLang}`} delay={120}>
-              <h3>{h.lang.title}</h3>
-              <p>{h.lang.text}</p>
-              <div className={styles.flip}>
-                <span lang="de">
-                  <b>DE</b> {h.lang.de}
-                </span>
-                <span lang="en">
-                  <b>EN</b> {h.lang.en}
-                </span>
+          <div className={styles.feature}>
+            <Reveal className={styles.featureText}>
+              <h3>{h.features[2].title}</h3>
+              <p>{h.features[2].text}</p>
+            </Reveal>
+            <Reveal className={styles.featureBild} delay={80}>
+              <div className={styles.miniEtikett}>
+                <p className={styles.miniEtikettName}>{h.label.name}</p>
+                <dl>
+                  <div>
+                    <dt>{h.label.made}</dt>
+                    <dd>15.11.2026</dd>
+                  </div>
+                  <div>
+                    <dt>{h.label.best}</dt>
+                    <dd>13.02.2027</dd>
+                  </div>
+                  <div>
+                    <dt>{h.label.batch}</dt>
+                    <dd>261115-LAB</dd>
+                  </div>
+                </dl>
+                <p className={styles.miniInci}>Aqua, Prunus Amygdalus Dulcis Oil, Butyrospermum Parkii Butter, Cetearyl Wheat Straw Glycosides, Cetearyl Alcohol, Glycerin, Cetyl Alcohol, Panthenol, Benzyl Alcohol, Dehydroacetic Acid, Tocopherol, Xanthan Gum</p>
+                <p className={styles.miniEigen}>{h.label.own}</p>
               </div>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* SCHRITTE – die Reihenfolge zählt, daher Nummern */}
-      <section className={`section ${styles.stepsSection}`} aria-labelledby="steps-title">
+      {/* BIBLIOTHEK */}
+      <section className={styles.bibliothek} aria-labelledby="library-title">
+        <div className={`container ${styles.bibliothekGrid}`}>
+          <Reveal>
+            <h2 id="library-title" className={styles.sectionTitle}>
+              {h.libraryTitle}
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            {h.libraryText.map((p) => (
+              <p key={p} className={styles.fliess}>
+                {p}
+              </p>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ABLAUF – die Reihenfolge ist die Information, darum nummeriert */}
+      <section className={styles.ablauf} aria-labelledby="steps-title">
         <div className="container">
           <Reveal>
             <h2 id="steps-title" className={styles.sectionTitle}>
               {h.stepsTitle}
             </h2>
           </Reveal>
-          <ol className={styles.steps}>
+          <ol className={styles.schritte}>
             {h.steps.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 90} className={styles.step}>
-                <span className={styles.stepNum} aria-hidden="true">
-                  {i + 1}
-                </span>
+              <Reveal as="li" key={s.title} delay={i * 70}>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
               </Reveal>
@@ -138,17 +224,42 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className={styles.faq} aria-labelledby="faq-title">
+        <div className={`container ${styles.faqGrid}`}>
+          <h2 id="faq-title" className={styles.sectionTitle}>
+            {h.faqTitle}
+          </h2>
+          <div>
+            {h.faq.map((f) => (
+              <details key={f.q} className={styles.frage}>
+                <summary>
+                  <h3>{f.q}</h3>
+                  <Icon name="plus" />
+                </summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ABSCHLUSS */}
-      <section className="section">
-        <div className="container">
-          <Reveal className={styles.ctaBand}>
+      <section className={styles.band}>
+        <div className={`container ${styles.bandInner}`}>
+          <div>
             <h2>{h.ctaBandTitle}</h2>
             <p>{h.ctaBandText}</p>
-            <Link className="btn btn-accent" href={href(lang, "/kontakt")}>
-              {h.ctaSecondary}
-              <Icon name="arrow" />
-            </Link>
-          </Reveal>
+          </div>
+          <a className={`btn ${styles.bandBtn}`} href={lab.mitgliedschaftUrl}>
+            {h.ctaPrimary}
+            <Icon name="arrow" />
+          </a>
+        </div>
+        <div className="container">
+          <p className={styles.bandNote}>
+            {h.ownUse} <a href={lab.blogUrl}>{site.owner.url.replace("https://", "")}</a>
+          </p>
         </div>
       </section>
     </>

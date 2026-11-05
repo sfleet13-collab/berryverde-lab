@@ -15,6 +15,7 @@ export default function Footer({ lang, t }: { lang: Locale; t: Dictionary }) {
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
         <nav aria-label="Rechtliches" className={styles.links}>
+          <Link href={href(lang, "/kontakt")}>{t.contact.title}</Link>
           <Link href={href(lang, "/impressum")}>{t.legal.imprint}</Link>
           <Link href={href(lang, "/datenschutz")}>{t.legal.privacy}</Link>
           <Link href={href(lang, "/agb")}>{t.legal.terms}</Link>

@@ -22,9 +22,7 @@ export function pageMetadata({
 }): Metadata {
   // Vorschaubild für WhatsApp, LinkedIn & Co. – auf JEDER Seite (Unterseiten erben es sonst nicht)
   const image = { url: `/${lang}/opengraph-image`, width: 1200, height: 630, alt: site.name };
-  const languages = Object.fromEntries(
-    locales.map((l) => [l === "de" ? ogLocale.de.replace("_", "-") : l, href(l, path)]),
-  );
+  const languages = Object.fromEntries(locales.map((l) => [ogLocale[l].replace("_", "-"), href(l, path)]));
   return {
     ...(title ? { title } : {}),
     description,

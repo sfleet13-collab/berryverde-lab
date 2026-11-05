@@ -29,7 +29,7 @@
   font-size: var(--step-4);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--accent);
+  color: var(--brand);
   margin: 0;
 }
 .footer {
@@ -42,5 +42,28 @@
 }
 .footer nav {
   display: flex;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--space-4);
+}
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.kopf {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-6);
+}
+.kopf a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text);
+  text-decoration: none;
 }

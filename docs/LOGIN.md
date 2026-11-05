@@ -2,6 +2,8 @@
 
 Der Login läuft über **Neon Auth**. Nutzer und Sitzungen liegen in derselben Neon-Datenbank wie die App-Daten (Schema `neon_auth`). Kein zusätzlicher Dienst, kein zusätzliches Konto.
 
+> **Dein Lab:** Nur Code per E-Mail (Google ist abgeschaltet). Einen Code bekommen nur Admins (`ADMIN_EMAILS`) und Adressen, die in der App unter „Verwaltung“ freigeschaltet sind.
+
 **Anmeldearten in der Vorlage:**
 - Code per E-Mail (6 Ziffern, kein Passwort)
 - Google

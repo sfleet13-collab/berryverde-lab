@@ -12,7 +12,14 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   cacheComponents: true,
   // Eigene 404 für alle unbekannten Adressen (Hauptlayout liegt unter /[lang])
-  experimental: { globalNotFound: true },
+  experimental: {
+    globalNotFound: true,
+    // Produktfotos werden im Browser verkleinert; 5 MB Reserve für die Server Action
+    serverActions: { bodySizeLimit: "5mb" },
+  },
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }],
+  },
   partialPrefetching: true,
   poweredByHeader: false,
   async headers() {

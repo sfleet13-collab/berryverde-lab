@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getAuth } from "@/lib/neon-auth";
 import { emailAllowed, isLocale } from "@/config/site";
+import { zugangFuer } from "@/lib/auth";
 
 export type SignInState = {
   step: "email" | "code";
@@ -21,6 +22,8 @@ export async function signInWithCode(prev: SignInState, form: FormData): Promise
   const email = String(form.get("email") ?? prev.email ?? "").trim().toLowerCase();
   if (!EMAIL_RE.test(email)) return { step: "email", email, error: "email" };
   if (!emailAllowed(email)) return { step: "email", email, error: "notAllowed" };
+  // Dein Lab: nur freigeschaltete Mitglieder (und Admins) bekommen einen Code
+  if (!(await zugangFuer(email)).erlaubt) return { step: "email", email, error: "notAllowed" };
 
   if (prev.step === "email" || form.get("resend")) {
     const { error } = await auth.emailOtp.sendVerificationOtp({ email, type: "sign-in" });

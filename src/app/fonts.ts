@@ -11,10 +11,13 @@ export const inter = localFont({
   display: "swap",
 });
 
-/** Überschriften: Bricolage Grotesque – serifenlos mit Charakter */
+/** Überschriften: Playfair Display – die Schrift von berryverde.com */
 export const display = localFont({
-  src: "../fonts/bricolage-grotesque-latin-wght.woff2",
+  src: [
+    { path: "../fonts/playfair-display-latin-wght.woff2", style: "normal" },
+    { path: "../fonts/playfair-display-latin-wght-italic.woff2", style: "italic" },
+  ],
   variable: "--font-display-face",
-  weight: "200 800",
+  weight: "400 900",
   display: "swap",
 });

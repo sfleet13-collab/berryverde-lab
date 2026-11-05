@@ -1,32 +1,37 @@
 {
-  "name": "susan-app-starter",
+  "name": "berryverde-lab",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/migrate.mjs && next build",
+    "build": "node scripts/migrate.mjs && tsx scripts/seed.mts && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "check": "npm run lint && npm run typocheck && npm run typecheck && next build",
+    "check": "npm run lint && npm run typocheck && npm run test && npm run typecheck && next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs",
     "selfcheck": "node scripts/selfcheck.mjs",
-    "typocheck": "node scripts/typocheck.mjs"
+    "typocheck": "node scripts/typocheck.mjs",
+    "test": "tsx --conditions=react-server --test src/lib/lab/*.test.ts src/lib/*.test.ts src/db/*.test.ts",
+    "db:seed": "tsx scripts/seed.mts"
   },
   "dependencies": {
     "@neondatabase/auth": "^0.6.0-beta",
     "@neondatabase/serverless": "^1.2.0",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.8.2",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

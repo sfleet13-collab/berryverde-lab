@@ -4,6 +4,7 @@ import { isLocale } from "@/config/site";
 import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
 import LegalPage from "@/components/LegalPage";
+import { Impressum } from "@/content/legal";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/impressum">): Promise<Metadata> {
   const { lang } = await params;
@@ -16,5 +17,9 @@ export default async function Page({ params }: PageProps<"/[lang]/impressum">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
-  return <LegalPage title={t.legal.imprint} t={t} />;
+  return (
+    <LegalPage title={t.legal.imprint} t={t}>
+      <Impressum />
+    </LegalPage>
+  );
 }

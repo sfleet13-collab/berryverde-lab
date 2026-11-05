@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { isLocale } from "@/config/site";
+import { isLocale, lab } from "@/config/site";
 import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
 import SignInForm from "@/components/SignInForm";
@@ -25,6 +25,9 @@ export default async function SignInPage({ params }: PageProps<"/[lang]/anmelden
           <h1 className={styles.title}>{t.auth.title}</h1>
           <p className="muted">{t.auth.description}</p>
           <SignInForm lang={lang} t={t.auth} />
+          <p className={styles.hinweis}>
+            {t.auth.notMember} <a href={lab.mitgliedschaftUrl}>{t.auth.join}</a>
+          </p>
         </div>
       </div>
     </section>
