@@ -125,7 +125,7 @@ async function Inhalt({
             alt={r.name}
             fill
             priority
-            sizes="(max-width: 1100px) 100vw, 1100px"
+            sizes="(max-width: 1200px) 100vw, 1200px"
           />
         </div>
       )}
