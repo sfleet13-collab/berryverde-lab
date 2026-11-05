@@ -90,7 +90,7 @@ export default function RohstoffForm({ r }: { r: RohstoffMitDosierung | null }) 
         </div>
         <fieldset className={styles.dosierung}>
           <legend>{t.dosierung}</legend>
-          {(["emulsion", "wasserfrei", "waessrig", "alle"] as const).map((typ) => (
+          {(["emulsion", "wasserfrei", "waessrig", "tensid", "alle"] as const).map((typ) => (
             <div key={typ} className={styles.dosZeile}>
               <span className={styles.dosTyp}>{t.dosTyp[typ]}</span>
               <label className="sr-only" htmlFor={`rf-dos-${typ}-min`}>
@@ -126,7 +126,34 @@ export default function RohstoffForm({ r }: { r: RohstoffMitDosierung | null }) 
         </section>
       )}
 
-      {kategorie === "emulgator" && (
+      {["oel", "butter", "wachs"].includes(kategorie) && (
+        <section className={styles.karte}>
+          <h2>{t.oele}</h2>
+          <div className={styles.felder}>
+            {auswahl("spreitung", t.spreitung, r?.spreitung ?? "", L.spreitung, true)}
+            {auswahl("oxidation", t.oxidation, r?.oxidation ?? "", L.oxidation, true)}
+            {feld("haltbarMonate", t.haltbarMonate, txt(r?.haltbarMonate), { mode: "numeric" })}
+            {feld("verseifungszahlKoh", t.verseifungszahl, txt(r?.verseifungszahlKoh), { mode: "decimal", hilfe: t.verseifungszahlHilfe })}
+            {feld("schmelzpunkt", t.schmelzpunkt, txt(r?.schmelzpunkt), { mode: "numeric" })}
+            {feld("geeignetFuer", t.geeignetFuer, r?.geeignetFuer ?? "")}
+            {feld("fettsaeuren", t.fettsaeuren, r?.fettsaeuren ?? "", { breit: true, platz: "Ölsäure ca. 65 %, Linolsäure ca. 20 %" })}
+          </div>
+        </section>
+      )}
+
+      {kategorie === "tensid" && (
+        <section className={styles.karte}>
+          <h2>{t.tensid}</h2>
+          <div className={styles.felder}>
+            {auswahl("tensidKlasse", t.tensidKlasse, r?.tensidKlasse ?? "anionisch", L.tensidKlasse)}
+            {auswahl("tensidRolle", t.tensidRolle, r?.tensidRolle ?? "basistensid", L.tensidRolle)}
+            {feld("wasProzent", t.wasProzent, txt(r?.wasProzent), { mode: "decimal", hilfe: t.wasHilfe })}
+            {auswahl("vertraeglichkeit", t.vertraeglichkeit, r?.vertraeglichkeit ?? "gut", { "sehr gut": "sehr gut", gut: "gut", akzeptabel: "akzeptabel" })}
+          </div>
+        </section>
+      )}
+
+      {(kategorie === "emulgator" || kategorie === "coemulgator") && (
         <section className={styles.karte}>
           <h2>{t.emulgator}</h2>
           <div className={styles.felder}>

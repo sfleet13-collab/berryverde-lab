@@ -35,6 +35,18 @@ export type RohstoffZeile = {
   fettphaseMin: number | null;
   fettphaseMax: number | null;
   hautgefuehl: string | null;
+  emulgatorTyp: "ow" | "wo" | null;
+  spreitung: keyof typeof L.spreitung | null;
+  oxidation: keyof typeof L.oxidation | null;
+  haltbarMonate: number | null;
+  fettsaeuren: string | null;
+  verseifungszahlKoh: number | null;
+  schmelzpunkt: number | null;
+  geeignetFuer: string | null;
+  tensidKlasse: keyof typeof L.tensidKlasse | null;
+  wasProzent: number | null;
+  vertraeglichkeit: string | null;
+  tensidRolle: keyof typeof L.tensidRolle | null;
   aktiv: boolean;
   dosierungen: { produkttyp: string; min: number; max: number; hinweis: string | null }[];
 };
@@ -168,6 +180,59 @@ export default function RohstoffListe({ rohstoffe, admin }: { rohstoffe: Rohstof
                           <dd>
                             {zahl(r.fettphaseMin, 0)} bis {zahl(r.fettphaseMax, 0)} %
                           </dd>
+                        </div>
+                      )}
+                      {r.emulgatorTyp && (
+                        <div>
+                          <dt>{L.rohstoffe.emulgatorTyp}</dt>
+                          <dd>{L.emulsionstyp[r.emulgatorTyp]}</dd>
+                        </div>
+                      )}
+                      {r.tensidKlasse && (
+                        <div>
+                          <dt>{L.rohstoffe.tensid}</dt>
+                          <dd>
+                            <span>
+                              {L.tensidKlasse[r.tensidKlasse]}
+                              {r.tensidRolle ? `, ${L.tensidRolle[r.tensidRolle]}` : ""}
+                            </span>
+                            {r.wasProzent != null && <span>{nbsp(`${zahl(r.wasProzent, 1)} % WAS`)}</span>}
+                            {r.vertraeglichkeit && <span>{`${L.rohstoffe.vertraeglichkeit}: ${r.vertraeglichkeit}`}</span>}
+                          </dd>
+                        </div>
+                      )}
+                      {(r.spreitung || r.oxidation || r.haltbarMonate != null) && (
+                        <div>
+                          <dt>{L.rohstoffe.eigenschaften}</dt>
+                          <dd>
+                            {r.spreitung && <span>{L.spreitung[r.spreitung]}</span>}
+                            {r.oxidation && <span>{L.oxidation[r.oxidation]}</span>}
+                            {r.haltbarMonate != null && <span>{nbsp(`${L.rohstoffe.haltbar} ${r.haltbarMonate} Monate`)}</span>}
+                          </dd>
+                        </div>
+                      )}
+                      {r.fettsaeuren && (
+                        <div>
+                          <dt>{L.rohstoffe.fettsaeuren}</dt>
+                          <dd>{nbsp(r.fettsaeuren)}</dd>
+                        </div>
+                      )}
+                      {r.geeignetFuer && (
+                        <div>
+                          <dt>{L.rohstoffe.geeignetFuer}</dt>
+                          <dd>{r.geeignetFuer}</dd>
+                        </div>
+                      )}
+                      {r.schmelzpunkt != null && (
+                        <div>
+                          <dt>{L.rohstoffe.schmelzpunkt}</dt>
+                          <dd>{nbsp(`${r.schmelzpunkt} °C`)}</dd>
+                        </div>
+                      )}
+                      {r.verseifungszahlKoh != null && (
+                        <div>
+                          <dt>{L.rohstoffe.verseifungszahl}</dt>
+                          <dd>{nbsp(`${zahl(r.verseifungszahlKoh, 1)} mg KOH/g`)}</dd>
                         </div>
                       )}
                       {r.hautgefuehl && (

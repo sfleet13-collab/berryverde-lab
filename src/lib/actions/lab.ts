@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { AUSRUESTUNG, BEREICHE, EMULSIONSTYPEN, FORMEN, KATEGORIEN, PHASEN, PRODUKTTYPEN, STUFEN } from "@/db/schema";
+import { AUSRUESTUNG, BEREICHE, EMULSIONSTYPEN, FORMEN, KATEGORIEN, PHASEN, PRODUKTTYPEN, STUFEN, TENSIDKLASSEN } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
 import {
   addZugang,
@@ -210,7 +210,10 @@ export async function rohstoffSpeichern(_prev: RohstoffState, form: FormData): P
       .replace(/^-|-$/g, "");
   const kategorie = eins(form.get("kategorie"), KATEGORIEN, "sonstiges");
   const istKons = kategorie === "konservierer";
-  const istEmu = kategorie === "emulgator";
+  const istEmu = kategorie === "emulgator" || kategorie === "coemulgator";
+  const istFett = kategorie === "oel" || kategorie === "butter" || kategorie === "wachs";
+  const istTensid = kategorie === "tensid";
+  const ganz = (n: number | null) => (n == null ? null : Math.round(n));
   const wirk = (k: string) => (istKons ? eins(form.get(k), ["++", "+", "o", "-"] as const, "o") : null);
 
   const werte: RohstoffEingabe = {
@@ -252,6 +255,17 @@ export async function rohstoffSpeichern(_prev: RohstoffState, form: FormData): P
     emulgatorBezug: istEmu ? eins(form.get("emulgatorBezug"), ["gesamt", "fettphase"] as const, "gesamt") : null,
     hautgefuehl: istEmu ? text(form.get("hautgefuehl"), 200) : null,
     konsistenzgeberNoetig: istEmu ? form.get("konsistenzgeberNoetig") === "on" : null,
+    spreitung: istFett && form.get("spreitung") ? eins(form.get("spreitung"), ["schnell", "mittel", "langsam"] as const, "mittel") : null,
+    oxidation: istFett && form.get("oxidation") ? eins(form.get("oxidation"), ["stabil", "mittel", "empfindlich"] as const, "mittel") : null,
+    haltbarMonate: istFett ? ganz(num(form.get("haltbarMonate"), 1, 60)) : null,
+    verseifungszahlKoh: istFett ? num(form.get("verseifungszahlKoh"), 0, 400) : null,
+    schmelzpunkt: istFett ? ganz(num(form.get("schmelzpunkt"), -40, 120)) : null,
+    geeignetFuer: istFett ? text(form.get("geeignetFuer"), 200) : null,
+    fettsaeuren: istFett ? text(form.get("fettsaeuren"), 300) : null,
+    tensidKlasse: istTensid ? eins(form.get("tensidKlasse"), TENSIDKLASSEN, "anionisch") : null,
+    tensidRolle: istTensid ? eins(form.get("tensidRolle"), ["basistensid", "kotensid", "mischtensid"] as const, "basistensid") : null,
+    wasProzent: istTensid ? num(form.get("wasProzent"), 0, 100) : null,
+    vertraeglichkeit: istTensid ? eins(form.get("vertraeglichkeit"), ["sehr gut", "gut", "akzeptabel"] as const, "gut") : null,
     aktiv: form.getAll("aktiv").includes("1"),
   };
   if (werte.tempMax != null) werte.tempMax = Math.round(werte.tempMax);

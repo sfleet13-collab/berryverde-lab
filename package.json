@@ -15,7 +15,7 @@
     "db:migrate": "node scripts/migrate.mjs",
     "selfcheck": "node scripts/selfcheck.mjs",
     "typocheck": "node scripts/typocheck.mjs",
-    "test": "tsx --conditions=react-server --test src/lib/lab/*.test.ts src/lib/*.test.ts",
+    "test": "tsx --conditions=react-server --test src/lib/lab/*.test.ts src/lib/*.test.ts src/db/*.test.ts",
     "db:seed": "tsx scripts/seed.mts"
   },
   "dependencies": {
