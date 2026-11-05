@@ -1246,10 +1246,12 @@ export const seedErweiterung: SeedRohstoff[] = [
         "als Haupttensid (v. a. feste Produkte); als Co-Tensid",
       ],
     ],
-    hinweis: "Schaum: sehr hoch, cremig, auch in hartem Wasser.",
+    hinweis:
+      "Feines Pulver: beim Abwiegen Staubmaske tragen. Schaum: sehr hoch, cremig, auch in hartem Wasser.",
   },
   {
     slug: "slsa",
+    hinweis: "Feines Pulver: beim Abwiegen Staubmaske tragen.",
     name: "SLSA (Sodium Lauryl Sulfoacetate)",
     inci: "Sodium Lauryl Sulfoacetate",
     kategorie: "tensid",
@@ -1306,7 +1308,8 @@ export const seedErweiterung: SeedRohstoff[] = [
     dos: [
       ["tensid", 2, 15, "Duschgel, feste Produkte; Shampoo, Gesichtsreinigung"],
     ],
-    hinweis: "Schaum: sehr gut, verdickend.",
+    hinweis:
+      "Feines Pulver: beim Abwiegen Staubmaske tragen. Schaum: sehr gut, verdickend.",
   },
   {
     slug: "sodium-lauroyl-sarcosinate",
