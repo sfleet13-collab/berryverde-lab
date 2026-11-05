@@ -25,6 +25,8 @@ export function labRohstoff(r: Rohstoff, dosierungen: Dosierung[]): LabRohstoff 
     fettphaseMin: r.fettphaseMin,
     fettphaseMax: r.fettphaseMax,
     emulgatorBezug: r.emulgatorBezug,
+    tensidKlasse: r.tensidKlasse,
+    wasProzent: r.wasProzent,
     dosierungen: dosierungen
       .filter((d) => d.rohstoffId === r.id)
       .map((d) => ({ produkttyp: d.produkttyp, min: d.min, max: d.max, hinweis: d.hinweis })),
@@ -38,6 +40,7 @@ export function labPosition(p: Position): LabPosition {
 export function labRezeptur(r: Rezeptur, positionen: Position[], chargeG?: number): LabRezeptur {
   return {
     produkttyp: r.produkttyp,
+    emulsionstyp: r.emulsionstyp,
     bereich: r.bereich,
     chargeG: chargeG && chargeG > 0 ? chargeG : r.chargeG,
     phZiel: r.phZiel,

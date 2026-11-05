@@ -19,13 +19,18 @@ import {
  */
 
 export const STUFEN = ["anfaenger", "mittel", "profi"] as const;
-export const PRODUKTTYPEN = ["emulsion", "wasserfrei", "waessrig"] as const;
+export const PRODUKTTYPEN = ["emulsion", "wasserfrei", "waessrig", "tensid"] as const;
+export const EMULSIONSTYPEN = ["ow", "wo"] as const;
+export const TENSIDKLASSEN = ["anionisch", "amphoter", "nichtionisch"] as const;
 export const PHASEN = ["fett", "wasser", "kalt", "pulver"] as const;
 export const FORMEN = ["fluessig", "fest", "pulver"] as const;
 export const KATEGORIEN = [
   "wasser",
   "emulgator",
+  "coemulgator",
   "konsistenzgeber",
+  "wachs",
+  "tensid",
   "oel",
   "butter",
   "konservierer",
@@ -120,6 +125,23 @@ export const rohstoffe = pgTable(
     hautgefuehl: text("hautgefuehl"),
     konsistenzgeberNoetig: boolean("konsistenzgeber_noetig"),
 
+    // Öle, Buttern, Wachse
+    spreitung: text("spreitung", { enum: ["schnell", "mittel", "langsam"] }),
+    oxidation: text("oxidation", { enum: ["stabil", "mittel", "empfindlich"] }),
+    haltbarMonate: integer("haltbar_monate"),
+    fettsaeuren: text("fettsaeuren"),
+    /** mg KOH pro g Öl – Grundlage für den Seifenrechner (V2). */
+    verseifungszahlKoh: numeric("verseifungszahl_koh", { precision: 6, scale: 1, mode: "number" }),
+    schmelzpunkt: integer("schmelzpunkt"),
+    geeignetFuer: text("geeignet_fuer"),
+
+    // Tenside
+    tensidKlasse: text("tensid_klasse", { enum: TENSIDKLASSEN }),
+    /** Waschaktive Substanz des Handelsprodukts in %. */
+    wasProzent: numeric("was_prozent", { precision: 5, scale: 2, mode: "number" }),
+    vertraeglichkeit: text("vertraeglichkeit", { enum: ["sehr gut", "gut", "akzeptabel"] }),
+    tensidRolle: text("tensid_rolle", { enum: ["basistensid", "kotensid", "mischtensid"] }),
+
     aktiv: boolean("aktiv").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -166,6 +188,8 @@ export const rezepturen = pgTable(
     name: text("name").notNull(),
     untertitel: text("untertitel"),
     produkttyp: text("produkttyp", { enum: PRODUKTTYPEN }).notNull(),
+    /** Nur bei Emulsionen: Öl in Wasser (Creme, Lotion) oder Wasser in Öl (Salbe, Schutzcreme). */
+    emulsionstyp: text("emulsionstyp", { enum: EMULSIONSTYPEN }),
     produktart: text("produktart"),
     bereich: text("bereich", { enum: BEREICHE }).notNull().default("gesicht"),
     /** Kommagetrennt: alle, trocken, fettig, sensibel, reif, misch */

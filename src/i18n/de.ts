@@ -142,9 +142,14 @@ const de = {
         "Eigene Naturkosmetik-Rezeptur in Dein Lab anlegen: Rohstoffe wählen, Anteile eintragen, live prüfen lassen und Korrekturen mit einem Klick übernehmen.",
     },
     karte: {
-      title: "Rezeptkarte und Etikett drucken oder als PDF",
+      title: "Rezeptkarte drucken oder als PDF speichern",
       description:
-        "Rezeptkarte aus Dein Lab mit Formel, Herstellung, Anwendung, INCI und Etikett. Drucken oder als PDF speichern und beim Rühren danebenlegen. Für Mitglieder.",
+        "Rezeptkarte aus Dein Lab mit Formel, Herstellung, Anwendung und INCI. Drucken oder als PDF speichern und beim Rühren danebenlegen. Nur für Mitglieder.",
+    },
+    etikett: {
+      title: "Etiketten drucken: rechteckig oder rund",
+      description:
+        "Etiketten aus Dein Lab mit Name, Herstelldatum, Haltbarkeit, Charge und INCI. Einzeln zum Ausschneiden oder als A4-Bogen drucken. Nur für Mitglieder.",
     },
     rohstoffe: {
       title: "Rohstoffe mit Steckbrief und Einsatzmenge",

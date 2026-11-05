@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { AUSRUESTUNG, BEREICHE, FORMEN, KATEGORIEN, PHASEN, PRODUKTTYPEN, STUFEN } from "@/db/schema";
+import { AUSRUESTUNG, BEREICHE, EMULSIONSTYPEN, FORMEN, KATEGORIEN, PHASEN, PRODUKTTYPEN, STUFEN } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
 import {
   addZugang,
@@ -73,12 +73,13 @@ export async function speichereRezeptur(id: number | null, roh: unknown): Promis
   }
 
   const produkttyp = eins(e.produkttyp, PRODUKTTYPEN, "emulsion") as Produkttyp;
+  const emulsionstyp = produkttyp === "emulsion" ? eins(e.emulsionstyp, EMULSIONSTYPEN, "ow") : null;
   const bereich = eins(e.bereich, BEREICHE, "gesicht");
   const chargeG = num(e.chargeG, 1, 5000) ?? 30;
   const phZiel = num(e.phZiel, 0, 14);
   const frischcreme = e.frischcreme === true;
   const pruefung = pruefe(
-    { produkttyp, bereich, chargeG, phZiel, frischcreme, positionen: positionen.map((p, i) => ({ ...p, key: `k${i}` })) },
+    { produkttyp, emulsionstyp, bereich, chargeG, phZiel, frischcreme, positionen: positionen.map((p, i) => ({ ...p, key: `k${i}` })) },
     map,
   );
 
@@ -93,6 +94,7 @@ export async function speichereRezeptur(id: number | null, roh: unknown): Promis
     name,
     untertitel: text(e.untertitel, 160),
     produkttyp,
+    emulsionstyp,
     produktart: text(e.produktart, 60),
     bereich,
     hautbeduerfnis:

@@ -379,6 +379,11 @@ html:not(.js) .reveal {
 }
 
 /* ---------- Drucken (Rezeptkarte, Etikett) ---------- */
+/* Etikettenbögen: A4 ohne Rand, damit die Etiketten genau auf dem Bogen sitzen */
+@page etikett {
+  size: A4;
+  margin: 0;
+}
 @media print {
   body {
     background: #fff;
@@ -392,5 +397,10 @@ html:not(.js) .reveal {
   }
   main {
     flex: none;
+  }
+  /* Kein Seitenrand vom Layout: Etiketten müssen millimetergenau auf dem Bogen sitzen */
+  .container {
+    width: 100%;
+    max-width: none;
   }
 }

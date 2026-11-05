@@ -63,10 +63,15 @@ export default function Rechner({
             </button>
           ))}
         </div>
-        <Link className={`btn btn-primary ${styles.kartenBtn}`} href={`${kartenLink}?g=${gueltig ? charge : rezeptur.chargeG}`}>
-          <Icon name="print" />
-          {L.rezeptur.karte}
-        </Link>
+        <div className={styles.kartenBtns}>
+          <Link className="btn btn-primary" href={`${kartenLink}?g=${gueltig ? charge : rezeptur.chargeG}`}>
+            <Icon name="print" />
+            {L.rezeptur.karte}
+          </Link>
+          <Link className="btn btn-ghost" href={`${kartenLink.replace(/\/karte$/, "/etikett")}?g=${gueltig ? charge : rezeptur.chargeG}`}>
+            {L.rezeptur.etikett}
+          </Link>
+        </div>
         <p id="charge-hilfe" className={styles.chargeHilfe} data-fehler={!gueltig || undefined} role={gueltig ? undefined : "alert"}>
           {gueltig ? L.rezeptur.chargeHilfe : fuelle(L.rezeptur.chargeUngueltig, { n: zahl(rezeptur.chargeG, 2) })}
         </p>
@@ -74,8 +79,14 @@ export default function Rechner({
 
       <Formel b={b} infos={infos} />
 
-      {(b.fettphase > 0 && b.wasserphase > 0) || b.emulgator || b.konserviererGesamt > 0 ? (
+      {(b.fettphase > 0 && b.wasserphase > 0) || b.emulgator || b.konserviererGesamt > 0 || b.wasGesamt > 0 ? (
         <dl className={styles.kennzahlen}>
+          {b.wasGesamt > 0 && (
+            <div>
+              <dt>{L.rezeptur.was}</dt>
+              <dd>{zahl(b.wasGesamt, 1)} %</dd>
+            </div>
+          )}
           {b.fettphase > 0 && b.wasserphase > 0 && (
             <div>
               <dt>{L.rezeptur.fettphase}</dt>

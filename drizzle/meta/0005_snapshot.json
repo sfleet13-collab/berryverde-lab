@@ -1,0 +1,960 @@
+{
+  "id": "c8c628d5-733a-4238-987d-f699e82e8ae2",
+  "prevId": "a096c9ab-7fc8-4bb3-a835-fd61ba303c3c",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.geraete": {
+      "name": "geraete",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beschreibung": {
+          "name": "beschreibung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link": {
+          "name": "link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "link_affiliate": {
+          "name": "link_affiliate",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {
+        "geraete_slug_idx": {
+          "name": "geraete_slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "stufe": {
+          "name": "stufe",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'anfaenger'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rezeptur_positionen": {
+      "name": "rezeptur_positionen",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "rezeptur_id": {
+          "name": "rezeptur_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rohstoff_id": {
+          "name": "rohstoff_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phase": {
+          "name": "phase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prozent": {
+          "name": "prozent",
+          "type": "numeric(6, 3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "ad_hundert": {
+          "name": "ad_hundert",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "reihenfolge": {
+          "name": "reihenfolge",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "hinweis": {
+          "name": "hinweis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "positionen_rezeptur_idx": {
+          "name": "positionen_rezeptur_idx",
+          "columns": [
+            {
+              "expression": "rezeptur_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "rezeptur_positionen_rezeptur_id_rezepturen_id_fk": {
+          "name": "rezeptur_positionen_rezeptur_id_rezepturen_id_fk",
+          "tableFrom": "rezeptur_positionen",
+          "tableTo": "rezepturen",
+          "columnsFrom": [
+            "rezeptur_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "rezeptur_positionen_rohstoff_id_rohstoffe_id_fk": {
+          "name": "rezeptur_positionen_rohstoff_id_rohstoffe_id_fk",
+          "tableFrom": "rezeptur_positionen",
+          "tableTo": "rohstoffe",
+          "columnsFrom": [
+            "rohstoff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rezepturen": {
+      "name": "rezepturen",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "untertitel": {
+          "name": "untertitel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "produkttyp": {
+          "name": "produkttyp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emulsionstyp": {
+          "name": "emulsionstyp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "produktart": {
+          "name": "produktart",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bereich": {
+          "name": "bereich",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'gesicht'"
+        },
+        "hautbeduerfnis": {
+          "name": "hautbeduerfnis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'alle'"
+        },
+        "ausruestung": {
+          "name": "ausruestung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'start'"
+        },
+        "stufe": {
+          "name": "stufe",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'anfaenger'"
+        },
+        "zeit_minuten": {
+          "name": "zeit_minuten",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "charge_g": {
+          "name": "charge_g",
+          "type": "numeric(7, 2)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 30
+        },
+        "haltbarkeit_tage": {
+          "name": "haltbarkeit_tage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ph_ziel": {
+          "name": "ph_ziel",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "frischcreme": {
+          "name": "frischcreme",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "geraete": {
+          "name": "geraete",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "herstellung": {
+          "name": "herstellung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "anwendung": {
+          "name": "anwendung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "blog_text": {
+          "name": "blog_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notiz": {
+          "name": "notiz",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'entwurf'"
+        },
+        "bibliothek": {
+          "name": "bibliothek",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "variante_von": {
+          "name": "variante_von",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "rezepturen_user_id_idx": {
+          "name": "rezepturen_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "rezepturen_bibliothek_idx": {
+          "name": "rezepturen_bibliothek_idx",
+          "columns": [
+            {
+              "expression": "bibliothek",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rohstoff_dosierungen": {
+      "name": "rohstoff_dosierungen",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "rohstoff_id": {
+          "name": "rohstoff_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "produkttyp": {
+          "name": "produkttyp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "min": {
+          "name": "min",
+          "type": "numeric(6, 3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max": {
+          "name": "max",
+          "type": "numeric(6, 3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hinweis": {
+          "name": "hinweis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "dosierung_rohstoff_typ_idx": {
+          "name": "dosierung_rohstoff_typ_idx",
+          "columns": [
+            {
+              "expression": "rohstoff_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "produkttyp",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "rohstoff_dosierungen_rohstoff_id_rohstoffe_id_fk": {
+          "name": "rohstoff_dosierungen_rohstoff_id_rohstoffe_id_fk",
+          "tableFrom": "rohstoff_dosierungen",
+          "tableTo": "rohstoffe",
+          "columnsFrom": [
+            "rohstoff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rohstoffe": {
+      "name": "rohstoffe",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "handelsnamen": {
+          "name": "handelsnamen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inci": {
+          "name": "inci",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategorie": {
+          "name": "kategorie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "funktion": {
+          "name": "funktion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phase": {
+          "name": "phase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form": {
+          "name": "form",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dichte": {
+          "name": "dichte",
+          "type": "numeric(5, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tropfenfaktor": {
+          "name": "tropfenfaktor",
+          "type": "numeric(6, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ph_min": {
+          "name": "ph_min",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ph_max": {
+          "name": "ph_max",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "temp_max": {
+          "name": "temp_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loeslichkeit": {
+          "name": "loeslichkeit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stufe": {
+          "name": "stufe",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'anfaenger'"
+        },
+        "lieferant": {
+          "name": "lieferant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kauf_link": {
+          "name": "kauf_link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kauf_link_affiliate": {
+          "name": "kauf_link_affiliate",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "steckbrief_was": {
+          "name": "steckbrief_was",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "steckbrief_chemisch": {
+          "name": "steckbrief_chemisch",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "steckbrief_wirkung": {
+          "name": "steckbrief_wirkung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hinweis": {
+          "name": "hinweis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quelle": {
+          "name": "quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wirk_bakterien": {
+          "name": "wirk_bakterien",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wirk_hefen": {
+          "name": "wirk_hefen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wirk_schimmel": {
+          "name": "wirk_schimmel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "breitband": {
+          "name": "breitband",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kons_status": {
+          "name": "kons_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kons_rolle": {
+          "name": "kons_rolle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kombi_partner": {
+          "name": "kombi_partner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nicht_waessrig": {
+          "name": "nicht_waessrig",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "emulgator_typ": {
+          "name": "emulgator_typ",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hlb": {
+          "name": "hlb",
+          "type": "numeric(4, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fettphase_min": {
+          "name": "fettphase_min",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fettphase_max": {
+          "name": "fettphase_max",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emulgator_bezug": {
+          "name": "emulgator_bezug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hautgefuehl": {
+          "name": "hautgefuehl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "konsistenzgeber_noetig": {
+          "name": "konsistenzgeber_noetig",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spreitung": {
+          "name": "spreitung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "oxidation": {
+          "name": "oxidation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "haltbar_monate": {
+          "name": "haltbar_monate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fettsaeuren": {
+          "name": "fettsaeuren",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verseifungszahl_koh": {
+          "name": "verseifungszahl_koh",
+          "type": "numeric(6, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "schmelzpunkt": {
+          "name": "schmelzpunkt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "geeignet_fuer": {
+          "name": "geeignet_fuer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensid_klasse": {
+          "name": "tensid_klasse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "was_prozent": {
+          "name": "was_prozent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vertraeglichkeit": {
+          "name": "vertraeglichkeit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tensid_rolle": {
+          "name": "tensid_rolle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "rohstoffe_slug_idx": {
+          "name": "rohstoffe_slug_idx",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.zugaenge": {
+      "name": "zugaenge",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stufe": {
+          "name": "stufe",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'anfaenger'"
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "notiz": {
+          "name": "notiz",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "zugaenge_email_idx": {
+          "name": "zugaenge_email_idx",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -46,6 +46,7 @@ async function Inhalt({ params }: { params: Promise<{ lang: string; id: string }
     name: r.name,
     untertitel: r.untertitel ?? "",
     produkttyp: r.produkttyp,
+    emulsionstyp: r.emulsionstyp,
     produktart: r.produktart ?? "",
     bereich: r.bereich,
     hautbeduerfnis: r.hautbeduerfnis,

@@ -34,6 +34,10 @@ export type Berechnung = {
   hatWasser: boolean;
   emulgator: { gesamt: number; aufFettphase: number } | null;
   konserviererGesamt: number;
+  /** Waschaktive Substanz gesamt in % (Anteil Handelsprodukt × Aktivgehalt). */
+  wasGesamt: number;
+  wasAnionisch: number;
+  wasAmphoter: number;
   aetherischGesamt: number;
   brauchtFeinwaage: boolean;
 };
@@ -113,6 +117,15 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
         ? { gesamt: emulgatorGesamt, aufFettphase: fettphase > 0 ? runde((emulgatorGesamt / fettphase) * 100, 1) : 0 }
         : null,
     konserviererGesamt: sum((p) => p.rohstoff.kategorie === "konservierer"),
+    ...(() => {
+      const was = (f: (p: BerechnetePosition) => boolean) =>
+        runde(positionen.filter((p) => p.rohstoff.kategorie === "tensid" && f(p)).reduce((s, p) => s + (p.prozentEffektiv * (p.rohstoff.wasProzent ?? 0)) / 100, 0), 2);
+      return {
+        wasGesamt: was(() => true),
+        wasAnionisch: was((p) => p.rohstoff.tensidKlasse === "anionisch"),
+        wasAmphoter: was((p) => p.rohstoff.tensidKlasse === "amphoter"),
+      };
+    })(),
     aetherischGesamt: sum((p) => p.rohstoff.kategorie === "aetherisches_oel"),
     brauchtFeinwaage: positionen.some((p) => p.menge.art === "gramm" && p.menge.feinwaage),
   };

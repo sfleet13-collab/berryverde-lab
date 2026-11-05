@@ -132,18 +132,51 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   }
 
   // ---------- 3. Emulgator und Fettphase ----------
+  // Co-Emulgatoren (Glyceryl Stearate, Fettalkohole …) zählen nicht als Haupt-Emulgator.
   const emulgatoren = aktiv.filter((p) => p.rohstoff.kategorie === "emulgator");
+  const etyp = rezeptur.emulsionstyp ?? "ow";
   if (typ === "emulsion") {
+    const passend = emulgatoren.filter((e) => !e.rohstoff.emulgatorTyp || e.rohstoff.emulgatorTyp === etyp);
+    const falsch = emulgatoren.filter((e) => e.rohstoff.emulgatorTyp && e.rohstoff.emulgatorTyp !== etyp);
+    const standard = etyp === "wo" ? { slug: "olivem-900", name: "Olivem 900", prozent: Math.max(2, runde(b.fettphase * 0.12, 1)) } : { slug: "xyliance", name: "Xyliance", prozent: 4 };
     if (emulgatoren.length === 0 && aktiv.length > 0) {
+      const coEmu = aktiv.filter((p) => p.rohstoff.kategorie === "coemulgator");
       m.push({
         code: "emulgator-fehlt",
         art: "fehler",
         titel: "Kein Emulgator",
-        text: "Eine Emulsion braucht einen Emulgator, sonst trennen sich Fett und Wasser wieder. Standard in Dein Lab ist Xyliance mit 3–5 %.",
-        korrektur: { label: "Xyliance mit 4 % ergänzen", hinzu: [{ slug: "xyliance", prozent: 4, phase: "fett" }] },
+        text:
+          (etyp === "wo"
+            ? "Eine W/O-Creme braucht einen W/O-Emulgator, sonst trennt sich das Wasser wieder ab. Standard in Dein Lab ist Olivem 900 mit 10–13 % der Fettphase."
+            : "Eine Emulsion braucht einen Emulgator, sonst trennen sich Fett und Wasser wieder. Standard in Dein Lab ist Xyliance mit 3–5 %.") +
+          (coEmu.length ? ` ${coEmu.map((p) => p.rohstoff.name).join(", ")} ${coEmu.length === 1 ? "ist ein Co-Emulgator und stabilisiert" : "sind Co-Emulgatoren und stabilisieren"} nur zusätzlich.` : ""),
+        korrektur: { label: `${standard.name} mit ${pct(standard.prozent)} ergänzen`, hinzu: [{ slug: standard.slug, prozent: standard.prozent, phase: "fett" }] },
       });
     }
-    for (const e of emulgatoren) {
+    for (const e of falsch) {
+      m.push({
+        code: "emulgator-typ",
+        art: "fehler",
+        titel: `${e.rohstoff.name} passt nicht zur ${etyp === "wo" ? "W/O" : "O/W"}-Emulsion`,
+        text:
+          etyp === "wo"
+            ? `${e.rohstoff.name} ist ein O/W-Emulgator und bildet eine Creme, in der das Öl im Wasser verteilt ist. Für eine reichhaltige W/O-Creme oder Salbe brauchst du einen W/O-Emulgator.`
+            : `${e.rohstoff.name} ist ein W/O-Emulgator. Für eine leichte O/W-Creme oder Lotion brauchst du einen O/W-Emulgator, oder du stellst den Emulsionstyp auf W/O um.`,
+        zeilen: [e.key],
+        korrektur: passend.length
+          ? undefined
+          : { label: `Durch ${standard.name} (${pct(standard.prozent)}) ersetzen`, ersetze: [{ key: e.key, slug: standard.slug, prozent: standard.prozent, phase: "fett" }] },
+      });
+    }
+    if (etyp === "wo" && aktiv.length > 0) {
+      m.push({
+        code: "wo-herstellung",
+        art: "hinweis",
+        titel: "W/O: Wasser portionsweise einarbeiten",
+        text: "Bei Wasser-in-Öl-Emulsionen die warme Wasserphase in kleinen Portionen unter ständigem Rühren in die Fettphase geben. Erst die nächste Portion, wenn die vorige ganz aufgenommen ist.",
+      });
+    }
+    for (const e of passend) {
       const r = e.rohstoff;
       const d = bereichFuer(r, typ);
       const aufFett = r.emulgatorBezug === "fettphase";
@@ -188,7 +221,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
     }
     // Xyliance unter 25 % Fettphase braucht 0,2 % Xanthan
     const xyl = nachSlug("xyliance");
-    if (xyl && b.fettphase < 25 && !nachSlug("xanthan")) {
+    if (etyp === "ow" && xyl && b.fettphase < 25 && !nachSlug("xanthan")) {
       m.push({
         code: "xyliance-xanthan",
         art: "warnung",
@@ -198,6 +231,66 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
         korrektur: { label: "0,2 % Xanthan ergänzen", hinzu: [{ slug: "xanthan", prozent: 0.2, phase: "wasser" }] },
       });
     }
+  }
+
+  // ---------- 3b. Tensidprodukte ----------
+  const tenside = aktiv.filter((p) => p.rohstoff.kategorie === "tensid");
+  if (typ === "tensid") {
+    const [wMin, wMax] = rezeptur.bereich === "gesicht" ? LAB.wasGesicht : LAB.wasKoerper;
+    if (tenside.length === 0 && aktiv.length > 0) {
+      m.push({
+        code: "tensid-fehlt",
+        art: "fehler",
+        titel: "Kein Tensid",
+        text: "Ein Duschgel, Shampoo oder eine Flüssigseife braucht mindestens ein Tensid. Für den Einstieg mild und gut verträglich: Kokosglucosid.",
+        korrektur: { label: "Kokosglucosid mit 20 % ergänzen", hinzu: [{ slug: "kokosglucosid", prozent: 20, phase: "wasser" }] },
+      });
+    } else if (tenside.length > 0 && (b.wasGesamt < wMin - 0.001 || b.wasGesamt > wMax + 0.001)) {
+      const haupt = [...tenside].filter((p) => !p.adHundert && (p.rohstoff.wasProzent ?? 0) > 0).sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
+      const ziel = naechster(b.wasGesamt, wMin, wMax);
+      const neu = haupt ? runde(haupt.prozentEffektiv + ((ziel - b.wasGesamt) * 100) / (haupt.rohstoff.wasProzent ?? 1), 1) : 0;
+      m.push({
+        code: "was",
+        art: b.wasGesamt > wMax ? "fehler" : "warnung",
+        titel: b.wasGesamt > wMax ? "Zu viel waschaktive Substanz" : "Wenig waschaktive Substanz",
+        text: `${rezeptur.bereich === "gesicht" ? "Für das Gesicht" : "Für Körper und Haare"} sind ${pct(wMin)} bis ${pct(wMax)} waschaktive Substanz (WAS) üblich. Aktuell sind es ${pct(b.wasGesamt)}. ${b.wasGesamt > wMax ? "Mehr entfettet und reizt die Haut." : "Das Produkt schäumt und reinigt dann eher schwach."} Gerechnet wird mit dem Aktivgehalt jedes Tensids, nicht mit der Menge des Handelsprodukts.`,
+        zeilen: tenside.map((p) => p.key),
+        korrektur: haupt && neu > 0 ? { label: `${haupt.rohstoff.name} auf ${pct(neu)} setzen (WAS ${pct(ziel)})`, setze: [{ key: haupt.key, prozent: neu }] } : undefined,
+      });
+    }
+    if (b.wasAmphoter > 0 && b.wasAnionisch > 0) {
+      const v = b.wasAmphoter / b.wasAnionisch;
+      const [vMin, vMax] = LAB.betainVerhaeltnis;
+      if (v < vMin - 0.005 || v > vMax + 0.005) {
+        const betain = tenside.find((p) => p.rohstoff.tensidKlasse === "amphoter" && !p.adHundert);
+        const zielWas = b.wasAnionisch * (v > vMax ? vMax : vMin);
+        const neu = betain && betain.rohstoff.wasProzent ? runde((zielWas * 100) / betain.rohstoff.wasProzent, 1) : 0;
+        m.push({
+          code: "betain",
+          art: "warnung",
+          titel: "Verhältnis Betain zu Aniontensid",
+          text: `Ein amphoteres Kotensid wie Kokosbetain macht Aniontenside milder, wenn es im Verhältnis 1:4 bis 1:3 (bezogen auf die WAS) dazukommt. Aktuell ist es 1:${zahl(1 / v, 1)}.`,
+          zeilen: tenside.filter((p) => p.rohstoff.tensidKlasse !== "nichtionisch").map((p) => p.key),
+          korrektur: betain && neu > 0 ? { label: `${betain.rohstoff.name} auf ${pct(neu)} setzen`, setze: [{ key: betain.key, prozent: neu }] } : undefined,
+        });
+      }
+    }
+    if (rezeptur.phZiel != null && (rezeptur.phZiel < LAB.phTensid[0] - 0.001 || rezeptur.phZiel > LAB.phTensid[1] + 0.001)) {
+      m.push({
+        code: "ph-tensid",
+        art: "warnung",
+        titel: "pH-Wert für Reinigungsprodukte",
+        text: `Hautfreundliche Duschgele und Shampoos liegen bei pH ${zahl(LAB.phTensid[0], 1)} bis ${zahl(LAB.phTensid[1], 1)}. Der Ziel-pH der Rezeptur ist ${zahl(rezeptur.phZiel, 1)}. Mit Milchsäure senken, mit Natron-Lösung heben.`,
+      });
+    }
+  } else if (tenside.length > 0 && typ === "emulsion") {
+    m.push({
+      code: "tensid-in-creme",
+      art: "hinweis",
+      titel: "Tensid in einer Creme",
+      text: "Tenside waschen und entfetten. In einer Pflegecreme haben sie meist nichts zu suchen. Für ein Duschgel oder Shampoo stelle den Produkttyp auf „Tensidprodukt“ um.",
+      zeilen: tenside.map((p) => p.key),
+    });
   }
 
   // ---------- 4. Konservierung ----------
@@ -224,7 +317,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
 
     if (standard.length === 0 && !alkoholReicht && !kombiVollstaendig) {
       const vorschlag: Korrektur =
-        typ === "emulsion"
+        typ === "emulsion" || typ === "tensid"
           ? { label: "Cosgard mit 1 % ergänzen (unter 40 °C zugeben)", hinzu: [{ slug: "cosgard", prozent: 1, phase: "kalt" }] }
           : { label: "Verstatil BL mit 2 % ergänzen", hinzu: [{ slug: "verstatil-bl", prozent: 2, phase: "wasser" }] };
       if (alkohol && !alkoholReicht) {

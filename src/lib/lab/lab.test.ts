@@ -27,6 +27,8 @@ const liste: LabRohstoff[] = seedRohstoffe.map((s, i) => ({
   fettphaseMin: s.fettphase?.[0] ?? null,
   fettphaseMax: s.fettphase?.[1] ?? null,
   emulgatorBezug: s.emulgatorBezug ?? null,
+  tensidKlasse: s.tensidKlasse ?? null,
+  wasProzent: s.wasProzent ?? null,
   dosierungen: (s.dos ?? []).map(([produkttyp, min, max, hinweis]) => ({ produkttyp, min, max, hinweis })),
 }));
 const map = new Map(liste.map((r) => [r.id, r]));

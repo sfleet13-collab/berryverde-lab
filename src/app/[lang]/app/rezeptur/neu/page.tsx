@@ -23,6 +23,7 @@ const LEER: EditorStart = {
   name: "",
   untertitel: "",
   produkttyp: "emulsion",
+  emulsionstyp: "ow",
   produktart: "",
   bereich: "gesicht",
   hautbeduerfnis: "alle",

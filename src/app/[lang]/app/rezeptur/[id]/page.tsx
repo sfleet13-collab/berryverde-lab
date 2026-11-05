@@ -93,7 +93,10 @@ async function Inhalt({ params }: { params: Promise<{ lang: string; id: string }
         <dl className={styles.eckdaten}>
           <div>
             <dt>{L.karte.kopf.typ}</dt>
-            <dd>{r.produktart ? `${r.produktart}, ${L.produkttyp[r.produkttyp].toLowerCase()}` : L.produkttyp[r.produkttyp]}</dd>
+            <dd>
+              {r.produktart ? `${r.produktart}, ${L.produkttyp[r.produkttyp].toLowerCase()}` : L.produkttyp[r.produkttyp]}
+              {r.produkttyp === "emulsion" && ` ${L.emulsionstyp[r.emulsionstyp ?? "ow"]}`}
+            </dd>
           </div>
           <div>
             <dt>{L.karte.kopf.haut}</dt>

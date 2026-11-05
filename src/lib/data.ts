@@ -145,6 +145,7 @@ export type RezepturEingabe = {
   name: string;
   untertitel: string | null;
   produkttyp: Produkttyp;
+  emulsionstyp: "ow" | "wo" | null;
   produktart: string | null;
   bereich: "gesicht" | "koerper";
   hautbeduerfnis: string;
@@ -175,6 +176,7 @@ export async function saveRezeptur(user: SessionUser, id: number | null, e: Reze
     name: e.name,
     untertitel: e.untertitel,
     produkttyp: e.produkttyp,
+    emulsionstyp: e.produkttyp === "emulsion" ? (e.emulsionstyp ?? "ow") : null,
     produktart: e.produktart,
     bereich: e.bereich,
     hautbeduerfnis: e.hautbeduerfnis,

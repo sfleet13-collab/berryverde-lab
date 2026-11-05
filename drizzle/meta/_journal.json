@@ -36,6 +36,13 @@
       "when": 1793827520058,
       "tag": "0004_items_entfernt",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793873905242,
+      "tag": "0005_rohstoffe_tenside_wo",
+      "breakpoints": true
     }
   ]
 }

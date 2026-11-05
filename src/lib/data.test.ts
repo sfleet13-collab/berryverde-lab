@@ -26,6 +26,7 @@ const eingabe = (name: string, extra: Partial<data.RezepturEingabe> = {}): data.
   name,
   untertitel: null,
   produkttyp: "wasserfrei",
+  emulsionstyp: null,
   produktart: "Peeling",
   bereich: "gesicht",
   hautbeduerfnis: "alle",

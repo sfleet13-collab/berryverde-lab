@@ -9,9 +9,9 @@ import { pageMetadata } from "@/lib/seo";
 import { getRezeptur } from "@/lib/data";
 import { ladeRohstoffe } from "@/lib/lab/laden";
 import { labRezeptur } from "@/lib/lab/map";
-import { chargenNummer, haltbarBis, inciListe, zahl } from "@/lib/lab/rechner";
+import { inciListe, zahl } from "@/lib/lab/rechner";
+import { herstelldatum, mengeAus } from "@/lib/lab/etikett";
 import { pruefe } from "@/lib/lab/regeln";
-import { LAB } from "@/lib/lab/types";
 import { requireMitglied } from "@/lib/session";
 import Icon from "@/components/Icon";
 import Formel from "@/components/lab/Formel";
@@ -39,34 +39,20 @@ export default function KartePage({ params, searchParams }: PageProps<"/[lang]/a
   );
 }
 
-const DATUM = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Berlin" });
-
-/** Heutiges Datum in Deutschland als JJJJ-MM-TT (Vercel rechnet in UTC). */
-function heuteIso(): string {
-  const teile = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-  return teile;
-}
-
 async function Inhalt({ params, suche }: { params: Promise<{ lang: string; id: string }>; suche: Promise<{ g?: string; d?: string }> }) {
   const { lang, id } = await params;
   const user = await requireMitglied(lang);
   const r = Number.isInteger(Number(id)) ? await getRezeptur(user, Number(id)) : null;
   if (!r) redirect(`/${lang}/app`);
   const s = await suche;
-  const g = Number(String(s.g ?? "").replace(",", "."));
-  const charge = Number.isFinite(g) && g > 0 && g <= 5000 ? g : r.chargeG;
-  const datumIso = /^\d{4}-\d{2}-\d{2}$/.test(s.d ?? "") ? s.d! : heuteIso();
-  // Mittags, damit die Zeitzone den Tag nicht verschiebt
-  const hergestellt = new Date(`${datumIso}T12:00:00Z`);
+  const charge = mengeAus(s.g, r.chargeG);
+  const datumIso = herstelldatum(s.d).iso;
 
   const rohstoffe = await ladeRohstoffe(user);
   const map = new Map(rohstoffe.map((x) => [x.id, x]));
   const p = pruefe(labRezeptur(r, r.positionen, charge), map);
   const b = p.berechnung;
   const inci = inciListe(b).join(", ");
-  const tage = r.frischcreme ? LAB.frischcremeTage : Math.min(r.haltbarkeitTage ?? p.haltbarkeitMaxTage ?? 90, p.haltbarkeitMaxTage ?? 10000);
-  const bis = haltbarBis(hergestellt, tage);
-  const charNr = chargenNummer(hergestellt, r.nummer ?? `E${r.id}`);
   const schritte = (r.herstellung ?? "").split("\n").map((x) => x.trim()).filter(Boolean);
   const haut = r.hautbeduerfnis
     .split(",")
@@ -96,7 +82,12 @@ async function Inhalt({ params, suche }: { params: Promise<{ lang: string; id: s
             {L.karte.aktualisieren}
           </button>
         </form>
-        <PrintButtons />
+        <div className={styles.aktionen}>
+          <PrintButtons />
+          <Link className="btn btn-ghost" href={`${basis}/etikett?g=${charge}&d=${datumIso}`}>
+            {L.karte.zumEtikett}
+          </Link>
+        </div>
         <p className={styles.fussnote}>{L.karte.pdfHinweis}</p>
       </div>
 
@@ -163,30 +154,6 @@ async function Inhalt({ params, suche }: { params: Promise<{ lang: string; id: s
         <section aria-labelledby="k-inci">
           <h2 id="k-inci">{L.rezeptur.inci}</h2>
           <p>{inci}</p>
-        </section>
-
-        <section className={styles.etikettBereich} aria-labelledby="k-etikett">
-          <h2 id="k-etikett">{L.karte.etikett}</h2>
-          <div className={styles.etikett}>
-            <p className={styles.etikettName}>{r.name}</p>
-            {r.frischcreme && <p className={styles.etikettFrisch}>{L.karte.frischcreme}</p>}
-            <dl>
-              <div>
-                <dt>{L.karte.hergestellt}</dt>
-                <dd>{DATUM.format(hergestellt)}</dd>
-              </div>
-              <div>
-                <dt>{L.karte.haltbarBis}</dt>
-                <dd>{DATUM.format(bis)}</dd>
-              </div>
-              <div>
-                <dt>{L.karte.charge}</dt>
-                <dd>{charNr}</dd>
-              </div>
-            </dl>
-            <p className={styles.etikettInci}>{inci}</p>
-            <p className={styles.etikettHinweis}>Nur für den Eigengebrauch</p>
-          </div>
         </section>
 
         <p className={styles.eigengebrauch}>{L.rezeptur.eigengebrauch}</p>

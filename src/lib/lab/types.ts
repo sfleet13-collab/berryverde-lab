@@ -4,7 +4,9 @@
  */
 
 export type Stufe = "anfaenger" | "mittel" | "profi";
-export type Produkttyp = "emulsion" | "wasserfrei" | "waessrig";
+export type Produkttyp = "emulsion" | "wasserfrei" | "waessrig" | "tensid";
+export type Emulsionstyp = "ow" | "wo";
+export type Tensidklasse = "anionisch" | "amphoter" | "nichtionisch";
 export type Phase = "fett" | "wasser" | "kalt" | "pulver";
 export type Form = "fluessig" | "fest" | "pulver";
 export type Bereich = "gesicht" | "koerper";
@@ -12,7 +14,10 @@ export type Bereich = "gesicht" | "koerper";
 export type Kategorie =
   | "wasser"
   | "emulgator"
+  | "coemulgator"
   | "konsistenzgeber"
+  | "wachs"
+  | "tensid"
   | "oel"
   | "butter"
   | "konservierer"
@@ -50,6 +55,8 @@ export type LabRohstoff = {
   fettphaseMin: number | null;
   fettphaseMax: number | null;
   emulgatorBezug: "gesamt" | "fettphase" | null;
+  tensidKlasse: Tensidklasse | null;
+  wasProzent: number | null;
   dosierungen: DosierBereich[];
 };
 
@@ -64,6 +71,8 @@ export type LabPosition = {
 
 export type LabRezeptur = {
   produkttyp: Produkttyp;
+  /** Nur bei Emulsionen; fehlt er, gilt O/W. */
+  emulsionstyp?: Emulsionstyp | null;
   bereich: Bereich;
   chargeG: number;
   phZiel: number | null;
@@ -88,6 +97,12 @@ export const LAB = {
   phZielMax: 5.5,
   aetherischMaxGesicht: 0.5,
   aetherischMaxKoerper: 1,
+  /** Waschaktive Substanz in Tensidprodukten (%), je Anwendungsbereich. */
+  wasGesicht: [4, 10] as [number, number],
+  wasKoerper: [8, 18] as [number, number],
+  /** Betain : Aniontensid (bezogen auf WAS) zwischen 1:4 und 1:3. */
+  betainVerhaeltnis: [0.25, 0.34] as [number, number],
+  phTensid: [4.5, 6] as [number, number],
   /** Unter diesem Gewicht braucht ein fester Rohstoff die Feinwaage (0,01 g). */
   feinwaageUnterG: 1,
 } as const;

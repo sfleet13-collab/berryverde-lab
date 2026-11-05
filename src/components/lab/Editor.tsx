@@ -8,7 +8,7 @@ import { L, fuelle } from "@/i18n/lab";
 import { speichereRezeptur } from "@/lib/actions/lab";
 import { mengeText, zahl } from "@/lib/lab/rechner";
 import { pruefe, wendeAn, type Korrektur } from "@/lib/lab/regeln";
-import type { Bereich, Kategorie, LabPosition, LabRohstoff, Phase, Produkttyp } from "@/lib/lab/types";
+import type { Bereich, Emulsionstyp, Kategorie, LabPosition, LabRohstoff, Phase, Produkttyp } from "@/lib/lab/types";
 import Meldungen from "./Meldungen";
 import type { RohstoffClient } from "./Rechner";
 import styles from "./lab.module.css";
@@ -18,6 +18,7 @@ export type EditorStart = {
   name: string;
   untertitel: string;
   produkttyp: Produkttyp;
+  emulsionstyp: Emulsionstyp | null;
   produktart: string;
   bereich: Bereich;
   hautbeduerfnis: string;
@@ -41,7 +42,7 @@ type Zeile = { key: string; rohstoffId: number; phase: Phase; prozent: string; a
 
 const PHASEN: Phase[] = ["fett", "wasser", "kalt", "pulver"];
 const KAT_ORDNUNG: Kategorie[] = [
-  "wasser", "oel", "butter", "emulgator", "konsistenzgeber", "feuchtigkeit", "wirkstoff", "antioxidans",
+  "wasser", "oel", "butter", "wachs", "emulgator", "coemulgator", "konsistenzgeber", "tensid", "feuchtigkeit", "wirkstoff", "antioxidans",
   "konservierer", "aetherisches_oel", "pulver", "peeling", "ph_regler", "sonstiges",
 ];
 const HAUT = ["alle", "trocken", "fettig", "sensibel", "reif", "misch"] as const;
@@ -68,6 +69,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
     name: start.name,
     untertitel: start.untertitel,
     produkttyp: start.produkttyp,
+    emulsionstyp: (start.emulsionstyp ?? "ow") as Emulsionstyp,
     produktart: start.produktart,
     bereich: start.bereich,
     haut: start.hautbeduerfnis.split(",").filter(Boolean),
@@ -112,6 +114,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
   const pruefung = pruefe(
     {
       produkttyp: k.produkttyp,
+      emulsionstyp: k.emulsionstyp,
       bereich: k.bereich,
       chargeG: charge,
       phZiel: k.phZiel.trim() === "" ? null : alsZahl(k.phZiel),
@@ -241,7 +244,7 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
             <fieldset className={`${styles.feld} ${styles.breit}`}>
               <legend>{L.editor.produkttyp}</legend>
               <div className={styles.segment}>
-                {(["emulsion", "wasserfrei", "waessrig"] as const).map((t) => (
+                {(["emulsion", "wasserfrei", "waessrig", "tensid"] as const).map((t) => (
                   <label key={t} data-aktiv={k.produkttyp === t || undefined}>
                     <input type="radio" name={f("typ")} checked={k.produkttyp === t} onChange={() => kopf("produkttyp", t)} />
                     <span>{L.produkttyp[t]}</span>
@@ -251,6 +254,20 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
               </div>
             </fieldset>
 
+            {k.produkttyp === "emulsion" && (
+              <fieldset className={`${styles.feld} ${styles.breit}`}>
+                <legend>{L.editor.emulsionstyp}</legend>
+                <div className={`${styles.segment} ${styles.segmentZwei}`}>
+                  {(["ow", "wo"] as const).map((t) => (
+                    <label key={t} data-aktiv={k.emulsionstyp === t || undefined}>
+                      <input type="radio" name={f("etyp")} checked={k.emulsionstyp === t} onChange={() => kopf("emulsionstyp", t)} />
+                      <span>{L.emulsionstyp[t]}</span>
+                      <small>{L.emulsionstypHilfe[t]}</small>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
             <div className={styles.feld}>
               <label htmlFor={f("art")}>{L.editor.produktart}</label>
               <input id={f("art")} type="text" value={k.produktart} maxLength={60} placeholder={L.editor.produktartPlatzhalter} onChange={(e) => kopf("produktart", e.target.value)} />
@@ -529,6 +546,12 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
               <dt>{L.rezeptur.summe}</dt>
               <dd>{zahl(b.summe, 2)} %</dd>
             </div>
+            {b.wasGesamt > 0 && (
+              <div>
+                <dt>{L.rezeptur.was}</dt>
+                <dd>{zahl(b.wasGesamt, 1)} %</dd>
+              </div>
+            )}
             {k.produkttyp === "emulsion" && (
               <div>
                 <dt>{L.rezeptur.fettphase}</dt>

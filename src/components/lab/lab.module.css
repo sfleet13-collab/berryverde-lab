@@ -390,8 +390,15 @@
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
+.segment {
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+.segmentZwei {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 @media (max-width: 560px) {
-  .segment {
+  .segment,
+  .segmentZwei {
     grid-template-columns: 1fr;
   }
 }
@@ -728,8 +735,11 @@
   border-color: var(--brand);
   background: var(--brand-soft);
 }
-.kartenBtn {
+.kartenBtns {
   justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 .chargeHilfe {
   grid-column: 1 / -1;
@@ -741,9 +751,12 @@
   .chargeLeiste {
     grid-template-columns: auto 1fr;
   }
-  .kartenBtn {
+  .kartenBtns {
     grid-column: 1 / -1;
     justify-self: stretch;
+  }
+  .kartenBtns > * {
+    flex: 1;
   }
 }
 
@@ -1969,4 +1982,160 @@ textarea::placeholder {
 }
 .mobilStatus[data-ok] {
   color: var(--ok);
+}
+
+/* ---------- Etikett-Seite (Masse in mm, Druck 1:1) ---------- */
+.etikettWahl {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+.etikettWahl .segment label {
+  text-decoration: none;
+  color: var(--text);
+}
+.bogenRahmen {
+  overflow-x: auto;
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border-radius: var(--radius-m);
+}
+.bogen {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  margin-inline: auto;
+  background: #fff;
+  color: #000;
+  box-shadow: var(--shadow-1);
+  page: etikett;
+}
+.bogen[data-einzeln] {
+  height: auto;
+  min-height: 60mm;
+}
+.etikettR,
+.etikettK {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: #000;
+}
+.etikettR {
+  width: 63.5mm;
+  height: 38.1mm;
+  padding: 2.4mm 3mm;
+  border-radius: 2.5mm;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.8mm;
+}
+.etikettK {
+  width: 40mm;
+  height: 40mm;
+  border-radius: 50%;
+  padding: 5mm 4mm;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 0.8mm;
+}
+.bogen .etikettR,
+.bogen .etikettK {
+  outline: 0.2mm dashed #b9b9b9;
+}
+.etikettName2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 9pt;
+  line-height: 1.1;
+  margin: 0;
+}
+.etikettK .etikettName2 {
+  font-size: 8.5pt;
+}
+.etikettZeilen {
+  margin: 0;
+  font-size: 6.5pt;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+.etikettZeilen div {
+  display: flex;
+  justify-content: space-between;
+  gap: 2mm;
+}
+.etikettK .etikettZeilen div {
+  justify-content: center;
+}
+.etikettZeilen dt,
+.etikettZeilen dd {
+  margin: 0;
+}
+.etikettZeilen dd {
+  font-weight: 600;
+}
+.etikettInci2 {
+  margin: 0;
+  font-size: 5pt;
+  line-height: 1.2;
+  overflow: hidden;
+}
+.etikettFuss {
+  margin: 0;
+  font-size: 5.5pt;
+  font-weight: 600;
+}
+.etikettFrisch2 {
+  margin: 0;
+  font-size: 6pt;
+  font-weight: 700;
+}
+@media print {
+  .bogenRahmen {
+    padding: 0;
+    background: none;
+    overflow: visible;
+  }
+  .bogen {
+    box-shadow: none;
+    margin: 0;
+  }
+  .bogen .etikettR,
+  .bogen .etikettK {
+    outline: none;
+  }
+  .bogen[data-einzeln] .etikettR,
+  .bogen[data-einzeln] .etikettK {
+    outline: 0.2mm dashed #888;
+  }
+}
+.vorschauTitel {
+  font-size: 1.15rem;
+  margin: 0;
+}
+.etikettWahl .segment a {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3);
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+.etikettWahl .segment a span {
+  font-weight: 600;
+}
+.etikettWahl .segment a small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+.etikettWahl .segment a[data-aktiv] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
 }

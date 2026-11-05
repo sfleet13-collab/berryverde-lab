@@ -8,7 +8,7 @@
  */
 
 type S = "anfaenger" | "mittel" | "profi";
-type Typ = "emulsion" | "wasserfrei" | "waessrig" | "alle";
+type Typ = "emulsion" | "wasserfrei" | "waessrig" | "tensid" | "alle";
 
 export type SeedRohstoff = {
   slug: string;
@@ -16,7 +16,7 @@ export type SeedRohstoff = {
   handelsnamen?: string;
   inci: string;
   kategorie:
-    | "wasser" | "emulgator" | "konsistenzgeber" | "oel" | "butter" | "konservierer" | "antioxidans"
+    | "wasser" | "emulgator" | "coemulgator" | "konsistenzgeber" | "wachs" | "tensid" | "oel" | "butter" | "konservierer" | "antioxidans"
     | "feuchtigkeit" | "wirkstoff" | "aetherisches_oel" | "pulver" | "peeling" | "ph_regler" | "sonstiges";
   funktion: string;
   phase: "fett" | "wasser" | "kalt" | "pulver";
@@ -45,6 +45,21 @@ export type SeedRohstoff = {
   emulgatorBezug?: "gesamt" | "fettphase";
   hautgefuehl?: string;
   konsistenzgeberNoetig?: boolean;
+  // Öle, Buttern, Wachse
+  spreitung?: "schnell" | "mittel" | "langsam";
+  oxidation?: "stabil" | "mittel" | "empfindlich";
+  haltbarMonate?: number;
+  fettsaeuren?: string;
+  verseifungszahlKoh?: number;
+  schmelzpunkt?: number;
+  geeignetFuer?: string;
+  // Tenside
+  tensidKlasse?: "anionisch" | "amphoter" | "nichtionisch";
+  wasProzent?: number;
+  vertraeglichkeit?: "sehr gut" | "gut" | "akzeptabel";
+  tensidRolle?: "basistensid" | "kotensid" | "mischtensid";
+  /** Quellen der Werte (URLs), werden beim Rohstoff hinterlegt. */
+  quellen?: string[];
   dos?: [Typ, number, number, string?][];
 };
 
