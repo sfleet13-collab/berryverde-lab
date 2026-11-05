@@ -2139,3 +2139,136 @@ textarea::placeholder {
   border-color: var(--brand);
   background: var(--brand-soft);
 }
+
+/* ---------- Produktfoto (Admin) ---------- */
+.fotoUpload {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+@media (max-width: 560px) {
+  .fotoUpload {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.fotoVorschau {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.fotoVorschau img {
+  object-fit: cover;
+}
+.fotoVorschau[data-leer] {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  border-style: dashed;
+}
+.fotoAktionen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.fotoAktionen p {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.textLink {
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  font: inherit;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.textLink:hover {
+  color: var(--err);
+}
+.fehlerText {
+  color: var(--err);
+  font-weight: 600;
+}
+
+/* ---------- Veröffentlichen (Admin): Pin-Texte und Blog ---------- */
+.veroeffentlichen {
+  display: grid;
+  gap: var(--space-4);
+}
+.pinRaster {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+@media (max-width: 760px) {
+  .pinRaster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.zeichen {
+  margin: var(--space-1) 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.zeichen[data-zuviel] {
+  color: var(--err);
+}
+
+/* Foto in Kopf der Rezeptur, Bibliothek und Rezeptkarte */
+.rezepturFoto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  background: var(--surface-2);
+  margin-bottom: var(--space-6);
+}
+.rezepturFoto img {
+  object-fit: cover;
+}
+.rezeptFoto {
+  position: relative;
+  display: block;
+  width: 4rem;
+  aspect-ratio: 1;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.rezeptFoto img {
+  object-fit: cover;
+}
+.blattTitel {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+.blattFoto {
+  position: relative;
+  flex: 0 0 auto;
+  width: 8.5rem;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.blattFoto img {
+  object-fit: cover;
+}
+@media (max-width: 480px) {
+  .blattFoto {
+    width: 5.5rem;
+  }
+}

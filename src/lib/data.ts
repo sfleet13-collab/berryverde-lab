@@ -163,6 +163,9 @@ export type RezepturEingabe = {
   // nur Admin
   nummer?: string | null;
   blogText?: string | null;
+  suchbegriff?: string | null;
+  blogWarum?: string | null;
+  zielLink?: string | null;
   status?: "entwurf" | "freigegeben";
   bibliothek?: boolean;
   positionen: { rohstoffId: number; phase: Phase; prozent: number; adHundert: boolean }[];
@@ -193,7 +196,15 @@ export async function saveRezeptur(user: SessionUser, id: number | null, e: Reze
     notiz: e.notiz,
     // Bibliothek, Nummer, Blog-Text und Freigabe bestimmt nur die Admin
     ...(admin
-      ? { nummer: e.nummer ?? null, blogText: e.blogText ?? null, status: e.status ?? "entwurf", bibliothek: e.bibliothek ?? false }
+      ? {
+          nummer: e.nummer ?? null,
+          blogText: e.blogText ?? null,
+          suchbegriff: e.suchbegriff ?? null,
+          blogWarum: e.blogWarum ?? null,
+          zielLink: e.zielLink ?? null,
+          status: e.status ?? "entwurf",
+          bibliothek: e.bibliothek ?? false,
+        }
       : {}),
     updatedAt: new Date(),
   };
@@ -234,6 +245,10 @@ export async function copyRezeptur(user: SessionUser, id: number): Promise<numbe
       name: `${quelle.name} (meine Variante)`,
       nummer: null,
       blogText: null,
+      suchbegriff: null,
+      blogWarum: null,
+      zielLink: null,
+      fotoUrl: null,
       status: "entwurf",
       bibliothek: false,
       varianteVon: quelle.id,
@@ -260,6 +275,15 @@ export async function copyRezeptur(user: SessionUser, id: number): Promise<numbe
 export async function deleteRezeptur(user: SessionUser, id: number) {
   nurMitglied(user);
   await db().delete(rezepturen).where(aenderbar(user, id));
+}
+
+/** Produktfoto setzen oder entfernen (nur Admin). Gibt die bisherige Adresse zurück, damit die alte Datei gelöscht werden kann. */
+export async function setRezepturFoto(user: SessionUser, id: number, fotoUrl: string | null): Promise<string | null> {
+  nurAdmin(user);
+  const [alt] = await db().select({ fotoUrl: rezepturen.fotoUrl }).from(rezepturen).where(eq(rezepturen.id, id)).limit(1);
+  if (!alt) throw new Error("Rezeptur nicht gefunden");
+  await db().update(rezepturen).set({ fotoUrl, updatedAt: new Date() }).where(eq(rezepturen.id, id));
+  return alt.fotoUrl;
 }
 
 // ---------------------------------------------------------------- Zugänge (nur Admin)

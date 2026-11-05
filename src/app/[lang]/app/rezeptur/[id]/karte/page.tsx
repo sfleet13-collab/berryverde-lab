@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
@@ -94,10 +95,17 @@ async function Inhalt({ params, suche }: { params: Promise<{ lang: string; id: s
       <article className={styles.blatt}>
         <header className={styles.blattKopf}>
           <p className={styles.blattMarke}>berryverde · Dein Lab</p>
-          <div>
-            {r.nummer && <p className={styles.nummer}>{r.nummer}</p>}
-            <h1>{r.name}</h1>
-            {r.untertitel && <p className={styles.untertitel}>{r.untertitel}</p>}
+          <div className={styles.blattTitel}>
+            <div>
+              {r.nummer && <p className={styles.nummer}>{r.nummer}</p>}
+              <h1>{r.name}</h1>
+              {r.untertitel && <p className={styles.untertitel}>{r.untertitel}</p>}
+            </div>
+            {r.fotoUrl && (
+              <div className={styles.blattFoto}>
+                <Image src={r.fotoUrl} alt={r.name} fill priority sizes="160px" />
+              </div>
+            )}
           </div>
           <dl className={styles.blattDaten}>
             <div>

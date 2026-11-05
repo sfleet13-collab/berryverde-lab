@@ -1,5 +1,6 @@
 "use server";
 
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AUSRUESTUNG, BEREICHE, EMULSIONSTYPEN, FORMEN, KATEGORIEN, PHASEN, PRODUKTTYPEN, STUFEN, TENSIDKLASSEN } from "@/db/schema";
@@ -14,6 +15,7 @@ import {
   saveGeraetLink,
   saveRezeptur,
   saveRohstoff,
+  setRezepturFoto,
   updateZugang,
   type DosierungEingabe,
   type RezepturEingabe,
@@ -119,6 +121,9 @@ export async function speichereRezeptur(id: number | null, roh: unknown): Promis
     notiz: text(e.notiz, 3000),
     nummer: text(e.nummer, 20),
     blogText: text(e.blogText, 6000),
+    suchbegriff: text(e.suchbegriff, 120),
+    blogWarum: text(e.blogWarum, 3000),
+    zielLink: link(e.zielLink),
     status,
     bibliothek: e.bibliothek === true,
     positionen,
@@ -149,6 +154,38 @@ export async function loescheRezeptur(form: FormData) {
   await deleteRezeptur(user, Number(form.get("id")));
   revalidatePath("/de/app", "layout");
   redirect("/de/app?ansicht=meine");
+}
+
+// ---------------------------------------------------------------- Admin: Produktfoto
+
+export type FotoErgebnis = { ok: true; url: string | null } | { ok: false; fehler: "zuGross" | "keinBild" | "fehler" };
+
+const FOTO_MAX = 4 * 1024 * 1024; // nach dem Verkleinern im Browser; Reserve unter dem Limit der Server Action
+const FOTO_TYPEN = ["image/webp", "image/jpeg", "image/png"];
+
+/** Lädt das (im Browser verkleinerte) Foto hoch oder entfernt es (ohne Datei). Nur Admin. */
+export async function fotoSpeichern(form: FormData): Promise<FotoErgebnis> {
+  const user = await requireAdmin();
+  const id = Number(form.get("id"));
+  if (!Number.isInteger(id) || id <= 0) return { ok: false, fehler: "fehler" };
+  const datei = form.get("foto");
+  try {
+    let url: string | null = null;
+    if (datei instanceof File && datei.size > 0) {
+      if (!FOTO_TYPEN.includes(datei.type)) return { ok: false, fehler: "keinBild" };
+      if (datei.size > FOTO_MAX) return { ok: false, fehler: "zuGross" };
+      const endung = datei.type === "image/png" ? "png" : datei.type === "image/jpeg" ? "jpg" : "webp";
+      const blob = await put(`rezepturen/${id}.${endung}`, datei, { access: "public", addRandomSuffix: true, contentType: datei.type });
+      url = blob.url;
+    }
+    const alt = await setRezepturFoto(user, id, url);
+    if (alt && alt !== url) await del(alt).catch(() => undefined); // alte Datei aufräumen; Fehler hier sind unkritisch
+    revalidatePath("/de/app", "layout");
+    return { ok: true, url };
+  } catch (e) {
+    console.error("fotoSpeichern", e);
+    return { ok: false, fehler: "fehler" };
+  }
 }
 
 // ---------------------------------------------------------------- Admin: Zugänge

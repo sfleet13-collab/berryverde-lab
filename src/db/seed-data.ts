@@ -122,12 +122,12 @@ const basisRohstoffe: SeedRohstoff[] = [
   {
     slug: "olivem-900", name: "Olivem 900", inci: "Sorbitan Olivate", kategorie: "emulgator",
     funktion: "Emulgator W/O", phase: "fett", form: "fest", loeslichkeit: "oel", stufe: "profi",
-    emulgatorTyp: "wo", emulgatorBezug: "fettphase", hautgefuehl: "reichhaltig",
-    hinweis: "Wird auf die Fettphase gerechnet. Wasser portionsweise einarbeiten.",
+    emulgatorTyp: "wo", emulgatorBezug: "gesamt", fettphase: [50, 100], hautgefuehl: "reichhaltig",
+    hinweis: "Herstellerangabe: 3–10 % vom ganzen Produkt, Fettphase mindestens 50 %. Wasser portionsweise einarbeiten.",
     was: "Emulgator für Wasser-in-Öl-Cremes, also sehr reichhaltige, schützende Pflege.",
     chemisch: "Ester aus Sorbitan und den Fettsäuren des Olivenöls.",
     wirkung: "Bindet Wasser in einer Fettgrundlage und ergibt einen schützenden Film.",
-    dos: [["emulsion", 10, 13, "der Fettphase"]],
+    dos: [["emulsion", 3, 10]],
   },
 
   // ---------- Konsistenzgeber ----------

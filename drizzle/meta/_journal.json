@@ -43,6 +43,13 @@
       "when": 1793873905242,
       "tag": "0005_rohstoffe_tenside_wo",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793878327179,
+      "tag": "0006_rezeptur_blog_foto",
+      "breakpoints": true
     }
   ]
 }

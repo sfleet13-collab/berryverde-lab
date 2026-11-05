@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -179,7 +180,14 @@ function RezeptZeile({ r, basis, zeigeStatus }: { r: RezepturMitPositionen; basi
   return (
     <li>
       <Link href={`${basis}/rezeptur/${r.id}`} className={styles.rezeptLink}>
-        <span className={styles.rezeptNummer}>{r.nummer ?? (r.bibliothek ? "" : L.bibliothek.eigene)}</span>
+        <span className={styles.rezeptNummer}>
+          {r.fotoUrl && (
+            <span className={styles.rezeptFoto}>
+              <Image src={r.fotoUrl} alt="" fill sizes="64px" />
+            </span>
+          )}
+          {r.nummer ?? (r.bibliothek ? "" : L.bibliothek.eigene)}
+        </span>
         <span className={styles.rezeptName}>
           <strong>{r.name}</strong>
           {r.untertitel && <span>{r.untertitel}</span>}

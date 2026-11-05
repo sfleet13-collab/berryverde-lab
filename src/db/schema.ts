@@ -208,6 +208,14 @@ export const rezepturen = pgTable(
     anwendung: text("anwendung"),
     /** Kernaussagen für den Blog-Entwurf (ohne Mengen). */
     blogText: text("blog_text"),
+    /** Nur Admin: Suchbegriff für H1 und Pin-Titel, z. B. „Gesichtsmaske selber machen“. */
+    suchbegriff: text("suchbegriff"),
+    /** Nur Admin: eigener Text „Warum die Zutaten zusammenpassen“ (leer = Vorschlag aus den Rohstoffen). */
+    blogWarum: text("blog_warum"),
+    /** Nur Admin: Ziel-Link des Pins = Blogartikel auf berryverde.com (leer = aus dem Suchbegriff gebildet). */
+    zielLink: text("ziel_link"),
+    /** Produktfoto (Vercel Blob, öffentlich). */
+    fotoUrl: text("foto_url"),
     notiz: text("notiz"),
     status: text("status", { enum: ["entwurf", "freigegeben"] }).notNull().default("entwurf"),
     bibliothek: boolean("bibliothek").notNull().default(false),

@@ -33,6 +33,9 @@ export type EditorStart = {
   notiz: string;
   nummer: string;
   blogText: string;
+  suchbegriff: string;
+  blogWarum: string;
+  zielLink: string;
   bibliothek: boolean;
   status: "entwurf" | "freigegeben";
   positionen: { rohstoffId: number; phase: Phase; prozent: number; adHundert: boolean }[];
@@ -84,6 +87,9 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
     notiz: start.notiz,
     nummer: start.nummer,
     blogText: start.blogText,
+    suchbegriff: start.suchbegriff,
+    blogWarum: start.blogWarum,
+    zielLink: start.zielLink,
     bibliothek: start.bibliothek,
     status: start.status,
   });
@@ -508,6 +514,21 @@ export default function Editor({ start, rohstoffe, admin }: { start: EditorStart
               <div className={`${styles.feld} ${styles.breit}`}>
                 <label htmlFor={f("blog")}>{L.editor.blogText}</label>
                 <textarea id={f("blog")} rows={5} value={k.blogText} onChange={(e) => kopf("blogText", e.target.value)} />
+              </div>
+              <div className={styles.feld}>
+                <label htmlFor={f("such")}>{L.editor.suchbegriff}</label>
+                <input id={f("such")} type="text" value={k.suchbegriff} maxLength={120} placeholder={L.editor.suchbegriffPlatzhalter} aria-describedby={f("such-hilfe")} onChange={(e) => kopf("suchbegriff", e.target.value)} />
+                <small id={f("such-hilfe")}>{L.editor.suchbegriffHilfe}</small>
+              </div>
+              <div className={styles.feld}>
+                <label htmlFor={f("ziel")}>{L.editor.zielLink}</label>
+                <input id={f("ziel")} type="url" inputMode="url" value={k.zielLink} maxLength={300} placeholder={L.editor.zielLinkPlatzhalter} aria-describedby={f("ziel-hilfe")} onChange={(e) => kopf("zielLink", e.target.value)} />
+                <small id={f("ziel-hilfe")}>{L.editor.zielLinkHilfe}</small>
+              </div>
+              <div className={`${styles.feld} ${styles.breit}`}>
+                <label htmlFor={f("warum")}>{L.editor.blogWarum}</label>
+                <textarea id={f("warum")} rows={4} value={k.blogWarum} aria-describedby={f("warum-hilfe")} onChange={(e) => kopf("blogWarum", e.target.value)} />
+                <small id={f("warum-hilfe")}>{L.editor.blogWarumHilfe}</small>
               </div>
             </div>
           </section>

@@ -138,7 +138,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   if (typ === "emulsion") {
     const passend = emulgatoren.filter((e) => !e.rohstoff.emulgatorTyp || e.rohstoff.emulgatorTyp === etyp);
     const falsch = emulgatoren.filter((e) => e.rohstoff.emulgatorTyp && e.rohstoff.emulgatorTyp !== etyp);
-    const standard = etyp === "wo" ? { slug: "olivem-900", name: "Olivem 900", prozent: Math.max(2, runde(b.fettphase * 0.12, 1)) } : { slug: "xyliance", name: "Xyliance", prozent: 4 };
+    const standard = etyp === "wo" ? { slug: "olivem-900", name: "Olivem 900", prozent: 5 } : { slug: "xyliance", name: "Xyliance", prozent: 4 };
     if (emulgatoren.length === 0 && aktiv.length > 0) {
       const coEmu = aktiv.filter((p) => p.rohstoff.kategorie === "coemulgator");
       m.push({
@@ -147,7 +147,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
         titel: "Kein Emulgator",
         text:
           (etyp === "wo"
-            ? "Eine W/O-Creme braucht einen W/O-Emulgator, sonst trennt sich das Wasser wieder ab. Standard in Dein Lab ist Olivem 900 mit 10–13 % der Fettphase."
+            ? "Eine W/O-Creme braucht einen W/O-Emulgator, sonst trennt sich das Wasser wieder ab. Standard in Dein Lab ist Olivem 900 mit 3–10 %, bei einer Fettphase von mindestens 50 %."
             : "Eine Emulsion braucht einen Emulgator, sonst trennen sich Fett und Wasser wieder. Standard in Dein Lab ist Xyliance mit 3–5 %.") +
           (coEmu.length ? ` ${coEmu.map((p) => p.rohstoff.name).join(", ")} ${coEmu.length === 1 ? "ist ein Co-Emulgator und stabilisiert" : "sind Co-Emulgatoren und stabilisieren"} nur zusätzlich.` : ""),
         korrektur: { label: `${standard.name} mit ${pct(standard.prozent)} ergänzen`, hinzu: [{ slug: standard.slug, prozent: standard.prozent, phase: "fett" }] },
@@ -207,7 +207,7 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           code: "fettphase",
           art: "fehler",
           titel: `Fettphase passt nicht zu ${r.name}`,
-          text: `${r.name} trägt eine Fettphase von ${pct(r.fettphaseMin)} bis ${pct(r.fettphaseMax)}. Aktuell sind es ${pct(b.fettphase)} (alle Rohstoffe der Fettphase zusammen).`,
+          text: `${r.name} braucht eine Fettphase ${r.fettphaseMax >= 100 ? `von mindestens ${pct(r.fettphaseMin)}` : `von ${pct(r.fettphaseMin)} bis ${pct(r.fettphaseMax)}`}. Aktuell sind es ${pct(b.fettphase)} (alle Rohstoffe der Fettphase zusammen).`,
           zeilen: [e.key],
           korrektur:
             oel && oel.prozentEffektiv + diff > 0
