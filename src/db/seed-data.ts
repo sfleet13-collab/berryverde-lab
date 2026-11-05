@@ -10,6 +10,8 @@
 type S = "anfaenger" | "mittel" | "profi";
 type Typ = "emulsion" | "wasserfrei" | "waessrig" | "tensid" | "alle";
 
+import { seedErweiterung, seedZusatz } from "./seed-data-erweiterung";
+
 export type SeedRohstoff = {
   slug: string;
   name: string;
@@ -66,7 +68,7 @@ export type SeedRohstoff = {
 const REGELWERK = "Regelwerk Dein Lab, 4.11.2026";
 export const SEED_QUELLE = `${REGELWERK}; Dichte und Steckbrief: Orientierungswerte, mit Datenblatt des Lieferanten abgleichen`;
 
-export const seedRohstoffe: SeedRohstoff[] = [
+const basisRohstoffe: SeedRohstoff[] = [
   // ---------- Wasser ----------
   {
     slug: "wasser", name: "Wasser, destilliert", inci: "Aqua", kategorie: "wasser", funktion: "Basis der Wasserphase",
@@ -420,6 +422,15 @@ export const seedRohstoffe: SeedRohstoff[] = [
     chemisch: "Natriumhydrogencarbonat in Wasser.",
     wirkung: "Hebt einen zu sauren pH-Wert an.",
   },
+];
+
+/** Startbestand: Grundliste (Regelwerk) + neue Felder aus der Recherche + Erweiterung (Öle, Emulgatoren, Tenside). */
+export const seedRohstoffe: SeedRohstoff[] = [
+  ...basisRohstoffe.map((r) => {
+    const z = seedZusatz[r.slug];
+    return z ? { ...z.z, ...r, quellen: [...(r.quellen ?? []), ...z.quellen] } : r;
+  }),
+  ...seedErweiterung,
 ];
 
 export const seedGeraete = [

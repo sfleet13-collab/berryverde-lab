@@ -248,7 +248,9 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
     } else if (tenside.length > 0 && (b.wasGesamt < wMin - 0.001 || b.wasGesamt > wMax + 0.001)) {
       const haupt = [...tenside].filter((p) => !p.adHundert && (p.rohstoff.wasProzent ?? 0) > 0).sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
       const ziel = naechster(b.wasGesamt, wMin, wMax);
-      const neu = haupt ? runde(haupt.prozentEffektiv + ((ziel - b.wasGesamt) * 100) / (haupt.rohstoff.wasProzent ?? 1), 1) : 0;
+      // auf 0,1 % runden, aber in Richtung Bereich, damit die Korrektur die Grenze sicher einhält
+      const roh = haupt ? haupt.prozentEffektiv + ((ziel - b.wasGesamt) * 100) / (haupt.rohstoff.wasProzent ?? 1) : 0;
+      const neu = b.wasGesamt > wMax ? Math.floor(roh * 10 + 1e-9) / 10 : Math.ceil(roh * 10 - 1e-9) / 10;
       m.push({
         code: "was",
         art: b.wasGesamt > wMax ? "fehler" : "warnung",

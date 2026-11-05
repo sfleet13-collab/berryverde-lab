@@ -265,3 +265,98 @@ test("Gesamtgewicht ohne Rundungsfehler", () => {
 test("Chargennummer", () => {
   assert.equal(chargenNummer(new Date(2026, 10, 15), "R-001"), "261115-R001");
 });
+
+// ---------- Emulsionstyp, Co-Emulgatoren, Tenside ----------
+
+test("W/O-Creme mit O/W-Emulgator: Fehler mit Ersatz durch Olivem 900", () => {
+  const r = creme();
+  const p = pruefe({ ...r, emulsionstyp: "wo" }, map);
+  const f = p.meldungen.find((m) => m.code === "emulgator-typ");
+  assert.ok(f, "emulgator-typ erwartet");
+  assert.equal(f.art, "fehler");
+  assert.equal(f.korrektur?.ersetze?.[0].slug, "olivem-900");
+  assert.ok(p.meldungen.some((m) => m.code === "wo-herstellung"));
+  assert.ok(!p.meldungen.some((m) => m.code === "xyliance-xanthan"), "Xanthan-Regel gilt nur für O/W");
+});
+
+test("O/W-Creme mit W/O-Emulgator: Fehler, Ersatz durch Xyliance", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((x) => (x.rohstoffId === id("xyliance") ? { ...x, rohstoffId: id("dermofeel-pgpr"), prozent: 3 } : x));
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "emulgator-typ");
+  assert.ok(f);
+  assert.equal(f.korrektur?.ersetze?.[0].slug, "xyliance");
+});
+
+test("Co-Emulgator allein zählt nicht als Emulgator", () => {
+  const r = creme();
+  r.positionen = r.positionen.map((x) => (x.rohstoffId === id("xyliance") ? { ...x, rohstoffId: id("glyceryl-stearate"), prozent: 3 } : x));
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "emulgator-fehlt");
+  assert.ok(f, "emulgator-fehlt erwartet");
+  assert.match(f.text, /Co-Emulgator/);
+});
+
+test("Alle neuen Rohstoffe: Pflichtfelder und gültige Dosierungen", () => {
+  const slugs = new Set<string>();
+  for (const s of seedRohstoffe) {
+    assert.ok(!slugs.has(s.slug), `doppelter slug ${s.slug}`);
+    slugs.add(s.slug);
+    assert.ok(s.name && s.inci && s.was && s.funktion, `Pflichtfeld fehlt bei ${s.slug}`);
+    for (const [, min, max] of s.dos ?? []) assert.ok(min >= 0 && max >= min, `Dosierung ${s.slug}`);
+    if (s.kategorie === "emulgator") assert.ok(s.emulgatorTyp, `Emulgatortyp fehlt bei ${s.slug}`);
+  }
+  assert.ok(slugs.has("kokosglucosid"), "Korrektur tensid-fehlt braucht kokosglucosid");
+  assert.ok(seedRohstoffe.filter((s) => s.kategorie === "oel").length >= 20);
+  assert.ok(seedRohstoffe.some((s) => s.emulgatorTyp === "wo" && s.slug !== "olivem-900"));
+});
+
+/** Mildes Duschgel: Kokosglucosid + SCI + Betain, WAS ≈ 12 %. */
+const duschgel = (extra: LabPosition[] = []) =>
+  rez({
+    produkttyp: "tensid",
+    bereich: "koerper",
+    chargeG: 200,
+    phZiel: 5.2,
+    positionen: [pos("wasser", 0, { ad: true }), pos("kokosglucosid", 12), pos("sci", 4), pos("kokosbetain", 3), pos("glycerin", 2), pos("cosgard", 1, { phase: "kalt" }), ...extra],
+  });
+
+test("Duschgel: WAS wird aus dem Aktivgehalt gerechnet, keine Fehler", () => {
+  const p = pruefe(duschgel(), map);
+  // 12·52 % + 4·80 % + 3·30 % = 6,24 + 3,2 + 0,9 = 10,34
+  assert.equal(Math.round(p.berechnung.wasGesamt * 100) / 100, 10.34);
+  assert.deepEqual(codes(duschgel()).filter((c) => c === "was" || c === "tensid-fehlt" || c === "emulgator-fehlt"), []);
+});
+
+test("Duschgel ohne Tensid: Fehler mit Kokosglucosid-Vorschlag", () => {
+  const r = rez({ produkttyp: "tensid", bereich: "koerper", positionen: [pos("wasser", 0, { ad: true }), pos("glycerin", 3), pos("cosgard", 1, { phase: "kalt" })] });
+  const f = pruefe(r, map).meldungen.find((m) => m.code === "tensid-fehlt");
+  assert.ok(f);
+  const neu = wendeAn(r.positionen, f.korrektur!, map, () => `k${++n}`);
+  assert.ok(neu.some((x) => x.rohstoffId === id("kokosglucosid")));
+});
+
+test("Zu viel WAS: Fehler, Korrektur bringt WAS in den Bereich", () => {
+  const r = duschgel();
+  r.positionen = r.positionen.map((x) => (x.rohstoffId === id("kokosglucosid") ? { ...x, prozent: 40 } : x));
+  const p = pruefe(r, map);
+  const f = p.meldungen.find((m) => m.code === "was");
+  assert.ok(f);
+  assert.equal(f.art, "fehler");
+  const neu = pruefe({ ...r, positionen: wendeAn(r.positionen, f.korrektur!, map, () => `k${++n}`) }, map);
+  assert.ok(neu.berechnung.wasGesamt <= 20.001 && neu.berechnung.wasGesamt >= 8);
+});
+
+test("Betain zu Aniontensid außerhalb 1:4 bis 1:3: Warnung", () => {
+  const r = duschgel();
+  r.positionen = r.positionen.map((x) => (x.rohstoffId === id("kokosbetain") ? { ...x, prozent: 8 } : x));
+  assert.ok(codes(r).includes("betain"));
+});
+
+test("pH außerhalb 4,5–6 im Tensidprodukt: Warnung", () => {
+  assert.ok(codes({ ...duschgel(), phZiel: 7 }).includes("ph-tensid"));
+});
+
+test("Tensid in einer Creme: Hinweis", () => {
+  const r = creme();
+  r.positionen.push(pos("kokosglucosid", 2));
+  assert.ok(pruefe(r, map).meldungen.some((m) => m.code === "tensid-in-creme"));
+});

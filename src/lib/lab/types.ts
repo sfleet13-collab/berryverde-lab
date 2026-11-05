@@ -98,8 +98,8 @@ export const LAB = {
   aetherischMaxGesicht: 0.5,
   aetherischMaxKoerper: 1,
   /** Waschaktive Substanz in Tensidprodukten (%), je Anwendungsbereich. */
-  wasGesicht: [4, 10] as [number, number],
-  wasKoerper: [8, 18] as [number, number],
+  wasGesicht: [3, 10] as [number, number],
+  wasKoerper: [8, 20] as [number, number],
   /** Betain : Aniontensid (bezogen auf WAS) zwischen 1:4 und 1:3. */
   betainVerhaeltnis: [0.25, 0.34] as [number, number],
   phTensid: [4.5, 6] as [number, number],
