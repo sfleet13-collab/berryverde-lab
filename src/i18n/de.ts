@@ -63,7 +63,7 @@ const de = {
       ],
       cta: "Alle Rohstoffe und Rezepturen freischalten → Mitglied werden",
       ctaNote:
-        "In Dein Lab ist für jeden Rohstoff hinterlegt, wie er spreitet. So stellst du Öle und Cremes gezielt zusammen.",
+        "In Dein Lab rechnest du aus diesen Ölen deine eigene Rezeptur, mit Mengen, Tropfen und INCI-Liste.",
     },
     featuresTitle: "Was Dein Lab für dich prüft und rechnet",
     features: [
