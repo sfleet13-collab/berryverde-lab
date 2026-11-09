@@ -1,0 +1,336 @@
+/* Öl-Kaskade (öffentliches Goodie): Beeren-Rosé auf Creme, immer hell (wird in berryverde.com eingebettet) */
+.seite {
+  --bg: #f7f1ef;
+  --surface: #fffdfc;
+  --fg: #2a1c22;
+  --muted: #6e5560;
+  --line: #e7d8d6;
+  --accent: #9e254d;
+  --accent-soft: #f3dfe4;
+  --fast: #c47a93;
+  --mid: #9e254d;
+  --slow: #6a1838;
+  --radius: 14px;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.seite * {
+  box-sizing: border-box;
+}
+.wrap {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 2rem max(16px, env(safe-area-inset-right, 0px)) 2.4rem
+    max(16px, env(safe-area-inset-left, 0px));
+}
+.eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display-face), Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.7rem, 4.5vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 0 0 1.6rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+
+/* Schale */
+.schale {
+  padding: 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.auswahl {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1.3rem;
+}
+.auswahl button {
+  min-height: 40px;
+  padding: 0.32rem 0.85rem;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+.auswahl button:hover {
+  border-color: var(--accent);
+}
+.auswahl button:active {
+  transform: scale(0.97);
+}
+.auswahl button:focus-visible,
+.cta a:focus-visible,
+.fuss a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.auswahl button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.schalenBereich {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.dish {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(300px, 82vw);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, var(--bg), var(--surface) 72%);
+  box-shadow: inset 0 2px 16px rgb(0 0 0 / 0.07);
+}
+.ghost {
+  position: absolute;
+  border: 2.5px dashed var(--accent);
+  border-radius: 50%;
+  opacity: 0.85;
+  pointer-events: none;
+  transition:
+    width 0.6s ease,
+    height 0.6s ease;
+}
+.splat {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 40%,
+    var(--accent),
+    var(--accent-soft) 88%
+  );
+  transition:
+    width 1.1s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.splat[data-sofort] {
+  transition: none;
+}
+.droplet {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 15px;
+  height: 19px;
+  margin: -9px 0 0 -7.5px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: var(--accent);
+  opacity: 0;
+}
+.ripple {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.fall {
+  animation: tropfen 0.72s ease-in forwards;
+}
+.go {
+  animation: welle 1s ease-out 0.6s forwards;
+}
+@keyframes tropfen {
+  0% {
+    transform: translateY(-120px) scaleY(1.1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  82% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(5px) scale(1.4, 0.5);
+    opacity: 0;
+  }
+}
+@keyframes welle {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fall,
+  .go {
+    animation: none;
+  }
+  .ghost,
+  .splat {
+    transition: none;
+  }
+}
+.caption {
+  min-height: 2.8rem;
+  max-width: 22rem;
+  text-align: center;
+}
+.caption strong {
+  font-size: 1rem;
+  color: var(--accent);
+}
+.caption span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Kaskade */
+.h2 {
+  margin: 2.2rem 0 0.3rem;
+  font-family: var(--font-display-face), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
+}
+.sub {
+  margin: 0 0 1.1rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+.kaskade {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+@media (max-width: 640px) {
+  .kaskade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.spalte {
+  min-width: 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.balken {
+  height: 4px;
+  margin-bottom: 0.8rem;
+  border-radius: 2px;
+}
+.spalte[data-tempo="schnell"] .balken {
+  background: var(--fast);
+}
+.spalte[data-tempo="mittel"] .balken {
+  background: var(--mid);
+}
+.spalte[data-tempo="langsam"] .balken {
+  background: var(--slow);
+}
+.h3 {
+  margin: 0 0 0.1rem;
+  font-family: var(--font-display-face), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.08rem;
+  letter-spacing: -0.015em;
+}
+.tag {
+  margin: 0 0 0.7rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.oel {
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--line);
+}
+.tag + .oel {
+  padding-top: 0;
+  border-top: 0;
+}
+.oelName {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.oelNotiz {
+  margin-top: 0.1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.cta {
+  margin-top: 2.2rem;
+  padding: 1.4rem;
+  text-align: center;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+}
+.cta p {
+  margin: 0 0 0.9rem;
+  font-size: 0.96rem;
+}
+.cta a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.3rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #fff;
+  text-decoration: none;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: background-color 0.15s ease;
+}
+.cta a:hover {
+  background: #7d1a3b;
+}
+.fuss {
+  margin-top: 1.8rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.fuss a {
+  color: var(--accent);
+}
+.made {
+  margin-top: 0.8rem;
+}

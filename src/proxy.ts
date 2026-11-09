@@ -16,11 +16,17 @@ function preferredLocale(request: NextRequest) {
 const PROTECTED = new RegExp(`^/(${locales.join("|")})/app(/|$)`);
 
 /** Im Privat-Modus ohne Login erreichbar: Anmeldung und Rechtsseiten. */
-const PUBLIC_IN_PRIVATE = new RegExp(`^/(${locales.join("|")})/(anmelden|impressum|datenschutz|agb)(/|$)`);
+const PUBLIC_IN_PRIVATE = new RegExp(
+  `^/(${locales.join("|")})/(anmelden|impressum|datenschutz|agb)(/|$)`,
+);
 const LOCALE_HOME = new RegExp(`^/(${locales.join("|")})/?$`);
+
+/** Öffentliche Seiten ohne Sprache und ohne Login (eigenes Layout, auch per iframe eingebettet). */
+const OEFFENTLICH_OHNE_SPRACHE = /^\/oel-kaskade\/?$/;
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (OEFFENTLICH_OHNE_SPRACHE.test(pathname)) return;
 
   // Dein Lab ist nur deutsch: alte oder geratene /en-Adressen auf Deutsch umleiten
   if (pathname === "/en" || pathname.startsWith("/en/")) {
@@ -32,8 +38,14 @@ export async function proxy(request: NextRequest) {
   if (privateMode) {
     // Startseite ist im Privat-Modus direkt der App-Bereich
     const home = LOCALE_HOME.exec(pathname);
-    if (home) return NextResponse.redirect(new URL(`/${home[1]}/app`, request.url), 307);
-    const lang = locales.find((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
+    if (home)
+      return NextResponse.redirect(
+        new URL(`/${home[1]}/app`, request.url),
+        307,
+      );
+    const lang = locales.find(
+      (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
+    );
     const auth = getAuth();
     if (lang && auth && !PUBLIC_IN_PRIVATE.test(pathname)) {
       return auth.middleware({ loginUrl: `/${lang}/anmelden` })(request);
@@ -48,7 +60,9 @@ export async function proxy(request: NextRequest) {
     return auth.middleware({ loginUrl: `/${match[1]}/anmelden` })(request);
   }
 
-  const hasLocale = locales.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
+  const hasLocale = locales.some(
+    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
+  );
   if (hasLocale) return;
 
   const url = request.nextUrl.clone();
