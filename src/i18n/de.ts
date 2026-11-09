@@ -32,6 +32,39 @@ const de = {
       without: "Konservierer weglassen",
       note: "Vereinfachtes Beispiel. Die geprüften Rezepturen mit allen Angaben findest du in Dein Lab.",
     },
+    spreit: {
+      title:
+        "Oder spiel mit der Spreitkaskade – dem Grundprinzip jeder Rezeptur mit Öl",
+      lead: "Jedes Öl verteilt sich anders auf der Haut. Klick ein Öl an und beobachte, wie weit es sich auf der Glasschale ausbreitet. Daraus ergibt sich, wie schnell es einzieht und wie es sich anfühlt.",
+      hint: "Klick ein Öl an ↓",
+      group: "Öl wählen",
+      speed: {
+        schnell: "spreitet schnell",
+        mittel: "spreitet mittel",
+        langsam: "spreitet langsam",
+      },
+      levelsTitle: "Die drei Spreit-Ebenen",
+      levels: [
+        {
+          key: "schnell",
+          title: "Schnell – die Einzieher",
+          text: "Squalan, Neutralöl, Kokosöl. Verteilen sich sofort und hinterlassen ein leichtes Hautgefühl.",
+        },
+        {
+          key: "mittel",
+          title: "Mittel – die Pflegenden",
+          text: "Jojoba, Mandel, Aprikose, Traubenkern, Avocado. Ziehen moderat ein und bringen Wirkstoffe in die oberen Hautschichten.",
+        },
+        {
+          key: "langsam",
+          title: "Langsam – die Schützenden",
+          text: "Sheabutter, Kakaobutter. Bleiben lange auf der Haut, pflegen und schützen.",
+        },
+      ],
+      cta: "Alle Rohstoffe und Rezepturen freischalten → Mitglied werden",
+      ctaNote:
+        "In Dein Lab ist für jeden Rohstoff hinterlegt, wie er spreitet. So stellst du Öle und Cremes gezielt zusammen.",
+    },
     featuresTitle: "Was Dein Lab für dich prüft und rechnet",
     features: [
       {
@@ -47,7 +80,13 @@ const de = {
         text: "Zu jeder Rezeptur bekommst du eine Karte zum Ausdrucken mit Formel, Herstellung und Anwendung. Das Etikett trägt Name, Datum, Haltbarkeit, Chargennummer und die Inhaltsstoffe in der richtigen Reihenfolge.",
       },
     ],
-    label: { made: "Hergestellt", best: "Haltbar bis", batch: "Charge", own: "Nur für den Eigengebrauch", name: "Leichte Tagescreme" },
+    label: {
+      made: "Hergestellt",
+      best: "Haltbar bis",
+      batch: "Charge",
+      own: "Nur für den Eigengebrauch",
+      name: "Leichte Tagescreme",
+    },
     check: {
       kind: "Fehler",
       title: "Xyliance außerhalb des Bereichs",
@@ -67,9 +106,18 @@ const de = {
     ],
     stepsTitle: "So kommst du ins Lab",
     steps: [
-      { title: "Mitglied werden", text: "Du schließt die Mitgliedschaft bei berryverde ab." },
-      { title: "Code per E-Mail", text: "Du meldest dich mit deiner E-Mail-Adresse an und bekommst einen Code. Ein Passwort brauchst du nicht." },
-      { title: "Rühren", text: "Rezeptur wählen, Menge eingeben, abwiegen oder tropfen. Die Karte liegt ausgedruckt neben dir." },
+      {
+        title: "Mitglied werden",
+        text: "Du schließt die Mitgliedschaft bei berryverde ab.",
+      },
+      {
+        title: "Code per E-Mail",
+        text: "Du meldest dich mit deiner E-Mail-Adresse an und bekommst einen Code. Ein Passwort brauchst du nicht.",
+      },
+      {
+        title: "Rühren",
+        text: "Rezeptur wählen, Menge eingeben, abwiegen oder tropfen. Die Karte liegt ausgedruckt neben dir.",
+      },
     ],
     faqTitle: "Häufige Fragen",
     faq: [
@@ -96,17 +144,20 @@ const de = {
     ],
     ctaBandTitle: "Bereit für deine erste Rezeptur?",
     ctaBandText: "Die Mitgliedschaft kostet 9 € im Monat oder 59 € im Jahr.",
-    ownUse: "Dein Lab ist für den Eigengebrauch gedacht. Keine Heilversprechen, nur Pflege.",
+    ownUse:
+      "Dein Lab ist für den Eigengebrauch gedacht. Keine Heilversprechen, nur Pflege.",
   },
   app: {
     title: "Rezepturen",
     setupTitle: "Login noch nicht eingerichtet",
-    setupText: "Sobald der Login eingerichtet ist, ist dieser Bereich geschützt.",
+    setupText:
+      "Sobald der Login eingerichtet ist, ist dieser Bereich geschützt.",
     signIn: "Anmelden",
   },
   auth: {
     title: "Anmelden",
-    description: "Gib die E-Mail-Adresse ein, mit der du Mitglied geworden bist. Du bekommst einen Code per E-Mail, ein Passwort brauchst du nicht.",
+    description:
+      "Gib die E-Mail-Adresse ein, mit der du Mitglied geworden bist. Du bekommst einen Code per E-Mail, ein Passwort brauchst du nicht.",
     email: "E-Mail-Adresse",
     sendCode: "Code senden",
     codeSent: "Wir haben dir einen Code an {email} geschickt.",
@@ -121,7 +172,8 @@ const de = {
       email: "Bitte gib eine gültige E-Mail-Adresse ein.",
       code: "Der Code stimmt nicht oder ist abgelaufen.",
       send: "Der Code konnte nicht gesendet werden. Bitte versuch es erneut.",
-      notAllowed: "Für diese E-Mail-Adresse ist kein Zugang freigeschaltet. Nimm die Adresse, mit der du Mitglied geworden bist.",
+      notAllowed:
+        "Für diese E-Mail-Adresse ist kein Zugang freigeschaltet. Nimm die Adresse, mit der du Mitglied geworden bist.",
       config: "Der Login ist noch nicht eingerichtet.",
     },
   },
@@ -204,16 +256,22 @@ const de = {
   },
   contact: {
     title: "Frag Susan",
-    description: "Schreib mir deine Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft.",
+    description:
+      "Schreib mir deine Frage zu einer Rezeptur, zu deinem Zugang oder zur Mitgliedschaft.",
     formTitle: "Deine Nachricht",
     directTitle: "Schreib mir eine E-Mail",
     direct: "Schreib mir direkt per E-Mail an",
     nextTitle: "So geht es weiter",
-    next: ["Ich lese deine Nachricht persönlich.", "Du bekommst innerhalb von zwei Werktagen eine Antwort.", "Deine Angaben nutze ich nur für deine Anfrage."],
+    next: [
+      "Ich lese deine Nachricht persönlich.",
+      "Du bekommst innerhalb von zwei Werktagen eine Antwort.",
+      "Deine Angaben nutze ich nur für deine Anfrage.",
+    ],
     name: "Name",
     email: "E-Mail-Adresse",
     message: "Nachricht",
-    consent: "Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage gespeichert werden.",
+    consent:
+      "Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage gespeichert werden.",
     privacyLink: "Datenschutzerklärung",
     submit: "Nachricht senden",
     sending: "Wird gesendet …",
