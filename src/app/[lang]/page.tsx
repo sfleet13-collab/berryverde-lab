@@ -9,9 +9,12 @@ import type { LabPosition, LabRohstoff } from "@/lib/lab/types";
 import Reveal from "@/components/Reveal";
 import Icon from "@/components/Icon";
 import HeroRechner from "@/components/lab/HeroRechner";
+import SpreitDemo from "@/components/lab/SpreitDemo";
 import styles from "./home.module.css";
 
-export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
@@ -57,9 +60,14 @@ function demoDaten(): { rohstoffe: LabRohstoff[]; start: LabPosition[] } {
       fettphaseMin: s.fettphase?.[0] ?? null,
       fettphaseMax: s.fettphase?.[1] ?? null,
       emulgatorBezug: s.emulgatorBezug ?? null,
-  tensidKlasse: s.tensidKlasse ?? null,
-  wasProzent: s.wasProzent ?? null,
-      dosierungen: (s.dos ?? []).map(([produkttyp, min, max, hinweis]) => ({ produkttyp, min, max, hinweis })),
+      tensidKlasse: s.tensidKlasse ?? null,
+      wasProzent: s.wasProzent ?? null,
+      dosierungen: (s.dos ?? []).map(([produkttyp, min, max, hinweis]) => ({
+        produkttyp,
+        min,
+        max,
+        hinweis,
+      })),
     };
   });
   const start: LabPosition[] = DEMO.map(([, prozent, ad], i) => ({
@@ -82,12 +90,21 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: h.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    mainEntity: h.faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqLd).replace(/</g, "\\u003c"),
+        }}
+      />
 
       {/* HERO – genau eine H1 pro Seite */}
       <section className={styles.hero}>
@@ -108,7 +125,45 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           </div>
           <div className={styles.demoRahmen}>
             <h2 className={styles.demoTitel}>{h.demo.title}</h2>
-            <HeroRechner rohstoffe={demo.rohstoffe} start={demo.start} t={h.demo} />
+            <HeroRechner
+              rohstoffe={demo.rohstoffe}
+              start={demo.start}
+              t={h.demo}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ZWEITES „PROBIER ES AUS“: Spreitkaskade als Teaser, führt direkt zur Mitgliedschaft */}
+      <section className={styles.spreit} aria-labelledby="spreit-title">
+        <div className="container">
+          <div className={styles.spreitGrid}>
+            <Reveal className={styles.spreitText}>
+              <h2 id="spreit-title" className={styles.spreitTitel}>
+                {h.spreit.title}
+              </h2>
+              <p className={styles.fliess}>{h.spreit.lead}</p>
+            </Reveal>
+            <Reveal delay={80}>
+              <SpreitDemo t={h.spreit} />
+            </Reveal>
+          </div>
+
+          <h3 className={styles.ebenenTitel}>{h.spreit.levelsTitle}</h3>
+          <ul className={styles.ebenen}>
+            {h.spreit.levels.map((l) => (
+              <li key={l.key} className={styles.ebene} data-tempo={l.key}>
+                <h4>{l.title}</h4>
+                <p>{l.text}</p>
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.spreitCta}>
+            <a className="btn btn-primary" href={lab.mitgliedschaftUrl}>
+              {h.spreit.cta}
+            </a>
+            <p>{h.spreit.ctaNote}</p>
           </div>
         </div>
       </section>
@@ -179,7 +234,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                     <dd>261115-LAB</dd>
                   </div>
                 </dl>
-                <p className={styles.miniInci}>Aqua, Prunus Amygdalus Dulcis Oil, Butyrospermum Parkii Butter, Cetearyl Wheat Straw Glycosides, Cetearyl Alcohol, Glycerin, Cetyl Alcohol, Panthenol, Benzyl Alcohol, Dehydroacetic Acid, Tocopherol, Xanthan Gum</p>
+                <p className={styles.miniInci}>
+                  Aqua, Prunus Amygdalus Dulcis Oil, Butyrospermum Parkii
+                  Butter, Cetearyl Wheat Straw Glycosides, Cetearyl Alcohol,
+                  Glycerin, Cetyl Alcohol, Panthenol, Benzyl Alcohol,
+                  Dehydroacetic Acid, Tocopherol, Xanthan Gum
+                </p>
                 <p className={styles.miniEigen}>{h.label.own}</p>
               </div>
             </Reveal>
@@ -258,7 +318,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
         <div className="container">
           <p className={styles.bandNote}>
-            {h.ownUse} <a href={lab.blogUrl}>{site.owner.url.replace("https://", "")}</a>
+            {h.ownUse}{" "}
+            <a href={lab.blogUrl}>{site.owner.url.replace("https://", "")}</a>
           </p>
         </div>
       </section>

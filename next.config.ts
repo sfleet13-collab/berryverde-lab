@@ -4,9 +4,21 @@ import type { NextConfig } from "next";
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "X-Frame-Options", value: "SAMEORIGIN" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
-  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  },
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
+];
+
+/** Seiten, die das Goodie „Öl-Kaskade“ per iframe einbetten dürfen. */
+const EINBETTEN_ERLAUBT = [
+  "https://berryverde.com",
+  "https://www.berryverde.com",
+  "https://*.berryverde.com",
 ];
 
 const nextConfig: NextConfig = {
@@ -18,12 +30,48 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "5mb" },
   },
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
   },
   partialPrefetching: true,
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      // Alle Seiten ausser dem Goodie: nicht einbettbar
+      {
+        source: "/((?!oel-kaskade).*)",
+        headers: [
+          ...securityHeaders,
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+      // Schriften für die Verkaufsseite auf Tentary: von der eigenen Domain, nicht von einem Schrift-Server
+      {
+        source: "/fonts/:file*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "https://susanfleet.mytentary.com",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // Öl-Kaskade: darf auf berryverde.com per iframe eingebettet werden
+      {
+        source: "/oel-kaskade",
+        headers: [
+          ...securityHeaders,
+          {
+            key: "Content-Security-Policy",
+            value: `frame-ancestors 'self' ${EINBETTEN_ERLAUBT.join(" ")}`,
+          },
+        ],
+      },
+    ];
   },
 };
 

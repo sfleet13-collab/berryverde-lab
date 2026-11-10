@@ -65,6 +65,10 @@ export const zugaenge = pgTable(
     stufe: text("stufe", { enum: STUFEN }).notNull().default("anfaenger"),
     aktiv: boolean("aktiv").notNull().default(true),
     notiz: text("notiz"),
+    /** Woher der Zugang kommt: von Hand freigeschaltet oder automatisch über einen Kauf bei Tentary. */
+    quelle: text("quelle", { enum: ["manuell", "tentary"] }).notNull().default("manuell"),
+    /** Letzter Abgleich mit Tentary (nur quelle = tentary). */
+    geprueftAm: timestamp("geprueft_am", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("zugaenge_email_idx").on(t.email)],

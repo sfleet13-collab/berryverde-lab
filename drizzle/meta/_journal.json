@@ -50,6 +50,13 @@
       "when": 1793878327179,
       "tag": "0006_rezeptur_blog_foto",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794298524625,
+      "tag": "0007_zugang_tentary",
+      "breakpoints": true
     }
   ]
 }

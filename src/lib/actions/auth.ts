@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getAuth } from "@/lib/neon-auth";
 import { emailAllowed, isLocale } from "@/config/site";
 import { zugangFuer } from "@/lib/auth";
+import { systemZugangAusTentary } from "@/lib/data";
+import { tentaryEingerichtet, tentaryZugang } from "@/lib/tentary";
 
 export type SignInState = {
   step: "email" | "code";
@@ -14,19 +16,33 @@ export type SignInState = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** Schritt 1: Code an die E-Mail-Adresse schicken. Schritt 2: Code prüfen und anmelden. */
-export async function signInWithCode(prev: SignInState, form: FormData): Promise<SignInState> {
+export async function signInWithCode(
+  prev: SignInState,
+  form: FormData,
+): Promise<SignInState> {
   const auth = getAuth();
   if (!auth) return { step: "email", error: "config" };
 
   const lang = String(form.get("lang") ?? "de");
-  const email = String(form.get("email") ?? prev.email ?? "").trim().toLowerCase();
+  const email = String(form.get("email") ?? prev.email ?? "")
+    .trim()
+    .toLowerCase();
   if (!EMAIL_RE.test(email)) return { step: "email", email, error: "email" };
-  if (!emailAllowed(email)) return { step: "email", email, error: "notAllowed" };
+  if (!emailAllowed(email))
+    return { step: "email", email, error: "notAllowed" };
   // Dein Lab: nur freigeschaltete Mitglieder (und Admins) bekommen einen Code
-  if (!(await zugangFuer(email)).erlaubt) return { step: "email", email, error: "notAllowed" };
+  if (!(await zugangFuer(email)).erlaubt) {
+    // Automatische Freischaltung: Hat die Adresse ein Dein-Lab-Abo bei Tentary, wird der Zugang jetzt angelegt
+    if (!tentaryEingerichtet() || (await tentaryZugang(email)) !== "aktiv")
+      return { step: "email", email, error: "notAllowed" };
+    await systemZugangAusTentary(email);
+  }
 
   if (prev.step === "email" || form.get("resend")) {
-    const { error } = await auth.emailOtp.sendVerificationOtp({ email, type: "sign-in" });
+    const { error } = await auth.emailOtp.sendVerificationOtp({
+      email,
+      type: "sign-in",
+    });
     if (error) {
       console.error("[auth] Code senden:", error.message);
       return { step: "email", email, error: "send" };

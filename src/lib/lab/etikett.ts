@@ -1,11 +1,21 @@
 import { LAB } from "./types";
 import { chargenNummer, haltbarBis } from "./rechner";
 
-export const DATUM = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Berlin" });
+export const DATUM = new Intl.DateTimeFormat("de-DE", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: "Europe/Berlin",
+});
 
 /** Heutiges Datum in Deutschland als JJJJ-MM-TT (Vercel rechnet in UTC). */
 export function heuteIso(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }
 
 /** Herstelldatum aus der Adresse (?d=JJJJ-MM-TT), sonst heute. Mittags, damit die Zeitzone den Tag nicht verschiebt. */
@@ -20,7 +30,14 @@ export function mengeAus(g: string | undefined, standard: number): number {
   return Number.isFinite(n) && n > 0 && n <= 5000 ? n : standard;
 }
 
-export type EtikettDaten = { name: string; frischcreme: boolean; hergestellt: string; haltbarBis: string; charge: string; inci: string };
+export type EtikettDaten = {
+  name: string;
+  frischcreme: boolean;
+  hergestellt: string;
+  haltbarBis: string;
+  charge: string;
+  inci: string;
+};
 
 export function etikettDaten(opt: {
   name: string;
@@ -34,7 +51,10 @@ export function etikettDaten(opt: {
 }): EtikettDaten {
   const tage = opt.frischcreme
     ? LAB.frischcremeTage
-    : Math.min(opt.haltbarkeitTage ?? opt.haltbarkeitMaxTage ?? 90, opt.haltbarkeitMaxTage ?? 10000);
+    : Math.min(
+        opt.haltbarkeitTage ?? opt.haltbarkeitMaxTage ?? 90,
+        opt.haltbarkeitMaxTage ?? 10000,
+      );
   return {
     name: opt.name,
     frischcreme: opt.frischcreme,
@@ -47,7 +67,25 @@ export function etikettDaten(opt: {
 
 /** Raster der A4-Bögen in mm. Rechteck = gängiger Bogen mit 21 Etiketten (63,5 × 38,1 mm). */
 export const BOEGEN = {
-  rechteck: { breite: 63.5, hoehe: 38.1, spalten: 3, zeilen: 7, links: 7.21, oben: 15.15, abstandX: 66.04, abstandY: 38.1 },
-  rund: { breite: 40, hoehe: 40, spalten: 4, zeilen: 6, links: 15, oben: 13.5, abstandX: 47, abstandY: 46 },
+  rechteck: {
+    breite: 63.5,
+    hoehe: 38.1,
+    spalten: 3,
+    zeilen: 7,
+    links: 7.21,
+    oben: 15.15,
+    abstandX: 66.04,
+    abstandY: 38.1,
+  },
+  rund: {
+    breite: 40,
+    hoehe: 40,
+    spalten: 4,
+    zeilen: 6,
+    links: 15,
+    oben: 13.5,
+    abstandX: 47,
+    abstandY: 46,
+  },
 } as const;
 export type Format = keyof typeof BOEGEN;

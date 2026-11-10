@@ -5,9 +5,14 @@
 
 /* ---------- Hero ---------- */
 .hero {
-  padding-block: clamp(var(--space-8), 5vw, var(--space-16)) clamp(var(--space-12), 7vw, var(--space-24));
+  padding-block: clamp(var(--space-8), 5vw, var(--space-16))
+    clamp(var(--space-12), 7vw, var(--space-24));
   background:
-    radial-gradient(70rem 32rem at 85% -10%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%),
+    radial-gradient(
+      70rem 32rem at 85% -10%,
+      color-mix(in srgb, var(--accent) 28%, transparent),
+      transparent 70%
+    ),
     var(--bg);
 }
 .heroGrid {
@@ -408,5 +413,90 @@
   .heroText,
   .demoRahmen {
     animation: none;
+  }
+}
+
+/* ---------- Spreitkaskade (zweites „Probier es aus“) ---------- */
+.spreit {
+  padding-block: clamp(var(--space-12), 7vw, var(--space-24))
+    clamp(var(--space-8), 5vw, var(--space-12));
+  border-top: 1px solid var(--border);
+}
+.spreitGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+  align-items: center;
+}
+.spreitTitel {
+  font-size: var(--step-2);
+  line-height: 1.12;
+  max-width: 22ch;
+  margin-bottom: var(--space-4);
+  text-wrap: balance;
+}
+.ebenenTitel {
+  margin: clamp(var(--space-8), 5vw, var(--space-12)) 0 var(--space-4);
+  font-size: var(--step-1);
+  line-height: 1.2;
+}
+.ebenen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ebene {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--farbe);
+  border-radius: var(--radius-m);
+}
+.ebene[data-tempo="schnell"] {
+  --farbe: #d99a3a;
+}
+.ebene[data-tempo="mittel"] {
+  --farbe: #b87a2e;
+}
+.ebene[data-tempo="langsam"] {
+  --farbe: #8a5a30;
+}
+.ebene h4 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+.ebene p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.spreitCta {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin-top: clamp(var(--space-8), 5vw, var(--space-12));
+  text-align: center;
+}
+.spreitCta p {
+  max-width: 52ch;
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.spreitCta .btn {
+  white-space: normal;
+  text-align: center;
+}
+@media (max-width: 860px) {
+  .spreitGrid,
+  .ebenen {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -6,7 +6,8 @@ import { createNeonAuth } from "@neondatabase/auth/next/server";
  * Ohne diese Werte läuft die App weiter, geschützte Bereiche zeigen dann einen Hinweis.
  */
 export const authConfigured = Boolean(
-  process.env.NEON_AUTH_BASE_URL && (process.env.NEON_AUTH_COOKIE_SECRET?.length ?? 0) >= 32,
+  process.env.NEON_AUTH_BASE_URL &&
+  (process.env.NEON_AUTH_COOKIE_SECRET?.length ?? 0) >= 32,
 );
 
 let instance: ReturnType<typeof createNeonAuth> | null = null;

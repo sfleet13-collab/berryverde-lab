@@ -1,6 +1,11 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { authConfigured, getCurrentUser, isAdmin, type SessionUser } from "./auth";
+import {
+  authConfigured,
+  getCurrentUser,
+  isAdmin,
+  type SessionUser,
+} from "./auth";
 
 /**
  * Zugangsprüfung für Seiten im App-Bereich.
