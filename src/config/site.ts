@@ -79,7 +79,7 @@ export const ogLocale: Record<Locale, string> = {
 
 /** Dein Lab: Verkaufsseite der Mitgliedschaft und Admin-Adressen (bekommen automatisch die Rolle Admin). */
 export const lab = {
-  mitgliedschaftUrl: process.env.NEXT_PUBLIC_MITGLIEDSCHAFT_URL ?? "https://berryverde.com/",
+  mitgliedschaftUrl: process.env.NEXT_PUBLIC_MITGLIEDSCHAFT_URL ?? "https://susanfleet.mytentary.com/dein-lab",
   blogUrl: "https://berryverde.com",
 };
 export const adminEmails = (process.env.ADMIN_EMAILS ?? "")
