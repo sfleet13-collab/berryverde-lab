@@ -46,6 +46,20 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
         ],
       },
+      // Schriften für die Verkaufsseite auf Tentary: von der eigenen Domain, nicht von einem Schrift-Server
+      {
+        source: "/fonts/:file*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "https://susanfleet.mytentary.com",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       // Öl-Kaskade: darf auf berryverde.com per iframe eingebettet werden
       {
         source: "/oel-kaskade",
