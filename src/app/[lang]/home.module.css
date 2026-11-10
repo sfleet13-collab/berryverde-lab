@@ -589,13 +589,6 @@
   padding-left: var(--space-4);
   border-left: 2px solid var(--brand-soft);
 }
-.macherin {
-  margin: var(--space-6) 0 0;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
-  font-size: var(--step--1);
-  font-weight: 600;
-}
 @media (max-width: 1040px) {
   .tarife {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -681,5 +674,49 @@
   .tarife {
     grid-template-columns: 1fr;
     gap: var(--space-8);
+  }
+}
+
+/* ---------- Über Susan ---------- */
+.ueber {
+  padding-block: clamp(var(--space-12), 7vw, var(--space-24));
+  border-top: 1px solid var(--border);
+}
+.ueberGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(var(--space-8), 6vw, var(--space-24));
+  align-items: center;
+}
+.ueberBild img {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-2);
+  rotate: -1.5deg;
+}
+.ueberGrid .fliess + .fliess {
+  margin-top: var(--space-4);
+}
+.unterschrift {
+  margin: var(--space-6) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-style: italic;
+  color: var(--brand);
+}
+@media (max-width: 760px) {
+  .ueberGrid {
+    grid-template-columns: 1fr;
+  }
+  .ueberBild img {
+    max-width: 260px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ueberBild img {
+    rotate: none;
   }
 }

@@ -129,6 +129,15 @@ const de = {
       "Die Bibliothek wächst laufend mit neuen, geprüften Rezepturen: vom Pulverpeeling ohne Strom bis zur Wintercreme. Du filterst nach Produkttyp, Hautbedürfnis, Ausrüstung und Stufe.",
       "Jede Rezeptur kannst du als eigene Variante speichern und verändern. Der Rechner prüft weiter mit. Und jeder Rohstoff hat einen Steckbrief: was dahintersteckt, was er chemisch ist und als was er wirkt.",
     ],
+    about: {
+      title: "Hinter Dein Lab steht Susan",
+      text: [
+        "Ich bin Chemielaborantin und habe 35 Jahre im Qualitätsmanagement gearbeitet. Dort gilt: erst prüfen, dann freigeben.",
+        "Genau so arbeitet Dein Lab. Jede Rezeptur wird gerechnet und geprüft, bevor du rührst: welche Mengen sicher sind, welche Rohstoffe zusammenpassen und woran eine Creme scheitert.",
+      ],
+      sign: "Susan Fleet, berryverde",
+      alt: "Susan Fleet im Laborkittel, lächelnd mit Mundschutz in der Hand",
+    },
     pricing: {
       title: "Werde Mitglied in Dein Lab",
       lead: "Ein Zugang für alles: Rechner, Rezepturen, Rohstoffe und Videos.",
@@ -162,8 +171,6 @@ const de = {
         "Danach meldest du dich hier mit derselben E-Mail-Adresse an. Dein Zugang ist automatisch freigeschaltet.",
         "Unsicher? Starte monatlich. Du kündigst jederzeit zum Monatsende.",
       ],
-      maker:
-        "Entwickelt von Susan Fleet, Chemielaborantin mit 35 Jahren Erfahrung im Qualitätsmanagement.",
     },
     stepsTitle: "So kommst du ins Lab",
     steps: [

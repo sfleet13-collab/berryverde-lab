@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, href } from "@/i18n";
@@ -302,6 +303,32 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
+      {/* ÜBER SUSAN – ein Mensch hinter dem Rechner, direkt vor dem Preis */}
+      <section className={styles.ueber} aria-labelledby="ueber-title">
+        <div className={`container ${styles.ueberGrid}`}>
+          <Reveal className={styles.ueberBild}>
+            <Image
+              src="/susan-labor.webp"
+              alt={h.about.alt}
+              width={800}
+              height={1000}
+              sizes="(max-width: 760px) 70vw, 360px"
+            />
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 id="ueber-title" className={styles.sectionTitle}>
+              {h.about.title}
+            </h2>
+            {h.about.text.map((t) => (
+              <p key={t} className={styles.fliess}>
+                {t}
+              </p>
+            ))}
+            <p className={styles.unterschrift}>{h.about.sign}</p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* PREISE – Jahr zuerst und hervorgehoben, Buttons direkt zur Tentary-Kasse */}
       <section
         id={lab.mitgliedAnker}
@@ -368,7 +395,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                   <li key={x}>{x}</li>
                 ))}
               </ul>
-              <p className={styles.macherin}>{p.maker}</p>
             </Reveal>
           </div>
         </div>
