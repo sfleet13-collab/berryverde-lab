@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, lab } from "@/config/site";
-import { getDictionary } from "@/i18n";
+import { getDictionary, href } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
 import SignInForm from "@/components/SignInForm";
 import styles from "@/components/SignInForm.module.css";
 
-export async function generateMetadata({ params }: PageProps<"/[lang]/anmelden">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/anmelden">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
-  return pageMetadata({ lang, path: "/anmelden", title: t.seo.auth.title, description: t.seo.auth.description, noindex: true });
+  return pageMetadata({
+    lang,
+    path: "/anmelden",
+    title: t.seo.auth.title,
+    description: t.seo.auth.description,
+    noindex: true,
+  });
 }
 
-export default async function SignInPage({ params }: PageProps<"/[lang]/anmelden">) {
+export default async function SignInPage({
+  params,
+}: PageProps<"/[lang]/anmelden">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
@@ -26,7 +36,10 @@ export default async function SignInPage({ params }: PageProps<"/[lang]/anmelden
           <p className="muted">{t.auth.description}</p>
           <SignInForm lang={lang} t={t.auth} />
           <p className={styles.hinweis}>
-            {t.auth.notMember} <a href={lab.mitgliedschaftUrl}>{t.auth.join}</a>
+            {t.auth.notMember}{" "}
+            <a href={`${href(lang, "/")}#${lab.mitgliedAnker}`}>
+              {t.auth.join}
+            </a>
           </p>
         </div>
       </div>

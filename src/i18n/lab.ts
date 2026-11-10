@@ -100,7 +100,7 @@ export const L = {
     leerMeineTitel: "Noch keine eigene Rezeptur",
     leerMeineText:
       "Hier landen deine eigenen Rezepturen. Starte bei null oder öffne eine Rezeptur aus der Bibliothek und speichere sie als eigene Variante. Der Rechner prüft bei jedem Schritt mit.",
-    leerBibliothek: "Die Bibliothek wird gerade gefüllt. Die ersten Rezepturen erscheinen am 15. November.",
+    leerBibliothek: "Die Bibliothek wird gerade gefüllt. Die ersten Rezepturen erscheinen in Kürze.",
     entwurf: "Entwurf",
     eigene: "Eigene",
     variante: "Variante",

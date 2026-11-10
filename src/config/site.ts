@@ -59,7 +59,10 @@ export const allowedEmails = (process.env.ALLOWED_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 export function emailAllowed(email?: string | null) {
-  return allowedEmails.length === 0 || (!!email && allowedEmails.includes(email.toLowerCase()));
+  return (
+    allowedEmails.length === 0 ||
+    (!!email && allowedEmails.includes(email.toLowerCase()))
+  );
 }
 
 /** Tracking ist nur aktiv, wenn eine ID gesetzt ist. Ohne ID: kein Cookie-Banner. */
@@ -67,7 +70,9 @@ export const tracking = {
   googleAnalyticsId: process.env.NEXT_PUBLIC_GA_ID ?? "",
   googleAdsId: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ?? "",
 };
-export const trackingEnabled = Boolean(tracking.googleAnalyticsId || tracking.googleAdsId);
+export const trackingEnabled = Boolean(
+  tracking.googleAnalyticsId || tracking.googleAdsId,
+);
 
 export const htmlLang: Record<Locale, string> = {
   de: site.spelling === "de-CH" ? "de-CH" : "de-DE",
@@ -77,9 +82,19 @@ export const ogLocale: Record<Locale, string> = {
   de: site.spelling === "de-CH" ? "de_CH" : "de_DE",
 };
 
-/** Dein Lab: Verkaufsseite der Mitgliedschaft und Admin-Adressen (bekommen automatisch die Rolle Admin). */
+/**
+ * Dein Lab: Verkauf läuft über die Startseite (Abschnitt #mitglied), die Buttons dort
+ * führen direkt zur Tentary-Kasse. Die Tentary-Landingpage bleibt nur für Besucher aus dem Shop.
+ */
 export const lab = {
-  mitgliedschaftUrl: process.env.NEXT_PUBLIC_MITGLIEDSCHAFT_URL ?? "https://susanfleet.mytentary.com/dein-lab",
+  /** Anker des Preis-Abschnitts auf der Startseite */
+  mitgliedAnker: "mitglied",
+  checkoutJahr:
+    process.env.NEXT_PUBLIC_CHECKOUT_JAHR ??
+    "https://susanfleet.mytentary.com/p/dein-lab-jahr/checkout",
+  checkoutMonat:
+    process.env.NEXT_PUBLIC_CHECKOUT_MONAT ??
+    "https://susanfleet.mytentary.com/p/dein-lab-monat/checkout",
   blogUrl: "https://berryverde.com",
 };
 export const adminEmails = (process.env.ADMIN_EMAILS ?? "")

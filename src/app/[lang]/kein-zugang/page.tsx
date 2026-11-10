@@ -2,20 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale, lab } from "@/config/site";
-import { getDictionary } from "@/i18n";
+import { getDictionary, href } from "@/i18n";
 import { L } from "@/i18n/lab";
 import { pageMetadata } from "@/lib/seo";
 import { signOut } from "@/lib/actions/auth";
 import styles from "@/components/lab/lab.module.css";
 
-export async function generateMetadata({ params }: PageProps<"/[lang]/kein-zugang">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/kein-zugang">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = getDictionary(lang);
-  return pageMetadata({ lang, path: "/kein-zugang", title: t.seo.keinZugang.title, description: t.seo.keinZugang.description, noindex: true });
+  return pageMetadata({
+    lang,
+    path: "/kein-zugang",
+    title: t.seo.keinZugang.title,
+    description: t.seo.keinZugang.description,
+    noindex: true,
+  });
 }
 
-export default async function KeinZugangPage({ params }: PageProps<"/[lang]/kein-zugang">) {
+export default async function KeinZugangPage({
+  params,
+}: PageProps<"/[lang]/kein-zugang">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   return (
@@ -24,7 +34,10 @@ export default async function KeinZugangPage({ params }: PageProps<"/[lang]/kein
         <h1 className={styles.seitenTitel}>{L.keinZugang.titel}</h1>
         <p>{L.keinZugang.text}</p>
         <div className={styles.aktionen}>
-          <a className="btn btn-primary" href={lab.mitgliedschaftUrl}>
+          <a
+            className="btn btn-primary"
+            href={`${href(lang, "/")}#${lab.mitgliedAnker}`}
+          >
             {L.keinZugang.mitglied}
           </a>
           <Link className="btn btn-ghost" href={`/${lang}/kontakt`}>

@@ -500,3 +500,154 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- Videos ---------- */
+.videos {
+  padding-block: clamp(var(--space-12), 7vw, var(--space-24));
+  border-top: 1px solid var(--border);
+}
+.videoTitel {
+  font-size: var(--step-2);
+  line-height: 1.12;
+  max-width: 24ch;
+  text-wrap: pretty;
+  margin-bottom: var(--space-4);
+}
+.videoArten {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-8) 0 0;
+}
+.videoArten div {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.videoArten dt {
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+.videoArten dd {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+.videoNotiz {
+  margin: var(--space-4) 0 0;
+  font-size: var(--step--1);
+  font-style: italic;
+  color: var(--brand);
+}
+@media (max-width: 520px) {
+  .videoArten {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Preise ---------- */
+.preise {
+  scroll-margin-top: 80px;
+  padding-block: clamp(var(--space-12), 8vw, var(--space-24));
+  background:
+    radial-gradient(
+      60rem 28rem at 15% 0%,
+      color-mix(in srgb, var(--accent) 22%, transparent),
+      transparent 70%
+    ),
+    var(--bg);
+}
+.preise .sectionTitle {
+  margin-bottom: var(--space-3);
+}
+.preiseLead {
+  margin: 0 0 var(--space-12);
+}
+.tarife {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  max-width: 880px;
+}
+.tarif {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-8) clamp(var(--space-6), 3vw, var(--space-8));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+}
+.empfohlen {
+  border: 2px solid var(--brand);
+  box-shadow: var(--shadow-2);
+}
+.marker {
+  position: absolute;
+  top: -13px;
+  left: var(--space-6);
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+.tarif h3 {
+  font-size: var(--step-1);
+  margin-bottom: var(--space-2);
+}
+.betrag {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 4vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.betrag small {
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+.tarifSub {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+.enthalten {
+  list-style: none;
+  margin: var(--space-6) 0 var(--space-8);
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+.enthalten li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+.enthalten svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--brand);
+}
+.tarifBtn {
+  margin-top: auto;
+  width: 100%;
+}
+.preiseFuss {
+  max-width: 62ch;
+  margin: var(--space-6) 0 0;
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+@media (max-width: 700px) {
+  .tarife {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+}
