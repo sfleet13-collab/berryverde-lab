@@ -361,8 +361,16 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 </a>
               </Reveal>
             ))}
+            <Reveal as="aside" delay={160} className={styles.preisInfo}>
+              <h3>{p.asideTitle}</h3>
+              <ul>
+                {p.aside.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+              <p className={styles.macherin}>{p.maker}</p>
+            </Reveal>
           </div>
-          <p className={styles.preiseFuss}>{p.after}</p>
         </div>
       </section>
 

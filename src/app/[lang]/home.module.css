@@ -564,9 +564,47 @@
 }
 .tarife {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 0.85fr);
   gap: var(--space-6);
-  max-width: 880px;
+  align-items: stretch;
+}
+.preisInfo {
+  align-self: center;
+  padding-left: clamp(0rem, 2vw, var(--space-6));
+}
+.preisInfo h3 {
+  font-size: var(--step-1);
+  margin-bottom: var(--space-4);
+}
+.preisInfo ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+  color: var(--text-muted);
+  font-size: var(--step--1);
+}
+.preisInfo li {
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--brand-soft);
+}
+.macherin {
+  margin: var(--space-6) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+@media (max-width: 1040px) {
+  .tarife {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .preisInfo {
+    grid-column: 1 / -1;
+    padding-left: 0;
+    max-width: 62ch;
+  }
 }
 .tarif {
   position: relative;
@@ -638,12 +676,6 @@
 .tarifBtn {
   margin-top: auto;
   width: 100%;
-}
-.preiseFuss {
-  max-width: 62ch;
-  margin: var(--space-6) 0 0;
-  font-size: var(--step--1);
-  color: var(--text-muted);
 }
 @media (max-width: 700px) {
   .tarife {

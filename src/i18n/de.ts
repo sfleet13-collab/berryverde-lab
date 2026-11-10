@@ -24,7 +24,8 @@ const de = {
     lead: "Dein Lab rechnet deine Creme in Gramm und Tropfen um, prüft Emulgator, Konservierung und pH-Wert und schlägt die Korrektur gleich vor. Entwickelt von einer Chemielaborantin.",
     ctaPrimary: "Mitglied werden",
     ctaSecondary: "Anmelden",
-    priceNote: "59 € im Jahr oder 9 € im Monat. Monatlich kündbar.",
+    priceNote:
+      "59 € im Jahr oder 9 € im Monat. Das Monatsabo kündigst du jederzeit zum Monatsende.",
     demo: {
       title: "Probier es aus",
       recipe: "Beispiel: leichte Tagescreme",
@@ -135,7 +136,7 @@ const de = {
         "Alle Rezepturen und über 80 Rohstoffe",
         "Rechner mit Prüfung, Rezeptkarte und Etikett",
         "Eigene Rezepturen anlegen und speichern",
-        "Videos: Basiswissen und ausgewählte Rezepturen",
+        "Videos: Basiswissen und ausgewählte Rezepturen (ab Dezember)",
         "Immer wieder neue Rezepturen",
       ],
       yearly: {
@@ -155,8 +156,14 @@ const de = {
         terms: "Jederzeit zum Monatsende kündbar",
         cta: "Monatlich Mitglied werden",
       },
-      after:
-        "Bezahlt wird sicher über Tentary, per Karte oder PayPal. Danach meldest du dich hier mit derselben E-Mail-Adresse an. Dein Zugang ist automatisch freigeschaltet.",
+      asideTitle: "Gut zu wissen",
+      aside: [
+        "Bezahlt wird sicher über Tentary, per Karte oder PayPal.",
+        "Danach meldest du dich hier mit derselben E-Mail-Adresse an. Dein Zugang ist automatisch freigeschaltet.",
+        "Unsicher? Starte monatlich. Du kündigst jederzeit zum Monatsende.",
+      ],
+      maker:
+        "Entwickelt von Susan Fleet, Chemielaborantin mit 35 Jahren Erfahrung im Qualitätsmanagement.",
     },
     stepsTitle: "So kommst du ins Lab",
     steps: [
@@ -193,7 +200,7 @@ const de = {
       },
       {
         q: "Wie kündige ich?",
-        a: "Über den Link in deiner Kaufbestätigung von Tentary. Die monatliche Mitgliedschaft endet zum Ende des laufenden Monats, die jährliche zum Ende des Jahres. Bis dahin bleibt dein Zugang bestehen.",
+        a: "Über den Link in deiner Kaufbestätigung von Tentary. Die monatliche Mitgliedschaft endet zum Ende des laufenden Monats, die jährliche zum Ende deines Mitgliedsjahres. Bis dahin bleibt dein Zugang bestehen.",
       },
       {
         q: "Darf ich die Kosmetik verkaufen oder verschenken?",
@@ -210,7 +217,7 @@ const de = {
     ],
     ctaBandTitle: "Bereit für deine erste Rezeptur?",
     ctaBandText:
-      "59 € im Jahr oder 9 € im Monat. Alle Rezepturen, Rohstoffe, Videos und der Rechner mit Prüfung.",
+      "59 € im Jahr oder 9 € im Monat. Alle Rezepturen, Rohstoffe, der Rechner mit Prüfung und ab Dezember die Videos.",
     ownUse:
       "Dein Lab ist für den Eigengebrauch gedacht. Keine Heilversprechen, nur Pflege.",
   },
