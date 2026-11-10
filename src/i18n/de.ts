@@ -24,7 +24,8 @@ const de = {
     lead: "Dein Lab rechnet deine Creme in Gramm und Tropfen um, prüft Emulgator, Konservierung und pH-Wert und schlägt die Korrektur gleich vor. Entwickelt von einer Chemielaborantin.",
     ctaPrimary: "Mitglied werden",
     ctaSecondary: "Anmelden",
-    priceNote: "9 € im Monat oder 59 € im Jahr. Start am 15. November.",
+    priceNote:
+      "59 € im Jahr oder 9 € im Monat. Das Monatsabo kündigst du jederzeit zum Monatsende.",
     demo: {
       title: "Probier es aus",
       recipe: "Beispiel: leichte Tagescreme",
@@ -99,20 +100,89 @@ const de = {
       { name: "Mandelöl", amount: "6,6 ml" },
       { name: "Xanthan", amount: "0,10 g · Feinwaage" },
     ],
+    videos: {
+      title: "Susan zeigt dir, wie es geht",
+      lead: "Bald im Lab: In Videos zeige ich dir Schritt für Schritt, wie man Rezepturen herstellt. So läuft eine Creme ab:",
+      steps: [
+        "Fettphase erwärmen",
+        "Warme Wasserphase dazugeben",
+        "Rühren, bis die Creme bindet",
+        "Unter 40 °C den Konservierer zugeben",
+        "In den Tiegel abfüllen",
+      ],
+      kinds: [
+        {
+          title: "Basis-Videos",
+          text: "Hygiene und Werkzeug, Wiegen und Messen, Wasserbad, Emulsion rühren, pH-Wert, Konservierung, Etikett.",
+        },
+        {
+          title: "Rezeptur-Videos",
+          text: "Zu ausgewählten Rezepturen rühre ich vor. Du siehst, worauf es bei Temperatur, Rührzeit und Reihenfolge ankommt.",
+        },
+      ],
+      note: "Erste Folgen ab Dezember. Alle Videos laufen direkt in Dein Lab.",
+      heat: "70 °C",
+      cool: "38 °C",
+    },
     libraryTitle: "Eine Bibliothek, die mit dir wächst",
     libraryText: [
       "Die Bibliothek wächst laufend mit neuen, geprüften Rezepturen: vom Pulverpeeling ohne Strom bis zur Wintercreme. Du filterst nach Produkttyp, Hautbedürfnis, Ausrüstung und Stufe.",
       "Jede Rezeptur kannst du als eigene Variante speichern und verändern. Der Rechner prüft weiter mit. Und jeder Rohstoff hat einen Steckbrief: was dahintersteckt, was er chemisch ist und als was er wirkt.",
     ],
+    about: {
+      title: "Hinter Dein Lab steht Susan",
+      text: [
+        "Ich bin Chemielaborantin und habe 35 Jahre im Labor gearbeitet: Rezepturen entwickelt, Qualitätskontrolle, Qualitätsmanagement. Dort gilt: erst prüfen, dann freigeben.",
+        "Genau so arbeitet Dein Lab. Jede Rezeptur wird gerechnet und geprüft, bevor du rührst: welche Mengen sicher sind, welche Rohstoffe zusammenpassen und woran eine Creme scheitert.",
+      ],
+      sign: "Susan Fleet, berryverde",
+      more: "Mehr von mir auf berryverde.com",
+      moreNote: "(öffnet in neuem Tab)",
+      alt: "Susan Fleet im Laborkittel, lächelnd mit Mundschutz in der Hand",
+    },
+    pricing: {
+      title: "Werde Mitglied in Dein Lab",
+      lead: "Ein Zugang für alles: Rechner, Rezepturen, Rohstoffe und Videos.",
+      included: [
+        "Alle Rezepturen und über 80 Rohstoffe",
+        "Rechner mit Prüfung, Rezeptkarte und Etikett",
+        "Eigene Rezepturen anlegen und speichern",
+        "Videos: Basiswissen und ausgewählte Rezepturen (ab Dezember)",
+        "Immer wieder neue Rezepturen",
+      ],
+      yearly: {
+        name: "Jährlich",
+        badge: "Du sparst 49 €",
+        price: "59 €",
+        per: "im Jahr",
+        sub: "Weniger als 5 € im Monat",
+        terms: "Verlängert sich jährlich, bis du kündigst",
+        cta: "Jährlich Mitglied werden",
+      },
+      monthly: {
+        name: "Monatlich",
+        price: "9 €",
+        per: "im Monat",
+        sub: "Zum Ausprobieren",
+        terms: "Jederzeit zum Monatsende kündbar",
+        cta: "Monatlich Mitglied werden",
+      },
+      asideTitle: "Gut zu wissen",
+      aside: [
+        "Bezahlt wird sicher über Tentary, per Karte oder PayPal.",
+        "Danach meldest du dich hier mit derselben E-Mail-Adresse an. Dein Zugang ist automatisch freigeschaltet.",
+        "Unsicher? Starte monatlich. Du kündigst jederzeit zum Monatsende.",
+      ],
+    },
     stepsTitle: "So kommst du ins Lab",
     steps: [
       {
         title: "Mitglied werden",
-        text: "Du schließt die Mitgliedschaft bei berryverde ab.",
+        text: "Du wählst jährlich oder monatlich und bezahlst per Karte oder PayPal.",
       },
       {
         title: "Code per E-Mail",
-        text: "Du meldest dich mit deiner E-Mail-Adresse an und bekommst einen Code. Ein Passwort brauchst du nicht.",
+        text: "Du meldest dich mit der E-Mail-Adresse an, mit der du gekauft hast, und bekommst einen Code. Ein Passwort brauchst du nicht.",
       },
       {
         title: "Rühren",
@@ -130,6 +200,18 @@ const de = {
         a: "Die Rezepturen sind auf die Laborbox von berryverde abgestimmt, Start oder Pro. Du kannst auch mit eigenen Bechergläsern, Glasstab und Pipette arbeiten. Braucht eine Rezeptur eine Feinwaage, einen Milchaufschäumer oder ein pH-Meter, steht das dabei.",
       },
       {
+        q: "Sind Videos dabei?",
+        a: "Ja. Als Mitglied siehst du die Basis-Videos und ausgewählte Rezeptur-Videos. Die ersten Folgen kommen ab Dezember. Alle Videos laufen direkt in Dein Lab, du brauchst keinen extra Zugang.",
+      },
+      {
+        q: "Wie schnell bin ich nach dem Kauf drin?",
+        a: "Sofort. Du meldest dich mit der E-Mail-Adresse an, mit der du gekauft hast, und bekommst einen Code. Dein Zugang ist automatisch freigeschaltet.",
+      },
+      {
+        q: "Wie kündige ich?",
+        a: "Über den Link in deiner Kaufbestätigung von Tentary. Die monatliche Mitgliedschaft endet zum Ende des laufenden Monats, die jährliche zum Ende deines Mitgliedsjahres. Bis dahin bleibt dein Zugang bestehen.",
+      },
+      {
         q: "Darf ich die Kosmetik verkaufen oder verschenken?",
         a: "Nein. Dein Lab ist nur für den Eigengebrauch gedacht. Wer Kosmetik abgibt, braucht unter anderem eine Sicherheitsbewertung. Das leistet Dein Lab nicht.",
       },
@@ -143,7 +225,8 @@ const de = {
       },
     ],
     ctaBandTitle: "Bereit für deine erste Rezeptur?",
-    ctaBandText: "Die Mitgliedschaft kostet 9 € im Monat oder 59 € im Jahr.",
+    ctaBandText:
+      "59 € im Jahr oder 9 € im Monat. Alle Rezepturen, Rohstoffe, der Rechner mit Prüfung und ab Dezember die Videos.",
     ownUse:
       "Dein Lab ist für den Eigengebrauch gedacht. Keine Heilversprechen, nur Pflege.",
   },

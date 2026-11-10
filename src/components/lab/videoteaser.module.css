@@ -1,0 +1,653 @@
+/* Video-Teaser: eine Creme entsteht in 16 s, fünf Schritte à 3,2 s.
+   Zeitachse in Prozent: 0–20 erwärmen, 20–40 Wasserphase, 40–60 rühren,
+   60–80 unter 40 °C konservieren, 80–100 abfüllen. */
+
+.teaser {
+  --dauer: 16s;
+  --oel: #e8c36e;
+  --wasser: #d5e6eb;
+  --creme: #fbf1e8;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(var(--space-8), 6vw, var(--space-24));
+  align-items: center;
+}
+@media (max-width: 860px) {
+  .teaser {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .buehne {
+    max-width: 460px;
+    width: 100%;
+    justify-self: center;
+  }
+}
+
+.buehne {
+  padding: clamp(var(--space-4), 3vw, var(--space-6))
+    clamp(var(--space-4), 3vw, var(--space-6)) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-2);
+}
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--font-body);
+}
+.svg * {
+  transform-box: fill-box;
+}
+
+/* Grundformen */
+.glas {
+  fill: var(--surface);
+}
+.kontur {
+  fill: none;
+  stroke: var(--text);
+  stroke-opacity: 0.5;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.skala {
+  stroke: var(--text);
+  stroke-opacity: 0.3;
+  stroke-width: 2;
+}
+.beere {
+  fill: var(--brand);
+}
+.wasser {
+  fill: var(--wasser);
+}
+.oel {
+  fill: var(--oel);
+}
+.creme,
+.fuellung {
+  fill: var(--creme);
+}
+.wabern {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.kannenGlas {
+  fill: var(--wasser);
+  stroke: var(--text);
+  stroke-opacity: 0.5;
+  stroke-width: 3;
+}
+.strahl {
+  fill: none;
+  stroke: #bcd8df;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+}
+.ruehren {
+  stroke: #8c7a73;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-origin: 50% 0;
+}
+.pipettenGlas,
+.roehre {
+  fill: var(--surface);
+  stroke: var(--text);
+  stroke-opacity: 0.45;
+  stroke-width: 2;
+}
+.wert {
+  font-size: 17px;
+  font-weight: 600;
+  fill: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.etikett {
+  fill: var(--brand-soft);
+}
+.etikettStrich {
+  stroke: var(--brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.quecksilber,
+.fuellung {
+  transform-origin: 50% 100%;
+}
+
+/* Zeitachse */
+.waerme,
+.becher,
+.oel,
+.wasser,
+.creme,
+.kanne,
+.strahl,
+.stab,
+.pipette,
+.tropfen,
+.thermo,
+.quecksilber,
+.heiss,
+.kalt,
+.tiegel,
+.fuellung,
+.deckel {
+  animation-duration: var(--dauer);
+  animation-timing-function: var(--ease-out);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.waerme {
+  animation-name: tWaerme;
+}
+.wabern {
+  animation: wabern 1.4s ease-in-out infinite alternate;
+}
+.becher {
+  animation-name: tBecher;
+}
+.oel {
+  animation-name: tOel;
+}
+.wasser {
+  animation-name: tWasser;
+}
+.creme {
+  animation-name: tCreme;
+}
+.kanne {
+  animation-name: tKanne;
+}
+.strahl {
+  animation-name: tStrahl;
+}
+.stab {
+  animation-name: tStab;
+}
+.ruehren {
+  animation: ruehren 0.55s ease-in-out infinite alternate;
+}
+.pipette {
+  animation-name: tPipette;
+}
+.tropfen {
+  animation-name: tTropfen;
+}
+.thermo {
+  animation-name: tThermo;
+}
+.quecksilber {
+  animation-name: tHg;
+}
+.heiss {
+  animation-name: tHeiss;
+}
+.kalt {
+  animation-name: tKalt;
+}
+.tiegel {
+  animation-name: tTiegel;
+}
+.fuellung {
+  animation-name: tFuellung;
+}
+.deckel {
+  animation-name: tDeckel;
+}
+
+@keyframes tWaerme {
+  0%,
+  36% {
+    opacity: 1;
+  }
+  42%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes wabern {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-5px);
+  }
+}
+@keyframes tBecher {
+  0%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  86%,
+  96% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tOel {
+  0% {
+    transform: translateY(46px);
+  }
+  8%,
+  22% {
+    transform: translateY(0);
+  }
+  34%,
+  100% {
+    transform: translateY(-74px);
+  }
+}
+@keyframes tWasser {
+  0%,
+  22% {
+    transform: translateY(80px);
+  }
+  34%,
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes tCreme {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  56%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes tKanne {
+  0%,
+  19% {
+    opacity: 0;
+    transform: translate(-14px, -10px);
+  }
+  23%,
+  36% {
+    opacity: 1;
+    transform: none;
+  }
+  40%,
+  100% {
+    opacity: 0;
+    transform: translate(-14px, -10px);
+  }
+}
+@keyframes tStrahl {
+  0%,
+  23% {
+    stroke-dashoffset: 120;
+  }
+  27%,
+  34% {
+    stroke-dashoffset: 0;
+  }
+  38%,
+  100% {
+    stroke-dashoffset: -120;
+  }
+}
+@keyframes tStab {
+  0%,
+  40% {
+    opacity: 0;
+  }
+  43%,
+  58% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ruehren {
+  from {
+    transform: rotate(-7deg);
+  }
+  to {
+    transform: rotate(7deg);
+  }
+}
+@keyframes tPipette {
+  0%,
+  60% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  63%,
+  77% {
+    opacity: 1;
+    transform: none;
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+@keyframes tTropfen {
+  0%,
+  65% {
+    opacity: 0;
+    transform: none;
+  }
+  66% {
+    opacity: 1;
+    transform: none;
+  }
+  71% {
+    opacity: 1;
+    transform: translateY(58px);
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: translateY(58px);
+  }
+}
+@keyframes tThermo {
+  0%,
+  79% {
+    opacity: 1;
+  }
+  84%,
+  96% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes tHg {
+  0% {
+    transform: scaleY(0.25);
+  }
+  14%,
+  40% {
+    transform: scaleY(0.88);
+  }
+  58%,
+  100% {
+    transform: scaleY(0.42);
+  }
+}
+@keyframes tHeiss {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  13%,
+  40% {
+    opacity: 1;
+  }
+  46%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tKalt {
+  0%,
+  56% {
+    opacity: 0;
+  }
+  61%,
+  80% {
+    opacity: 1;
+  }
+  84%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tTiegel {
+  0%,
+  82% {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  86%,
+  97% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes tFuellung {
+  0%,
+  85% {
+    transform: scaleY(0);
+  }
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes tDeckel {
+  0%,
+  92% {
+    opacity: 0;
+    transform: translateY(-34px);
+  }
+  95%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Fortschritt unter der Bühne */
+.balken {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: var(--space-3);
+}
+.balken span {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+.balken span::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: b1 var(--dauer) linear infinite;
+}
+.balken span:nth-child(2)::after {
+  animation-name: b2;
+}
+.balken span:nth-child(3)::after {
+  animation-name: b3;
+}
+.balken span:nth-child(4)::after {
+  animation-name: b4;
+}
+.balken span:nth-child(5)::after {
+  animation-name: b5;
+}
+@keyframes b1 {
+  0% {
+    transform: scaleX(0);
+  }
+  20%,
+  98% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+@keyframes b2 {
+  0%,
+  20% {
+    transform: scaleX(0);
+  }
+  40%,
+  98% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+@keyframes b3 {
+  0%,
+  40% {
+    transform: scaleX(0);
+  }
+  60%,
+  98% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+@keyframes b4 {
+  0%,
+  60% {
+    transform: scaleX(0);
+  }
+  80%,
+  98% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+@keyframes b5 {
+  0%,
+  80% {
+    transform: scaleX(0);
+  }
+  98% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+/* Schrittliste: der laufende Schritt leuchtet auf */
+.schritte {
+  list-style: none;
+  counter-reset: s;
+  padding: 0;
+  margin: var(--space-6) 0 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.schritte li {
+  counter-increment: s;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-muted);
+  animation: schritt var(--dauer) infinite;
+}
+.schritte li::before {
+  content: counter(s);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 600;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  animation: schrittNr var(--dauer) infinite;
+}
+.schritte li:nth-child(2),
+.schritte li:nth-child(2)::before {
+  animation-delay: 3.2s;
+}
+.schritte li:nth-child(3),
+.schritte li:nth-child(3)::before {
+  animation-delay: 6.4s;
+}
+.schritte li:nth-child(4),
+.schritte li:nth-child(4)::before {
+  animation-delay: 9.6s;
+}
+.schritte li:nth-child(5),
+.schritte li:nth-child(5)::before {
+  animation-delay: 12.8s;
+}
+@keyframes schritt {
+  0%,
+  19% {
+    color: var(--text);
+  }
+  20%,
+  100% {
+    color: var(--text-muted);
+  }
+}
+@keyframes schrittNr {
+  0%,
+  19% {
+    background: var(--brand);
+    color: var(--on-brand, #fff);
+  }
+  20%,
+  100% {
+    background: var(--brand-soft);
+    color: var(--brand);
+  }
+}
+
+/* Nur laufen, solange sichtbar */
+.teaser[data-laeuft="false"] *,
+.teaser[data-laeuft="false"] .balken span::after,
+.teaser[data-laeuft="false"] .schritte li::before {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teaser *,
+  .teaser .balken span::after,
+  .teaser .schritte li::before {
+    animation: none !important;
+  }
+  .waerme,
+  .kanne,
+  .stab,
+  .pipette,
+  .thermo,
+  .becher {
+    opacity: 0;
+  }
+  .tiegel,
+  .fuellung,
+  .deckel {
+    opacity: 1;
+    transform: none;
+  }
+  .balken {
+    display: none;
+  }
+}

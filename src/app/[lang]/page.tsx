@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDictionary, href } from "@/i18n";
@@ -10,6 +11,7 @@ import Reveal from "@/components/Reveal";
 import Icon from "@/components/Icon";
 import HeroRechner from "@/components/lab/HeroRechner";
 import SpreitDemo from "@/components/lab/SpreitDemo";
+import VideoTeaser from "@/components/lab/VideoTeaser";
 import styles from "./home.module.css";
 
 export async function generateMetadata({
@@ -86,6 +88,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const t = getDictionary(lang);
   const h = t.home;
   const demo = demoDaten();
+  const zumPreis = `#${lab.mitgliedAnker}`;
+  const p = h.pricing;
 
   const faqLd = {
     "@context": "https://schema.org",
@@ -113,7 +117,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <h1>{h.title}</h1>
             <p className={styles.lead}>{h.lead}</p>
             <div className={styles.ctas}>
-              <a className="btn btn-primary" href={lab.mitgliedschaftUrl}>
+              <a className="btn btn-primary" href={zumPreis}>
                 {h.ctaPrimary}
                 <Icon name="arrow" />
               </a>
@@ -160,7 +164,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           </ul>
 
           <div className={styles.spreitCta}>
-            <a className="btn btn-primary" href={lab.mitgliedschaftUrl}>
+            <a className="btn btn-primary" href={zumPreis}>
               {h.spreit.cta}
             </a>
             <p>{h.spreit.ctaNote}</p>
@@ -223,15 +227,15 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 <dl>
                   <div>
                     <dt>{h.label.made}</dt>
-                    <dd>15.11.2026</dd>
+                    <dd>02.12.2026</dd>
                   </div>
                   <div>
                     <dt>{h.label.best}</dt>
-                    <dd>13.02.2027</dd>
+                    <dd>02.03.2027</dd>
                   </div>
                   <div>
                     <dt>{h.label.batch}</dt>
-                    <dd>261115-LAB</dd>
+                    <dd>261202-LAB</dd>
                   </div>
                 </dl>
                 <p className={styles.miniInci}>
@@ -244,6 +248,40 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </div>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* VIDEOS – Susan als Person: Vertrauen vor dem Preis */}
+      <section className={styles.videos} aria-labelledby="videos-title">
+        <div className="container">
+          <Reveal>
+            <VideoTeaser
+              steps={h.videos.steps}
+              heat={h.videos.heat}
+              cool={h.videos.cool}
+              kopf={
+                <>
+                  <h2 id="videos-title" className={styles.videoTitel}>
+                    {h.videos.title}
+                  </h2>
+                  <p className={styles.fliess}>{h.videos.lead}</p>
+                </>
+              }
+              fuss={
+                <>
+                  <dl className={styles.videoArten}>
+                    {h.videos.kinds.map((k) => (
+                      <div key={k.title}>
+                        <dt>{k.title}</dt>
+                        <dd>{k.text}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p className={styles.videoNotiz}>{h.videos.note}</p>
+                </>
+              }
+            />
+          </Reveal>
         </div>
       </section>
 
@@ -262,6 +300,113 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </p>
             ))}
           </Reveal>
+        </div>
+      </section>
+
+      {/* ÜBER SUSAN – ein Mensch hinter dem Rechner, direkt vor dem Preis */}
+      <section className={styles.ueber} aria-labelledby="ueber-title">
+        <div className={`container ${styles.ueberGrid}`}>
+          <Reveal className={styles.ueberBild}>
+            <Image
+              src="/susan-labor.webp"
+              alt={h.about.alt}
+              width={800}
+              height={1000}
+              sizes="(max-width: 760px) 70vw, 360px"
+            />
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 id="ueber-title" className={styles.sectionTitle}>
+              {h.about.title}
+            </h2>
+            {h.about.text.map((t) => (
+              <p key={t} className={styles.fliess}>
+                {t}
+              </p>
+            ))}
+            <p className={styles.unterschrift}>{h.about.sign}</p>
+            <a
+              className={`btn btn-ghost ${styles.ueberBtn}`}
+              href={lab.blogUrl}
+              target="_blank"
+              rel="noopener"
+            >
+              {h.about.more}
+              <Icon name="arrow" />
+              <span className="sr-only">{h.about.moreNote}</span>
+            </a>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* PREISE – Jahr zuerst und hervorgehoben, Buttons direkt zur Tentary-Kasse */}
+      <section
+        id={lab.mitgliedAnker}
+        className={styles.preise}
+        aria-labelledby="preise-title"
+      >
+        <div className="container">
+          <Reveal>
+            <h2 id="preise-title" className={styles.sectionTitle}>
+              {p.title}
+            </h2>
+            <p className={`${styles.fliess} ${styles.preiseLead}`}>{p.lead}</p>
+          </Reveal>
+          <div className={styles.tarife}>
+            {[
+              {
+                t: p.yearly,
+                badge: p.yearly.badge,
+                url: lab.checkoutJahr,
+                empfohlen: true,
+              },
+              {
+                t: p.monthly,
+                badge: null,
+                url: lab.checkoutMonat,
+                empfohlen: false,
+              },
+            ].map(({ t: tarif, badge, url, empfohlen }, i) => (
+              <Reveal
+                key={tarif.name}
+                delay={i * 80}
+                className={`${styles.tarif} ${empfohlen ? styles.empfohlen : ""}`}
+              >
+                {badge && <span className={styles.marker}>{badge}</span>}
+                <h3>{tarif.name}</h3>
+                <p className={styles.betrag}>
+                  {tarif.price} <small>{tarif.per}</small>
+                </p>
+                <p className={styles.tarifSub}>{tarif.sub}</p>
+                <ul className={styles.enthalten}>
+                  {p.included.map((x) => (
+                    <li key={x}>
+                      <Icon name="check" size={16} />
+                      {x}
+                    </li>
+                  ))}
+                  <li>
+                    <Icon name="check" size={16} />
+                    {tarif.terms}
+                  </li>
+                </ul>
+                <a
+                  className={`btn ${empfohlen ? "btn-primary" : "btn-ghost"} ${styles.tarifBtn}`}
+                  href={url}
+                >
+                  {tarif.cta}
+                </a>
+              </Reveal>
+            ))}
+            <Reveal as="aside" delay={160} className={styles.preisInfo}>
+              <h3>{p.asideTitle}</h3>
+              <ul>
+                {p.aside.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -311,7 +456,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <h2>{h.ctaBandTitle}</h2>
             <p>{h.ctaBandText}</p>
           </div>
-          <a className={`btn ${styles.bandBtn}`} href={lab.mitgliedschaftUrl}>
+          <a className={`btn ${styles.bandBtn}`} href={zumPreis}>
             {h.ctaPrimary}
             <Icon name="arrow" />
           </a>
