@@ -707,6 +707,9 @@
   font-style: italic;
   color: var(--brand);
 }
+.ueberBtn {
+  margin-top: var(--space-6);
+}
 @media (max-width: 760px) {
   .ueberGrid {
     grid-template-columns: 1fr;

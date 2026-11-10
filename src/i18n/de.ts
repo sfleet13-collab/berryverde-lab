@@ -136,6 +136,8 @@ const de = {
         "Genau so arbeitet Dein Lab. Jede Rezeptur wird gerechnet und geprüft, bevor du rührst: welche Mengen sicher sind, welche Rohstoffe zusammenpassen und woran eine Creme scheitert.",
       ],
       sign: "Susan Fleet, berryverde",
+      more: "Mehr von mir auf berryverde.com",
+      moreNote: "(öffnet in neuem Tab)",
       alt: "Susan Fleet im Laborkittel, lächelnd mit Mundschutz in der Hand",
     },
     pricing: {

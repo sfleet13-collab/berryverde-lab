@@ -325,6 +325,16 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </p>
             ))}
             <p className={styles.unterschrift}>{h.about.sign}</p>
+            <a
+              className={`btn btn-ghost ${styles.ueberBtn}`}
+              href={lab.blogUrl}
+              target="_blank"
+              rel="noopener"
+            >
+              {h.about.more}
+              <Icon name="arrow" />
+              <span className="sr-only">{h.about.moreNote}</span>
+            </a>
           </Reveal>
         </div>
       </section>
