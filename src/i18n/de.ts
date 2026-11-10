@@ -101,7 +101,7 @@ const de = {
     ],
     libraryTitle: "Eine Bibliothek, die mit dir wächst",
     libraryText: [
-      "Zweimal im Monat kommen neue, geprüfte Rezepturen dazu: vom Pulverpeeling ohne Strom bis zur Wintercreme. Du filterst nach Produkttyp, Hautbedürfnis, Ausrüstung und Stufe.",
+      "Die Bibliothek wächst laufend mit neuen, geprüften Rezepturen: vom Pulverpeeling ohne Strom bis zur Wintercreme. Du filterst nach Produkttyp, Hautbedürfnis, Ausrüstung und Stufe.",
       "Jede Rezeptur kannst du als eigene Variante speichern und verändern. Der Rechner prüft weiter mit. Und jeder Rohstoff hat einen Steckbrief: was dahintersteckt, was er chemisch ist und als was er wirkt.",
     ],
     stepsTitle: "So kommst du ins Lab",
