@@ -3,7 +3,7 @@ import { site } from "@/config/site";
 import Kaskade from "./Kaskade";
 import styles from "./kaskade.module.css";
 
-const TITEL = "Spreitkaskade: Welches Öl zieht wie schnell ein?";
+const TITEL = "Spreitkaskade: Welches Öl zieht schnell ein?";
 const BESCHREIBUNG =
   "Die Öl-Spreitkaskade von berryverde: Wähle ein Öl und sieh, wie weit es spreitet. Schnell, mittel oder langsam – für deine eigene Pflegeöl-Mischung.";
 
@@ -26,7 +26,6 @@ export default function OelKaskadeSeite() {
   return (
     <main className={styles.seite}>
       <div className={styles.wrap}>
-        <p className={styles.eyebrow}>berryverde · Dein Geschenk</p>
         <h1 className={styles.h1}>Die Öl-Kaskade</h1>
         <p className={styles.lede}>
           Wähle ein Öl und sieh, wie weit es spreitet. Je grösser der Fleck,
