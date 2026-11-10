@@ -1,96 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { EBENEN, OELE, REIHE, fleckGroesse, type Oel } from "@/lib/oele";
 import styles from "./kaskade.module.css";
-
-type Tempo = "schnell" | "mittel" | "langsam";
-type Oel = { name: string; tempo: Tempo; spreitung: number; notiz: string };
-
-/** Einordnung nach dem Spreitmodell (Ansmann), über die Fettsäureketten. Spreitung = relative Stufe, kein Messwert. */
-const OELE: Oel[] = [
-  {
-    name: "Squalan",
-    tempo: "schnell",
-    spreitung: 100,
-    notiz: "ultraleicht, geruchlos, zieht sofort ein",
-  },
-  {
-    name: "Neutralöl (MCT)",
-    tempo: "schnell",
-    spreitung: 94,
-    notiz: "Kokos-Ester, sehr leicht, nicht fettend",
-  },
-  {
-    name: "Kokosöl",
-    tempo: "schnell",
-    spreitung: 86,
-    notiz: "kurze C12-Kette, schnell, aber komedogen – sparsam",
-  },
-  {
-    name: "Aprikosenkernöl",
-    tempo: "mittel",
-    spreitung: 64,
-    notiz: "zart, weich, gut verträglich",
-  },
-  {
-    name: "Traubenkernöl",
-    tempo: "mittel",
-    spreitung: 61,
-    notiz: "leicht, mattierend, linolsäurereich",
-  },
-  {
-    name: "Distelöl",
-    tempo: "mittel",
-    spreitung: 58,
-    notiz: "linolsäurereich, gut bei unreiner Haut",
-  },
-  {
-    name: "Reiskeimöl",
-    tempo: "mittel",
-    spreitung: 55,
-    notiz: "seidig, antioxidantienreich, ausgleichend",
-  },
-  {
-    name: "Mandelöl",
-    tempo: "mittel",
-    spreitung: 52,
-    notiz: "beruhigend, nährend, mild",
-  },
-  {
-    name: "Jojobaöl",
-    tempo: "mittel",
-    spreitung: 49,
-    notiz: "Wachsester, hautähnlich, reguliert",
-  },
-  {
-    name: "Avocadoöl",
-    tempo: "mittel",
-    spreitung: 45,
-    notiz: "reichhaltig, aber mittel spreitend",
-  },
-  {
-    name: "Sheabutter",
-    tempo: "langsam",
-    spreitung: 28,
-    notiz: "Butter, langsam, schützender Film",
-  },
-  {
-    name: "Kakaobutter",
-    tempo: "langsam",
-    spreitung: 20,
-    notiz: "feste Butter, sehr reichhaltig",
-  },
-];
-
-const EBENEN: { tempo: Tempo; titel: string; tag: string }[] = [
-  { tempo: "schnell", titel: "Schnell", tag: "leicht, zieht sofort ein" },
-  { tempo: "mittel", titel: "Mittel", tag: "ausgleichend, seidig" },
-  { tempo: "langsam", titel: "Langsam", tag: "reichhaltig, schützend" },
-];
-
-const REIHE = [...OELE].sort((a, b) => b.spreitung - a.spreitung);
-const groesse = (s: number) =>
-  (0.22 + ((s - 18) / (100 - 18)) * (0.9 - 0.22)) * 100;
 
 /** Meldet die Höhe an die einbettende Seite (WordPress-iframe passt sich an). */
 function useHoeheMelden() {
@@ -127,7 +39,7 @@ export default function Kaskade() {
     window.clearTimeout(timer.current);
     const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     timer.current = window.setTimeout(
-      () => setFleck(groesse(o.spreitung)),
+      () => setFleck(fleckGroesse(o.spreitung)),
       ruhig ? 0 : 600,
     );
   }
@@ -142,7 +54,7 @@ export default function Kaskade() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const ring = vorher ? groesse(vorher.spreitung) : 0;
+  const ring = vorher ? fleckGroesse(vorher.spreitung) : 0;
 
   return (
     <>

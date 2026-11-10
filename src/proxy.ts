@@ -22,7 +22,7 @@ const PUBLIC_IN_PRIVATE = new RegExp(
 const LOCALE_HOME = new RegExp(`^/(${locales.join("|")})/?$`);
 
 /** Öffentliche Seiten ohne Sprache und ohne Login (eigenes Layout, auch per iframe eingebettet). */
-const OEFFENTLICH_OHNE_SPRACHE = /^\/oel-kaskade\/?$/;
+const OEFFENTLICH_OHNE_SPRACHE = /^\/(oel-kaskade|oel-chart-fuer-dich)\/?$/;
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
