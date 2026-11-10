@@ -1,4 +1,9 @@
-import { LAB, type LabPosition, type LabRezeptur, type LabRohstoff } from "./types";
+import {
+  LAB,
+  type LabPosition,
+  type LabRezeptur,
+  type LabRohstoff,
+} from "./types";
 
 /** Auf zwei Nachkommastellen runden, ohne Gleitkomma-Reste (0.1 + 0.2). */
 export function runde(wert: number, stellen = 2): number {
@@ -44,18 +49,31 @@ export type Berechnung = {
 
 function dichteVon(r: LabRohstoff): number {
   if (r.dichte && r.dichte > 0) return r.dichte;
-  return r.phase === "fett" || r.kategorie === "oel" ? LAB.dichteOel : LAB.dichteWasser;
+  return r.phase === "fett" || r.kategorie === "oel"
+    ? LAB.dichteOel
+    : LAB.dichteWasser;
 }
 
 /** Gramm → Anzeige: Tropfen bis 20 Stück, darüber ml; Festes und Pulver immer in Gramm. */
 export function mengeFuer(r: LabRohstoff, gramm: number): Mengenangabe {
   if (r.form !== "fluessig") {
-    return { art: "gramm", gramm: runde(gramm), feinwaage: gramm > 0 && gramm < LAB.feinwaageUnterG };
+    return {
+      art: "gramm",
+      gramm: runde(gramm),
+      feinwaage: gramm > 0 && gramm < LAB.feinwaageUnterG,
+    };
   }
-  const faktor = r.tropfenfaktor && r.tropfenfaktor > 0 ? r.tropfenfaktor : LAB.tropfenfaktorStandard;
+  const faktor =
+    r.tropfenfaktor && r.tropfenfaktor > 0
+      ? r.tropfenfaktor
+      : LAB.tropfenfaktorStandard;
   const tropfen = gramm / faktor;
   if (tropfen <= LAB.tropfenMax + 0.5) {
-    return { art: "tropfen", tropfen: Math.max(gramm > 0 ? 1 : 0, Math.round(tropfen)), gramm: runde(gramm) };
+    return {
+      art: "tropfen",
+      tropfen: Math.max(gramm > 0 ? 1 : 0, Math.round(tropfen)),
+      gramm: runde(gramm),
+    };
   }
   return { art: "ml", ml: runde(gramm / dichteVon(r), 1), gramm: runde(gramm) };
 }
@@ -65,11 +83,16 @@ export function mengeFuer(r: LabRohstoff, gramm: number): Mengenangabe {
  * Fettphase, Emulgatoranteil (auf Gesamt und auf Fettphase), Konservierer.
  * Positionen mit unbekanntem Rohstoff werden übersprungen.
  */
-export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff>): Berechnung {
+export function berechne(
+  rezeptur: LabRezeptur,
+  rohstoffe: Map<number, LabRohstoff>,
+): Berechnung {
   const zeilen = rezeptur.positionen.filter((p) => rohstoffe.has(p.rohstoffId));
   const ausgleich = zeilen.find((p) => p.adHundert);
   const summeOhneAusgleich = runde(
-    zeilen.filter((p) => p !== ausgleich).reduce((s, p) => s + (Number.isFinite(p.prozent) ? p.prozent : 0), 0),
+    zeilen
+      .filter((p) => p !== ausgleich)
+      .reduce((s, p) => s + (Number.isFinite(p.prozent) ? p.prozent : 0), 0),
     3,
   );
   const rest = runde(100 - summeOhneAusgleich, 3);
@@ -77,49 +100,96 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
 
   const positionen: BerechnetePosition[] = zeilen.map((p) => {
     const rohstoff = rohstoffe.get(p.rohstoffId)!;
-    const prozentEffektiv = p === ausgleich ? Math.max(0, rest) : Number.isFinite(p.prozent) ? p.prozent : 0;
+    const prozentEffektiv =
+      p === ausgleich
+        ? Math.max(0, rest)
+        : Number.isFinite(p.prozent)
+          ? p.prozent
+          : 0;
     const gramm = (charge * prozentEffektiv) / 100;
-    return { ...p, rohstoff, prozentEffektiv, gramm: runde(gramm), menge: mengeFuer(rohstoff, gramm) };
+    return {
+      ...p,
+      rohstoff,
+      prozentEffektiv,
+      gramm: runde(gramm),
+      menge: mengeFuer(rohstoff, gramm),
+    };
   });
 
   // Rundungsrest: Die gerundeten Gramm sollen sich genau zur Gesamtmenge addieren.
   // Der Rest geht an den Ausgleichsposten, sonst an die größte Position (dort fällt er am wenigsten ins Gewicht).
   const summeGerundet = positionen.reduce((s, p) => s + p.gramm, 0);
-  const sollG = runde((charge * (ausgleich ? summeOhneAusgleich + Math.max(0, rest) : summeOhneAusgleich)) / 100);
+  const sollG = runde(
+    (charge *
+      (ausgleich
+        ? summeOhneAusgleich + Math.max(0, rest)
+        : summeOhneAusgleich)) /
+      100,
+  );
   const restG = runde(sollG - summeGerundet);
   if (restG !== 0 && positionen.length > 0) {
-    const ziel = positionen.find((p) => p.adHundert) ?? [...positionen].sort((a, c) => c.gramm - a.gramm)[0];
+    const ziel =
+      positionen.find((p) => p.adHundert) ??
+      [...positionen].sort((a, c) => c.gramm - a.gramm)[0];
     ziel.gramm = runde(ziel.gramm + restG);
     ziel.menge = mengeFuer(ziel.rohstoff, ziel.gramm);
   }
 
   const sum = (f: (p: BerechnetePosition) => boolean) =>
-    runde(positionen.filter(f).reduce((s, p) => s + p.prozentEffektiv, 0), 3);
+    runde(
+      positionen.filter(f).reduce((s, p) => s + p.prozentEffektiv, 0),
+      3,
+    );
 
   const fettphase = sum((p) => p.phase === "fett");
   const wasserphase = sum((p) => p.phase === "wasser");
   const emulgatorGesamt = sum((p) => p.rohstoff.kategorie === "emulgator");
   const hatWasser =
     wasserphase > 0 ||
-    positionen.some((p) => p.prozentEffektiv > 0 && (p.rohstoff.kategorie === "wasser" || p.rohstoff.slug === "wasser"));
+    positionen.some(
+      (p) =>
+        p.prozentEffektiv > 0 &&
+        (p.rohstoff.kategorie === "wasser" || p.rohstoff.slug === "wasser"),
+    );
 
   return {
     positionen,
     summeOhneAusgleich,
-    summe: ausgleich ? runde(summeOhneAusgleich + Math.max(0, rest), 3) : summeOhneAusgleich,
-    gesamtG: runde((charge * (ausgleich ? runde(summeOhneAusgleich + Math.max(0, rest), 3) : summeOhneAusgleich)) / 100),
+    summe: ausgleich
+      ? runde(summeOhneAusgleich + Math.max(0, rest), 3)
+      : summeOhneAusgleich,
+    gesamtG: runde(
+      (charge *
+        (ausgleich
+          ? runde(summeOhneAusgleich + Math.max(0, rest), 3)
+          : summeOhneAusgleich)) /
+        100,
+    ),
     hatAusgleich: Boolean(ausgleich),
     fettphase,
     wasserphase,
     hatWasser,
     emulgator:
       emulgatorGesamt > 0
-        ? { gesamt: emulgatorGesamt, aufFettphase: fettphase > 0 ? runde((emulgatorGesamt / fettphase) * 100, 1) : 0 }
+        ? {
+            gesamt: emulgatorGesamt,
+            aufFettphase:
+              fettphase > 0 ? runde((emulgatorGesamt / fettphase) * 100, 1) : 0,
+          }
         : null,
     konserviererGesamt: sum((p) => p.rohstoff.kategorie === "konservierer"),
     ...(() => {
       const was = (f: (p: BerechnetePosition) => boolean) =>
-        runde(positionen.filter((p) => p.rohstoff.kategorie === "tensid" && f(p)).reduce((s, p) => s + (p.prozentEffektiv * (p.rohstoff.wasProzent ?? 0)) / 100, 0), 2);
+        runde(
+          positionen
+            .filter((p) => p.rohstoff.kategorie === "tensid" && f(p))
+            .reduce(
+              (s, p) =>
+                s + (p.prozentEffektiv * (p.rohstoff.wasProzent ?? 0)) / 100,
+              0,
+            ),
+          2,
+        );
       return {
         wasGesamt: was(() => true),
         wasAnionisch: was((p) => p.rohstoff.tensidKlasse === "anionisch"),
@@ -127,7 +197,9 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
       };
     })(),
     aetherischGesamt: sum((p) => p.rohstoff.kategorie === "aetherisches_oel"),
-    brauchtFeinwaage: positionen.some((p) => p.menge.art === "gramm" && p.menge.feinwaage),
+    brauchtFeinwaage: positionen.some(
+      (p) => p.menge.art === "gramm" && p.menge.feinwaage,
+    ),
   };
 }
 
@@ -138,7 +210,9 @@ export function berechne(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohsto
 export function inciListe(b: Berechnung): string[] {
   const gesehen = new Set<string>();
   const out: string[] = [];
-  for (const p of [...b.positionen].sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)) {
+  for (const p of [...b.positionen].sort(
+    (a, c) => c.prozentEffektiv - a.prozentEffektiv,
+  )) {
     if (p.prozentEffektiv <= 0) continue;
     for (const teil of p.rohstoff.inci.split(",")) {
       const name = teil.trim();

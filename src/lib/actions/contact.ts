@@ -5,7 +5,9 @@ import { sendMail } from "@/lib/mail";
 
 export type ContactState = {
   ok: boolean;
-  errors?: Partial<Record<"name" | "email" | "message" | "consent" | "form", true>>;
+  errors?: Partial<
+    Record<"name" | "email" | "message" | "consent" | "form", true>
+  >;
   /** Eingaben zurückgeben, damit bei Fehlern nichts verloren geht */
   values?: { name: string; email: string; message: string };
 };
@@ -20,7 +22,10 @@ function rateLimited(ip: string, max = 5, windowMs = 10 * 60_000) {
   return list.length > max;
 }
 
-export async function submitContact(_prev: ContactState, form: FormData): Promise<ContactState> {
+export async function submitContact(
+  _prev: ContactState,
+  form: FormData,
+): Promise<ContactState> {
   const name = String(form.get("name") ?? "").trim();
   const email = String(form.get("email") ?? "").trim();
   const message = String(form.get("message") ?? "").trim();
@@ -28,10 +33,12 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
 
   const errors: ContactState["errors"] = {};
   if (name.length < 2 || name.length > 120) errors.name = true;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) errors.email = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200)
+    errors.email = true;
   if (message.length < 10 || message.length > 5000) errors.message = true;
   if (!consent) errors.consent = true;
-  if (Object.keys(errors).length) return { ok: false, errors, values: { name, email, message } };
+  if (Object.keys(errors).length)
+    return { ok: false, errors, values: { name, email, message } };
 
   // Spam-Schutz 1: verstecktes Feld muss leer bleiben
   if (String(form.get("website") ?? "")) return { ok: true };
@@ -41,7 +48,12 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
 
   const h = await headers();
   const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
-  if (rateLimited(ip)) return { ok: false, errors: { form: true }, values: { name, email, message } };
+  if (rateLimited(ip))
+    return {
+      ok: false,
+      errors: { form: true },
+      values: { name, email, message },
+    };
 
   try {
     await sendMail({
@@ -52,6 +64,10 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
     return { ok: true };
   } catch (err) {
     console.error("Kontaktformular:", err);
-    return { ok: false, errors: { form: true }, values: { name, email, message } };
+    return {
+      ok: false,
+      errors: { form: true },
+      values: { name, email, message },
+    };
   }
 }

@@ -1,4 +1,10 @@
-import { berechne, runde, zahl, type Berechnung, type BerechnetePosition } from "./rechner";
+import {
+  berechne,
+  runde,
+  zahl,
+  type Berechnung,
+  type BerechnetePosition,
+} from "./rechner";
 import {
   LAB,
   STUFEN_ORDNUNG,
@@ -40,7 +46,11 @@ export type Meldung = {
   korrektur?: Korrektur;
 };
 
-export type GeraeteBedarf = { slug: "feinwaage" | "ruehrer" | "ph-meter"; pflicht: boolean; grund: string };
+export type GeraeteBedarf = {
+  slug: "feinwaage" | "ruehrer" | "ph-meter";
+  pflicht: boolean;
+  grund: string;
+};
 
 export type Pruefung = {
   berechnung: Berechnung;
@@ -55,8 +65,15 @@ export type Pruefung = {
 
 const pct = (n: number) => `${zahl(n, 2)} %`;
 
-function bereichFuer(r: LabRohstoff, typ: LabRezeptur["produkttyp"]): DosierBereich | null {
-  return r.dosierungen.find((d) => d.produkttyp === typ) ?? r.dosierungen.find((d) => d.produkttyp === "alle") ?? null;
+function bereichFuer(
+  r: LabRohstoff,
+  typ: LabRezeptur["produkttyp"],
+): DosierBereich | null {
+  return (
+    r.dosierungen.find((d) => d.produkttyp === typ) ??
+    r.dosierungen.find((d) => d.produkttyp === "alle") ??
+    null
+  );
 }
 
 /** Nächster gültiger Wert innerhalb eines Bereichs. */
@@ -68,12 +85,16 @@ function hatInci(p: BerechnetePosition, name: string): boolean {
   return p.rohstoff.inci.toLowerCase().includes(name.toLowerCase());
 }
 
-export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff>): Pruefung {
+export function pruefe(
+  rezeptur: LabRezeptur,
+  rohstoffe: Map<number, LabRohstoff>,
+): Pruefung {
   const b = berechne(rezeptur, rohstoffe);
   const m: Meldung[] = [];
   const typ = rezeptur.produkttyp;
   const aktiv = b.positionen.filter((p) => p.prozentEffektiv > 0);
-  const nachSlug = (slug: string) => aktiv.find((p) => p.rohstoff.slug === slug);
+  const nachSlug = (slug: string) =>
+    aktiv.find((p) => p.rohstoff.slug === slug);
 
   // ---------- 0. Ungültige Anteile ----------
   const negativ = b.positionen.filter((p) => !p.adHundert && p.prozent < 0);
@@ -84,13 +105,21 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       titel: "Negativer Anteil",
       text: `Ein Anteil kann nicht unter 0 % liegen (${negativ.map((p) => p.rohstoff.name).join(", ")}).`,
       zeilen: negativ.map((p) => p.key),
-      korrektur: { label: "Auf 0 % setzen", setze: negativ.map((p) => ({ key: p.key, prozent: 0 })) },
+      korrektur: {
+        label: "Auf 0 % setzen",
+        setze: negativ.map((p) => ({ key: p.key, prozent: 0 })),
+      },
     });
   }
 
   // ---------- 1. Summe ----------
   if (b.positionen.length === 0) {
-    m.push({ code: "leer", art: "hinweis", titel: "Noch keine Rohstoffe", text: "Füge den ersten Rohstoff hinzu, dann rechnet und prüft Dein Lab mit." });
+    m.push({
+      code: "leer",
+      art: "hinweis",
+      titel: "Noch keine Rohstoffe",
+      text: "Füge den ersten Rohstoff hinzu, dann rechnet und prüft Dein Lab mit.",
+    });
   } else if (b.hatAusgleich) {
     if (b.summeOhneAusgleich > 100) {
       m.push({
@@ -103,18 +132,29 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   } else if (Math.abs(b.summe - 100) > 0.005) {
     const diff = runde(100 - b.summe, 3);
     const wasser = b.positionen.find((p) => p.rohstoff.kategorie === "wasser");
-    const groesste = [...b.positionen].sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
+    const groesste = [...b.positionen].sort(
+      (a, c) => c.prozentEffektiv - a.prozentEffektiv,
+    )[0];
     m.push({
       code: "summe",
       art: "fehler",
       titel: `Summe ist ${pct(b.summe)} statt 100 %`,
-      text: diff > 0 ? `Es fehlen ${pct(diff)}.` : `Es sind ${pct(-diff)} zu viel.`,
+      text:
+        diff > 0 ? `Es fehlen ${pct(diff)}.` : `Es sind ${pct(-diff)} zu viel.`,
       korrektur: wasser
-        ? { label: `${wasser.rohstoff.name} als Ausgleich „ad 100“ setzen`, ausgleich: wasser.key }
+        ? {
+            label: `${wasser.rohstoff.name} als Ausgleich „ad 100“ setzen`,
+            ausgleich: wasser.key,
+          }
         : groesste && groesste.prozentEffektiv + diff > 0
           ? {
               label: `${groesste.rohstoff.name} auf ${pct(runde(groesste.prozentEffektiv + diff, 3))} setzen`,
-              setze: [{ key: groesste.key, prozent: runde(groesste.prozentEffektiv + diff, 3) }],
+              setze: [
+                {
+                  key: groesste.key,
+                  prozent: runde(groesste.prozentEffektiv + diff, 3),
+                },
+              ],
             }
           : undefined,
     });
@@ -127,7 +167,11 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       art: "fehler",
       titel: "Wasser in einer wasserfreien Rezeptur",
       text: "Sobald Wasser enthalten ist, braucht das Produkt eine Konservierung. Stelle den Produkttyp auf „Emulsion“ oder „Wässrig“ um oder nimm das Wasser heraus.",
-      zeilen: aktiv.filter((p) => p.phase === "wasser" || p.rohstoff.kategorie === "wasser").map((p) => p.key),
+      zeilen: aktiv
+        .filter(
+          (p) => p.phase === "wasser" || p.rohstoff.kategorie === "wasser",
+        )
+        .map((p) => p.key),
     });
   }
 
@@ -136,9 +180,16 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   const emulgatoren = aktiv.filter((p) => p.rohstoff.kategorie === "emulgator");
   const etyp = rezeptur.emulsionstyp ?? "ow";
   if (typ === "emulsion") {
-    const passend = emulgatoren.filter((e) => !e.rohstoff.emulgatorTyp || e.rohstoff.emulgatorTyp === etyp);
-    const falsch = emulgatoren.filter((e) => e.rohstoff.emulgatorTyp && e.rohstoff.emulgatorTyp !== etyp);
-    const standard = etyp === "wo" ? { slug: "olivem-900", name: "Olivem 900", prozent: 5 } : { slug: "xyliance", name: "Xyliance", prozent: 4 };
+    const passend = emulgatoren.filter(
+      (e) => !e.rohstoff.emulgatorTyp || e.rohstoff.emulgatorTyp === etyp,
+    );
+    const falsch = emulgatoren.filter(
+      (e) => e.rohstoff.emulgatorTyp && e.rohstoff.emulgatorTyp !== etyp,
+    );
+    const standard =
+      etyp === "wo"
+        ? { slug: "olivem-900", name: "Olivem 900", prozent: 5 }
+        : { slug: "xyliance", name: "Xyliance", prozent: 4 };
     if (emulgatoren.length === 0 && aktiv.length > 0) {
       const coEmu = aktiv.filter((p) => p.rohstoff.kategorie === "coemulgator");
       m.push({
@@ -149,8 +200,15 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           (etyp === "wo"
             ? "Eine W/O-Creme braucht einen W/O-Emulgator, sonst trennt sich das Wasser wieder ab. Standard in Dein Lab ist Olivem 900 mit 3–10 %, bei einer Fettphase von mindestens 50 %."
             : "Eine Emulsion braucht einen Emulgator, sonst trennen sich Fett und Wasser wieder. Standard in Dein Lab ist Xyliance mit 3–5 %.") +
-          (coEmu.length ? ` ${coEmu.map((p) => p.rohstoff.name).join(", ")} ${coEmu.length === 1 ? "ist ein Co-Emulgator und stabilisiert" : "sind Co-Emulgatoren und stabilisieren"} nur zusätzlich.` : ""),
-        korrektur: { label: `${standard.name} mit ${pct(standard.prozent)} ergänzen`, hinzu: [{ slug: standard.slug, prozent: standard.prozent, phase: "fett" }] },
+          (coEmu.length
+            ? ` ${coEmu.map((p) => p.rohstoff.name).join(", ")} ${coEmu.length === 1 ? "ist ein Co-Emulgator und stabilisiert" : "sind Co-Emulgatoren und stabilisieren"} nur zusätzlich.`
+            : ""),
+        korrektur: {
+          label: `${standard.name} mit ${pct(standard.prozent)} ergänzen`,
+          hinzu: [
+            { slug: standard.slug, prozent: standard.prozent, phase: "fett" },
+          ],
+        },
       });
     }
     for (const e of falsch) {
@@ -165,7 +223,17 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
         zeilen: [e.key],
         korrektur: passend.length
           ? undefined
-          : { label: `Durch ${standard.name} (${pct(standard.prozent)}) ersetzen`, ersetze: [{ key: e.key, slug: standard.slug, prozent: standard.prozent, phase: "fett" }] },
+          : {
+              label: `Durch ${standard.name} (${pct(standard.prozent)}) ersetzen`,
+              ersetze: [
+                {
+                  key: e.key,
+                  slug: standard.slug,
+                  prozent: standard.prozent,
+                  phase: "fett",
+                },
+              ],
+            },
       });
     }
     if (etyp === "wo" && aktiv.length > 0) {
@@ -181,10 +249,16 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       const d = bereichFuer(r, typ);
       const aufFett = r.emulgatorBezug === "fettphase";
       if (d) {
-        const ist = aufFett ? (b.fettphase > 0 ? runde((e.prozentEffektiv / b.fettphase) * 100, 1) : 0) : e.prozentEffektiv;
+        const ist = aufFett
+          ? b.fettphase > 0
+            ? runde((e.prozentEffektiv / b.fettphase) * 100, 1)
+            : 0
+          : e.prozentEffektiv;
         if (ist < d.min - 0.001 || ist > d.max + 0.001) {
           const zielBezug = naechster(ist, d.min, d.max);
-          const ziel = aufFett ? runde((b.fettphase * zielBezug) / 100, 2) : zielBezug;
+          const ziel = aufFett
+            ? runde((b.fettphase * zielBezug) / 100, 2)
+            : zielBezug;
           m.push({
             code: "emulgator-menge",
             art: "fehler",
@@ -193,15 +267,31 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
               ? `${r.name} wird auf die Fettphase gerechnet: ${pct(d.min)} bis ${pct(d.max)} der Fettphase. Aktuell sind es ${pct(ist)}.`
               : `${r.name} arbeitet zuverlässig bei ${pct(d.min)} bis ${pct(d.max)}. Aktuell sind es ${pct(ist)}.`,
             zeilen: [e.key],
-            korrektur: e.adHundert ? undefined : { label: `${r.name} auf ${pct(ziel)} setzen`, setze: [{ key: e.key, prozent: ziel }] },
+            korrektur: e.adHundert
+              ? undefined
+              : {
+                  label: `${r.name} auf ${pct(ziel)} setzen`,
+                  setze: [{ key: e.key, prozent: ziel }],
+                },
           });
         }
       }
-      if (r.fettphaseMin != null && r.fettphaseMax != null && (b.fettphase < r.fettphaseMin - 0.001 || b.fettphase > r.fettphaseMax + 0.001)) {
+      if (
+        r.fettphaseMin != null &&
+        r.fettphaseMax != null &&
+        (b.fettphase < r.fettphaseMin - 0.001 ||
+          b.fettphase > r.fettphaseMax + 0.001)
+      ) {
         const ziel = naechster(b.fettphase, r.fettphaseMin, r.fettphaseMax);
         const diff = runde(ziel - b.fettphase, 3);
         const oel = aktiv
-          .filter((p) => p.phase === "fett" && !p.adHundert && (p.rohstoff.kategorie === "oel" || p.rohstoff.kategorie === "butter"))
+          .filter(
+            (p) =>
+              p.phase === "fett" &&
+              !p.adHundert &&
+              (p.rohstoff.kategorie === "oel" ||
+                p.rohstoff.kategorie === "butter"),
+          )
           .sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
         m.push({
           code: "fettphase",
@@ -213,7 +303,12 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
             oel && oel.prozentEffektiv + diff > 0
               ? {
                   label: `${oel.rohstoff.name} auf ${pct(runde(oel.prozentEffektiv + diff, 2))} setzen (Fettphase ${pct(ziel)})`,
-                  setze: [{ key: oel.key, prozent: runde(oel.prozentEffektiv + diff, 2) }],
+                  setze: [
+                    {
+                      key: oel.key,
+                      prozent: runde(oel.prozentEffektiv + diff, 2),
+                    },
+                  ],
                 }
               : undefined,
         });
@@ -228,7 +323,10 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
         titel: "Xanthan fehlt",
         text: "Unter 25 % Fettphase wird eine Emulsion mit Xyliance zu dünn und kann sich absetzen. 0,2 % Xanthan in der Wasserphase stabilisieren sie.",
         zeilen: [xyl.key],
-        korrektur: { label: "0,2 % Xanthan ergänzen", hinzu: [{ slug: "xanthan", prozent: 0.2, phase: "wasser" }] },
+        korrektur: {
+          label: "0,2 % Xanthan ergänzen",
+          hinzu: [{ slug: "xanthan", prozent: 0.2, phase: "wasser" }],
+        },
       });
     }
   }
@@ -236,48 +334,89 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   // ---------- 3b. Tensidprodukte ----------
   const tenside = aktiv.filter((p) => p.rohstoff.kategorie === "tensid");
   if (typ === "tensid") {
-    const [wMin, wMax] = rezeptur.bereich === "gesicht" ? LAB.wasGesicht : LAB.wasKoerper;
+    const [wMin, wMax] =
+      rezeptur.bereich === "gesicht" ? LAB.wasGesicht : LAB.wasKoerper;
     if (tenside.length === 0 && aktiv.length > 0) {
       m.push({
         code: "tensid-fehlt",
         art: "fehler",
         titel: "Kein Tensid",
         text: "Ein Duschgel, Shampoo oder eine Flüssigseife braucht mindestens ein Tensid. Für den Einstieg mild und gut verträglich: Kokosglucosid.",
-        korrektur: { label: "Kokosglucosid mit 20 % ergänzen", hinzu: [{ slug: "kokosglucosid", prozent: 20, phase: "wasser" }] },
+        korrektur: {
+          label: "Kokosglucosid mit 20 % ergänzen",
+          hinzu: [{ slug: "kokosglucosid", prozent: 20, phase: "wasser" }],
+        },
       });
-    } else if (tenside.length > 0 && (b.wasGesamt < wMin - 0.001 || b.wasGesamt > wMax + 0.001)) {
-      const haupt = [...tenside].filter((p) => !p.adHundert && (p.rohstoff.wasProzent ?? 0) > 0).sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
+    } else if (
+      tenside.length > 0 &&
+      (b.wasGesamt < wMin - 0.001 || b.wasGesamt > wMax + 0.001)
+    ) {
+      const haupt = [...tenside]
+        .filter((p) => !p.adHundert && (p.rohstoff.wasProzent ?? 0) > 0)
+        .sort((a, c) => c.prozentEffektiv - a.prozentEffektiv)[0];
       const ziel = naechster(b.wasGesamt, wMin, wMax);
       // auf 0,1 % runden, aber in Richtung Bereich, damit die Korrektur die Grenze sicher einhält
-      const roh = haupt ? haupt.prozentEffektiv + ((ziel - b.wasGesamt) * 100) / (haupt.rohstoff.wasProzent ?? 1) : 0;
-      const neu = b.wasGesamt > wMax ? Math.floor(roh * 10 + 1e-9) / 10 : Math.ceil(roh * 10 - 1e-9) / 10;
+      const roh = haupt
+        ? haupt.prozentEffektiv +
+          ((ziel - b.wasGesamt) * 100) / (haupt.rohstoff.wasProzent ?? 1)
+        : 0;
+      const neu =
+        b.wasGesamt > wMax
+          ? Math.floor(roh * 10 + 1e-9) / 10
+          : Math.ceil(roh * 10 - 1e-9) / 10;
       m.push({
         code: "was",
         art: b.wasGesamt > wMax ? "fehler" : "warnung",
-        titel: b.wasGesamt > wMax ? "Zu viel waschaktive Substanz" : "Wenig waschaktive Substanz",
+        titel:
+          b.wasGesamt > wMax
+            ? "Zu viel waschaktive Substanz"
+            : "Wenig waschaktive Substanz",
         text: `${rezeptur.bereich === "gesicht" ? "Für das Gesicht" : "Für Körper und Haare"} sind ${pct(wMin)} bis ${pct(wMax)} waschaktive Substanz (WAS) üblich. Aktuell sind es ${pct(b.wasGesamt)}. ${b.wasGesamt > wMax ? "Mehr entfettet und reizt die Haut." : "Das Produkt schäumt und reinigt dann eher schwach."} Gerechnet wird mit dem Aktivgehalt jedes Tensids, nicht mit der Menge des Handelsprodukts.`,
         zeilen: tenside.map((p) => p.key),
-        korrektur: haupt && neu > 0 ? { label: `${haupt.rohstoff.name} auf ${pct(neu)} setzen (WAS ${pct(ziel)})`, setze: [{ key: haupt.key, prozent: neu }] } : undefined,
+        korrektur:
+          haupt && neu > 0
+            ? {
+                label: `${haupt.rohstoff.name} auf ${pct(neu)} setzen (WAS ${pct(ziel)})`,
+                setze: [{ key: haupt.key, prozent: neu }],
+              }
+            : undefined,
       });
     }
     if (b.wasAmphoter > 0 && b.wasAnionisch > 0) {
       const v = b.wasAmphoter / b.wasAnionisch;
       const [vMin, vMax] = LAB.betainVerhaeltnis;
       if (v < vMin - 0.005 || v > vMax + 0.005) {
-        const betain = tenside.find((p) => p.rohstoff.tensidKlasse === "amphoter" && !p.adHundert);
+        const betain = tenside.find(
+          (p) => p.rohstoff.tensidKlasse === "amphoter" && !p.adHundert,
+        );
         const zielWas = b.wasAnionisch * (v > vMax ? vMax : vMin);
-        const neu = betain && betain.rohstoff.wasProzent ? runde((zielWas * 100) / betain.rohstoff.wasProzent, 1) : 0;
+        const neu =
+          betain && betain.rohstoff.wasProzent
+            ? runde((zielWas * 100) / betain.rohstoff.wasProzent, 1)
+            : 0;
         m.push({
           code: "betain",
           art: "warnung",
           titel: "Verhältnis Betain zu Aniontensid",
           text: `Ein amphoteres Kotensid wie Kokosbetain macht Aniontenside milder, wenn es im Verhältnis 1:4 bis 1:3 (bezogen auf die WAS) dazukommt. Aktuell ist es 1:${zahl(1 / v, 1)}.`,
-          zeilen: tenside.filter((p) => p.rohstoff.tensidKlasse !== "nichtionisch").map((p) => p.key),
-          korrektur: betain && neu > 0 ? { label: `${betain.rohstoff.name} auf ${pct(neu)} setzen`, setze: [{ key: betain.key, prozent: neu }] } : undefined,
+          zeilen: tenside
+            .filter((p) => p.rohstoff.tensidKlasse !== "nichtionisch")
+            .map((p) => p.key),
+          korrektur:
+            betain && neu > 0
+              ? {
+                  label: `${betain.rohstoff.name} auf ${pct(neu)} setzen`,
+                  setze: [{ key: betain.key, prozent: neu }],
+                }
+              : undefined,
         });
       }
     }
-    if (rezeptur.phZiel != null && (rezeptur.phZiel < LAB.phTensid[0] - 0.001 || rezeptur.phZiel > LAB.phTensid[1] + 0.001)) {
+    if (
+      rezeptur.phZiel != null &&
+      (rezeptur.phZiel < LAB.phTensid[0] - 0.001 ||
+        rezeptur.phZiel > LAB.phTensid[1] + 0.001)
+    ) {
       m.push({
         code: "ph-tensid",
         art: "warnung",
@@ -311,17 +450,32 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       : 0;
     const alkoholMin = typ === "emulsion" ? 12 : 15;
     const alkoholReicht = alkoholAnteil >= alkoholMin - 0.001;
-    const standard = kons.filter((p) => p.rohstoff.konsRolle === "standard" && p.rohstoff.konsStatus === "konservierungsmittel");
-    const kombiVollstaendig = kons.some(
-      (p) => p.rohstoff.konsRolle === "kombi" && p.rohstoff.kombiPartner && p.rohstoff.kombiPartner.split(",").some((s) => nachSlug(s.trim())),
+    const standard = kons.filter(
+      (p) =>
+        p.rohstoff.konsRolle === "standard" &&
+        p.rohstoff.konsStatus === "konservierungsmittel",
     );
-    const nurZusatz = kons.filter((p) => p !== alkohol && !standard.includes(p));
+    const kombiVollstaendig = kons.some(
+      (p) =>
+        p.rohstoff.konsRolle === "kombi" &&
+        p.rohstoff.kombiPartner &&
+        p.rohstoff.kombiPartner.split(",").some((s) => nachSlug(s.trim())),
+    );
+    const nurZusatz = kons.filter(
+      (p) => p !== alkohol && !standard.includes(p),
+    );
 
     if (standard.length === 0 && !alkoholReicht && !kombiVollstaendig) {
       const vorschlag: Korrektur =
         typ === "emulsion" || typ === "tensid"
-          ? { label: "Cosgard mit 1 % ergänzen (unter 40 °C zugeben)", hinzu: [{ slug: "cosgard", prozent: 1, phase: "kalt" }] }
-          : { label: "Verstatil BL mit 2 % ergänzen", hinzu: [{ slug: "verstatil-bl", prozent: 2, phase: "wasser" }] };
+          ? {
+              label: "Cosgard mit 1 % ergänzen (unter 40 °C zugeben)",
+              hinzu: [{ slug: "cosgard", prozent: 1, phase: "kalt" }],
+            }
+          : {
+              label: "Verstatil BL mit 2 % ergänzen",
+              hinzu: [{ slug: "verstatil-bl", prozent: 2, phase: "wasser" }],
+            };
       if (alkohol && !alkoholReicht) {
         m.push({
           code: "alkohol-zu-wenig",
@@ -334,7 +488,10 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           zeilen: [alkohol.key],
           korrektur:
             typ === "waessrig" && !alkohol.adHundert
-              ? { label: "Alkohol auf 15 % setzen", setze: [{ key: alkohol.key, prozent: 15 }] }
+              ? {
+                  label: "Alkohol auf 15 % setzen",
+                  setze: [{ key: alkohol.key, prozent: 15 }],
+                }
               : vorschlag,
         });
       } else if (nurZusatz.length > 0) {
@@ -377,8 +534,17 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
     // Kombi-Partner fehlt
     for (const p of kons) {
       const r = p.rohstoff;
-      if (r.konsRolle === "kombi" && r.kombiPartner && !r.kombiPartner.split(",").some((s) => nachSlug(s.trim()))) {
-        const partner = [...rohstoffe.values()].find((x) => r.kombiPartner!.split(",").map((s) => s.trim()).includes(x.slug));
+      if (
+        r.konsRolle === "kombi" &&
+        r.kombiPartner &&
+        !r.kombiPartner.split(",").some((s) => nachSlug(s.trim()))
+      ) {
+        const partner = [...rohstoffe.values()].find((x) =>
+          r
+            .kombiPartner!.split(",")
+            .map((s) => s.trim())
+            .includes(x.slug),
+        );
         m.push({
           code: "kombi-partner",
           art: "fehler",
@@ -388,7 +554,13 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           korrektur: partner
             ? {
                 label: `${partner.name} ergänzen`,
-                hinzu: [{ slug: partner.slug, prozent: bereichFuer(partner, typ)?.min ?? 0.5, phase: partner.phase }],
+                hinzu: [
+                  {
+                    slug: partner.slug,
+                    prozent: bereichFuer(partner, typ)?.min ?? 0.5,
+                    phase: partner.phase,
+                  },
+                ],
               }
             : undefined,
         });
@@ -402,8 +574,14 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       const d = bereichFuer(r, typ);
       // Cosgard: 0,5 % sind erlaubt, wenn 0,2 % Kaliumsorbat ergänzen
       const cosgardKombi =
-        r.slug === "cosgard" && p.prozentEffektiv >= 0.5 - 0.001 && (nachSlug("kaliumsorbat")?.prozentEffektiv ?? 0) >= 0.2 - 0.001;
-      if (d && !cosgardKombi && (p.prozentEffektiv < d.min - 0.001 || p.prozentEffektiv > d.max + 0.001)) {
+        r.slug === "cosgard" &&
+        p.prozentEffektiv >= 0.5 - 0.001 &&
+        (nachSlug("kaliumsorbat")?.prozentEffektiv ?? 0) >= 0.2 - 0.001;
+      if (
+        d &&
+        !cosgardKombi &&
+        (p.prozentEffektiv < d.min - 0.001 || p.prozentEffektiv > d.max + 0.001)
+      ) {
         const ziel = naechster(p.prozentEffektiv, d.min, d.max);
         m.push({
           code: "kons-menge",
@@ -414,11 +592,22 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
               ? `${r.name} schützt erst ab ${pct(d.min)} zuverlässig (Bereich ${pct(d.min)} bis ${pct(d.max)}).${r.slug === "cosgard" ? " Ausnahme: 0,5 % zusammen mit 0,2 % Kaliumsorbat." : ""} Aktuell sind es ${pct(p.prozentEffektiv)}.`
               : `${r.name} ist bis ${pct(d.max)} vorgesehen. Aktuell sind es ${pct(p.prozentEffektiv)}; mehr schützt nicht besser, reizt aber eher.`,
           zeilen: [p.key],
-          korrektur: p.adHundert ? undefined : { label: `${r.name} auf ${pct(ziel)} setzen`, setze: [{ key: p.key, prozent: ziel }] },
+          korrektur: p.adHundert
+            ? undefined
+            : {
+                label: `${r.name} auf ${pct(ziel)} setzen`,
+                setze: [{ key: p.key, prozent: ziel }],
+              },
         });
       }
-      const phZuTief = rezeptur.phZiel != null && r.phMin != null && rezeptur.phZiel < r.phMin - 0.001;
-      const phZuHoch = rezeptur.phZiel != null && r.phMax != null && rezeptur.phZiel > r.phMax + 0.001;
+      const phZuTief =
+        rezeptur.phZiel != null &&
+        r.phMin != null &&
+        rezeptur.phZiel < r.phMin - 0.001;
+      const phZuHoch =
+        rezeptur.phZiel != null &&
+        r.phMax != null &&
+        rezeptur.phZiel > r.phMax + 0.001;
       if (rezeptur.phZiel != null && (phZuTief || phZuHoch)) {
         const bereich =
           r.phMin != null && r.phMax != null
@@ -443,7 +632,17 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           zeilen: [p.key],
           korrektur: p.adHundert
             ? undefined
-            : { label: "Durch Verstatil BL (2 %) ersetzen", ersetze: [{ key: p.key, slug: "verstatil-bl", prozent: 2, phase: "wasser" }] },
+            : {
+                label: "Durch Verstatil BL (2 %) ersetzen",
+                ersetze: [
+                  {
+                    key: p.key,
+                    slug: "verstatil-bl",
+                    prozent: 2,
+                    phase: "wasser",
+                  },
+                ],
+              },
         });
       }
     }
@@ -461,7 +660,13 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
 
   // ---------- 5. Vitamin C mit Benzoat oder Sorbat ----------
   const vitC = aktiv.find((p) => hatInci(p, "Ascorbic Acid"));
-  const benz = aktiv.filter((p) => hatInci(p, "Sodium Benzoate") || hatInci(p, "Potassium Sorbate") || hatInci(p, "Benzoic Acid") || hatInci(p, "Sorbic Acid"));
+  const benz = aktiv.filter(
+    (p) =>
+      hatInci(p, "Sodium Benzoate") ||
+      hatInci(p, "Potassium Sorbate") ||
+      hatInci(p, "Benzoic Acid") ||
+      hatInci(p, "Sorbic Acid"),
+  );
   if (vitC && benz.length > 0) {
     m.push({
       code: "vitc-benzoat",
@@ -475,12 +680,19 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   // ---------- 6. Zugabe unter 40 °C ----------
   const wirdErhitzt =
     typ === "emulsion" ||
-    (typ === "wasserfrei" && aktiv.some((p) => ["butter", "konsistenzgeber", "emulgator"].includes(p.rohstoff.kategorie)));
+    (typ === "wasserfrei" &&
+      aktiv.some((p) =>
+        ["butter", "konsistenzgeber", "emulgator"].includes(
+          p.rohstoff.kategorie,
+        ),
+      ));
   if (wirdErhitzt) {
     for (const p of aktiv) {
       const r = p.rohstoff;
       const empfindlich =
-        r.kategorie === "konservierer" || r.kategorie === "aetherisches_oel" || (r.tempMax != null && r.tempMax <= LAB.kaltGrenze);
+        r.kategorie === "konservierer" ||
+        r.kategorie === "aetherisches_oel" ||
+        (r.tempMax != null && r.tempMax <= LAB.kaltGrenze);
       if (empfindlich && p.phase !== "kalt") {
         m.push({
           code: "zu-heiss",
@@ -488,14 +700,20 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
           titel: `${r.name} erst unter 40 °C zugeben`,
           text: `${r.name} steht in der ${p.phase === "fett" ? "Fettphase" : p.phase === "wasser" ? "Wasserphase" : "Pulverphase"} und würde mit erhitzt. Hitze zerstört die Wirkung. Gehört in die Kaltphase (Zugabe beim Abkühlen unter 40 °C).`,
           zeilen: [p.key],
-          korrektur: { label: "In die Kaltphase verschieben", phase: [{ key: p.key, phase: "kalt" }] },
+          korrektur: {
+            label: "In die Kaltphase verschieben",
+            phase: [{ key: p.key, phase: "kalt" }],
+          },
         });
       }
     }
   }
 
   // ---------- 7. Ätherische Öle ----------
-  const eoMax = rezeptur.bereich === "gesicht" ? LAB.aetherischMaxGesicht : LAB.aetherischMaxKoerper;
+  const eoMax =
+    rezeptur.bereich === "gesicht"
+      ? LAB.aetherischMaxGesicht
+      : LAB.aetherischMaxKoerper;
   if (b.aetherischGesamt > eoMax + 0.001) {
     const eo = aktiv.filter((p) => p.rohstoff.kategorie === "aetherisches_oel");
     m.push({
@@ -506,7 +724,10 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
       zeilen: eo.map((p) => p.key),
       korrektur:
         eo.length === 1 && !eo[0].adHundert
-          ? { label: `${eo[0].rohstoff.name} auf ${pct(eoMax)} setzen`, setze: [{ key: eo[0].key, prozent: eoMax }] }
+          ? {
+              label: `${eo[0].rohstoff.name} auf ${pct(eoMax)} setzen`,
+              setze: [{ key: eo[0].key, prozent: eoMax }],
+            }
           : undefined,
     });
   } else if (b.aetherischGesamt > 0) {
@@ -521,10 +742,19 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   // ---------- 8. Einsatzmengen aller übrigen Rohstoffe ----------
   for (const p of aktiv) {
     const r = p.rohstoff;
-    if (p.adHundert || r.kategorie === "konservierer" || r.kategorie === "emulgator" || r.kategorie === "aetherisches_oel") continue;
+    if (
+      p.adHundert ||
+      r.kategorie === "konservierer" ||
+      r.kategorie === "emulgator" ||
+      r.kategorie === "aetherisches_oel"
+    )
+      continue;
     const d = bereichFuer(r, typ);
     if (!d) continue;
-    if (p.prozentEffektiv < d.min - 0.001 || p.prozentEffektiv > d.max + 0.001) {
+    if (
+      p.prozentEffektiv < d.min - 0.001 ||
+      p.prozentEffektiv > d.max + 0.001
+    ) {
       const ziel = naechster(p.prozentEffektiv, d.min, d.max);
       m.push({
         code: "menge",
@@ -532,20 +762,34 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
         titel: `${r.name} außerhalb der üblichen Menge`,
         text: `Üblich sind ${pct(d.min)} bis ${pct(d.max)}${d.hinweis ? ` (${d.hinweis})` : ""}. Aktuell sind es ${pct(p.prozentEffektiv)}.`,
         zeilen: [p.key],
-        korrektur: { label: `${r.name} auf ${pct(ziel)} setzen`, setze: [{ key: p.key, prozent: ziel }] },
+        korrektur: {
+          label: `${r.name} auf ${pct(ziel)} setzen`,
+          setze: [{ key: p.key, prozent: ziel }],
+        },
       });
     }
   }
 
   // ---------- 9. Antioxidans in Ölmischungen ----------
-  const oelAnteil = aktiv.filter((p) => p.rohstoff.kategorie === "oel" || p.rohstoff.kategorie === "butter").reduce((s, p) => s + p.prozentEffektiv, 0);
-  if (oelAnteil >= 5 && !aktiv.some((p) => p.rohstoff.kategorie === "antioxidans")) {
+  const oelAnteil = aktiv
+    .filter(
+      (p) =>
+        p.rohstoff.kategorie === "oel" || p.rohstoff.kategorie === "butter",
+    )
+    .reduce((s, p) => s + p.prozentEffektiv, 0);
+  if (
+    oelAnteil >= 5 &&
+    !aktiv.some((p) => p.rohstoff.kategorie === "antioxidans")
+  ) {
     m.push({
       code: "antioxidans",
       art: "warnung",
       titel: "Antioxidans fehlt",
       text: "Öle werden ohne Schutz schneller ranzig. 0,2–0,5 % Tocopherol in der Fettphase verlängern die Haltbarkeit. Tocopherol ist kein Konservierer.",
-      korrektur: { label: "0,3 % Tocopherol ergänzen", hinzu: [{ slug: "tocopherol", prozent: 0.3, phase: "fett" }] },
+      korrektur: {
+        label: "0,3 % Tocopherol ergänzen",
+        hinzu: [{ slug: "tocopherol", prozent: 0.3, phase: "fett" }],
+      },
     });
   }
 
@@ -560,9 +804,17 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   }
 
   // ---------- 11. Stufe ----------
-  const stufe = aktiv.reduce<Stufe>((s, p) => (STUFEN_ORDNUNG[p.rohstoff.stufe] > STUFEN_ORDNUNG[s] ? p.rohstoff.stufe : s), "anfaenger");
+  const stufe = aktiv.reduce<Stufe>(
+    (s, p) =>
+      STUFEN_ORDNUNG[p.rohstoff.stufe] > STUFEN_ORDNUNG[s]
+        ? p.rohstoff.stufe
+        : s,
+    "anfaenger",
+  );
   if (stufe !== "anfaenger") {
-    const hoch = aktiv.filter((p) => p.rohstoff.stufe === stufe).map((p) => p.rohstoff.name);
+    const hoch = aktiv
+      .filter((p) => p.rohstoff.stufe === stufe)
+      .map((p) => p.rohstoff.name);
     m.push({
       code: "stufe",
       art: "hinweis",
@@ -574,10 +826,17 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
   // ---------- Geräte ----------
   const geraete: GeraeteBedarf[] = [];
   if (b.brauchtFeinwaage) {
-    geraete.push({ slug: "feinwaage", pflicht: true, grund: "Pulver und feste Rohstoffe unter 1 g lassen sich nur mit einer Feinwaage (0,01 g) genau abmessen." });
+    geraete.push({
+      slug: "feinwaage",
+      pflicht: true,
+      grund:
+        "Pulver und feste Rohstoffe unter 1 g lassen sich nur mit einer Feinwaage (0,01 g) genau abmessen.",
+    });
   }
   if (typ === "emulsion") {
-    const anspruchsvoll = emulgatoren.some((e) => ["montanov-68", "dermofeel-gsc"].includes(e.rohstoff.slug));
+    const anspruchsvoll = emulgatoren.some((e) =>
+      ["montanov-68", "dermofeel-gsc"].includes(e.rohstoff.slug),
+    );
     geraete.push({
       slug: "ruehrer",
       pflicht: anspruchsvoll,
@@ -587,10 +846,22 @@ export function pruefe(rezeptur: LabRezeptur, rohstoffe: Map<number, LabRohstoff
     });
   }
   if (wasserImProdukt && kons.length > 0) {
-    geraete.push({ slug: "ph-meter", pflicht: false, grund: "Teststreifen reichen für den Anfang. Ein pH-Meter misst genauer, wenn der Konservierer einen engen pH-Bereich hat." });
+    geraete.push({
+      slug: "ph-meter",
+      pflicht: false,
+      grund:
+        "Teststreifen reichen für den Anfang. Ein pH-Meter misst genauer, wenn der Konservierer einen engen pH-Bereich hat.",
+    });
   }
 
-  return { berechnung: b, meldungen: m, stufe, geraete, haltbarkeitMaxTage, ok: !m.some((x) => x.art === "fehler") };
+  return {
+    berechnung: b,
+    meldungen: m,
+    stufe,
+    geraete,
+    haltbarkeitMaxTage,
+    ok: !m.some((x) => x.art === "fehler"),
+  };
 }
 
 /**
@@ -605,34 +876,61 @@ export function wendeAn(
   neuerKey: () => string,
 ): LabPosition[] {
   let out = positionen.map((p) => ({ ...p }));
-  const nachSlug = (slug: string) => [...rohstoffe.values()].find((r) => r.slug === slug);
+  const nachSlug = (slug: string) =>
+    [...rohstoffe.values()].find((r) => r.slug === slug);
 
-  for (const s of k.setze ?? []) out = out.map((p) => (p.key === s.key ? { ...p, prozent: s.prozent } : p));
-  for (const s of k.phase ?? []) out = out.map((p) => (p.key === s.key ? { ...p, phase: s.phase } : p));
-  if (k.ausgleich) out = out.map((p) => ({ ...p, adHundert: p.key === k.ausgleich }));
+  for (const s of k.setze ?? [])
+    out = out.map((p) => (p.key === s.key ? { ...p, prozent: s.prozent } : p));
+  for (const s of k.phase ?? [])
+    out = out.map((p) => (p.key === s.key ? { ...p, phase: s.phase } : p));
+  if (k.ausgleich)
+    out = out.map((p) => ({ ...p, adHundert: p.key === k.ausgleich }));
   for (const e of k.ersetze ?? []) {
     const r = nachSlug(e.slug);
     if (!r) continue;
     const alt = out.find((p) => p.key === e.key);
     const diff = alt ? e.prozent - alt.prozent : 0;
-    out = out.map((p) => (p.key === e.key ? { ...p, rohstoffId: r.id, prozent: e.prozent, phase: e.phase } : p));
-    if (!out.some((p) => p.adHundert) && diff !== 0) out = gleicheAus(out, diff, e.key);
+    out = out.map((p) =>
+      p.key === e.key
+        ? { ...p, rohstoffId: r.id, prozent: e.prozent, phase: e.phase }
+        : p,
+    );
+    if (!out.some((p) => p.adHundert) && diff !== 0)
+      out = gleicheAus(out, diff, e.key);
   }
   for (const h of k.hinzu ?? []) {
     const r = nachSlug(h.slug);
     if (!r || out.some((p) => p.rohstoffId === r.id)) continue;
     const key = neuerKey();
-    out.push({ key, rohstoffId: r.id, phase: h.phase, prozent: h.prozent, adHundert: false });
-    if (!out.some((p) => p.adHundert)) out = gleicheAus(out, h.prozent, key, h.phase);
+    out.push({
+      key,
+      rohstoffId: r.id,
+      phase: h.phase,
+      prozent: h.prozent,
+      adHundert: false,
+    });
+    if (!out.some((p) => p.adHundert))
+      out = gleicheAus(out, h.prozent, key, h.phase);
   }
   return out;
 }
 
-function gleicheAus(positionen: LabPosition[], diff: number, ausserKey: string, phase?: Phase): LabPosition[] {
-  const kandidaten = positionen.filter((p) => p.key !== ausserKey && p.prozent - diff > 0);
+function gleicheAus(
+  positionen: LabPosition[],
+  diff: number,
+  ausserKey: string,
+  phase?: Phase,
+): LabPosition[] {
+  const kandidaten = positionen.filter(
+    (p) => p.key !== ausserKey && p.prozent - diff > 0,
+  );
   const ziel =
-    [...kandidaten].filter((p) => !phase || p.phase === phase).sort((a, b) => b.prozent - a.prozent)[0] ??
+    [...kandidaten]
+      .filter((p) => !phase || p.phase === phase)
+      .sort((a, b) => b.prozent - a.prozent)[0] ??
     [...kandidaten].sort((a, b) => b.prozent - a.prozent)[0];
   if (!ziel) return positionen;
-  return positionen.map((p) => (p.key === ziel.key ? { ...p, prozent: runde(p.prozent - diff, 3) } : p));
+  return positionen.map((p) =>
+    p.key === ziel.key ? { ...p, prozent: runde(p.prozent - diff, 3) } : p,
+  );
 }

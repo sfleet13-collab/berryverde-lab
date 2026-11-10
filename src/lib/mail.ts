@@ -6,7 +6,9 @@ import "server-only";
  * – praktisch beim Entwickeln.
  */
 /** Ist der Versand eingerichtet? Ohne Schlüssel zeigt die Kontaktseite die E-Mail-Adresse statt des Formulars. */
-export const mailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.CONTACT_TO_EMAIL);
+export const mailConfigured = Boolean(
+  process.env.RESEND_API_KEY && process.env.CONTACT_TO_EMAIL,
+);
 
 export async function sendMail({
   subject,
@@ -23,13 +25,21 @@ export async function sendMail({
   const from = process.env.MAIL_FROM ?? "App <onboarding@resend.dev>";
 
   if (!key || !to) {
-    console.info("[mail] Kein RESEND_API_KEY/CONTACT_TO_EMAIL gesetzt – E-Mail nur geloggt:\n", subject, "\n", text);
+    console.info(
+      "[mail] Kein RESEND_API_KEY/CONTACT_TO_EMAIL gesetzt – E-Mail nur geloggt:\n",
+      subject,
+      "\n",
+      text,
+    );
     return;
   }
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ from, to: [to], subject, text, reply_to: replyTo }),
   });
   if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);

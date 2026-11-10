@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { locales, ogLocale, privateMode, site, type Locale } from "@/config/site";
+import {
+  locales,
+  ogLocale,
+  privateMode,
+  site,
+  type Locale,
+} from "@/config/site";
 import { href } from "@/i18n";
 
 /**
@@ -21,8 +27,15 @@ export function pageMetadata({
   noindex?: boolean;
 }): Metadata {
   // Vorschaubild für WhatsApp, LinkedIn & Co. – auf JEDER Seite (Unterseiten erben es sonst nicht)
-  const image = { url: `/${lang}/opengraph-image`, width: 1200, height: 630, alt: site.name };
-  const languages = Object.fromEntries(locales.map((l) => [ogLocale[l].replace("_", "-"), href(l, path)]));
+  const image = {
+    url: `/${lang}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    alt: site.name,
+  };
+  const languages = Object.fromEntries(
+    locales.map((l) => [ogLocale[l].replace("_", "-"), href(l, path)]),
+  );
   return {
     ...(title ? { title } : {}),
     description,
@@ -45,6 +58,9 @@ export function pageMetadata({
       description,
       images: [image],
     },
-    robots: noindex || privateMode ? { index: false, follow: false } : { index: true, follow: true },
+    robots:
+      noindex || privateMode
+        ? { index: false, follow: false }
+        : { index: true, follow: true },
   };
 }

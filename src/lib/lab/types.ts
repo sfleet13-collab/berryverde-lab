@@ -30,7 +30,12 @@ export type Kategorie =
   | "ph_regler"
   | "sonstiges";
 
-export type DosierBereich = { produkttyp: Produkttyp | "alle"; min: number; max: number; hinweis?: string | null };
+export type DosierBereich = {
+  produkttyp: Produkttyp | "alle";
+  min: number;
+  max: number;
+  hinweis?: string | null;
+};
 
 /** Rohstoff, so wie Rechner und Regeln ihn brauchen. */
 export type LabRohstoff = {
@@ -80,7 +85,11 @@ export type LabRezeptur = {
   positionen: LabPosition[];
 };
 
-export const STUFEN_ORDNUNG: Record<Stufe, number> = { anfaenger: 0, mittel: 1, profi: 2 };
+export const STUFEN_ORDNUNG: Record<Stufe, number> = {
+  anfaenger: 0,
+  mittel: 1,
+  profi: 2,
+};
 
 /** Einstellungen des Rechners (Platzhalter, bis die Pipette kalibriert ist). */
 export const LAB = {
