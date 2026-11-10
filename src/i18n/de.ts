@@ -132,7 +132,7 @@ const de = {
     about: {
       title: "Hinter Dein Lab steht Susan",
       text: [
-        "Ich bin Chemielaborantin und habe 35 Jahre im Qualitätsmanagement gearbeitet. Dort gilt: erst prüfen, dann freigeben.",
+        "Ich bin Chemielaborantin und habe 35 Jahre im Labor gearbeitet: Rezepturen entwickelt, Qualitätskontrolle, Qualitätsmanagement. Dort gilt: erst prüfen, dann freigeben.",
         "Genau so arbeitet Dein Lab. Jede Rezeptur wird gerechnet und geprüft, bevor du rührst: welche Mengen sicher sind, welche Rohstoffe zusammenpassen und woran eine Creme scheitert.",
       ],
       sign: "Susan Fleet, berryverde",
