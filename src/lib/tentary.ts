@@ -180,3 +180,62 @@ export async function tentaryZugang(email: string): Promise<TentaryAntwort> {
     return "fehler";
   }
 }
+
+/** Verbindungstest ohne Kundendaten: ok, wenn Tentary eine gültige Antwort auf eine Suche liefert. */
+export async function tentaryVerbindungstest(): Promise<{
+  ok: boolean;
+  schritt?: string;
+}> {
+  if (!process.env.TENTARY_API_KEY)
+    return { ok: false, schritt: "kein Schlüssel" };
+  const abbruch = AbortSignal.timeout(8000);
+  try {
+    const init = await rpc(
+      {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-06-18",
+          capabilities: {},
+          clientInfo: { name: "dein-lab", version: "1.0" },
+        },
+      },
+      null,
+      abbruch,
+    );
+    if (!init.ok) return { ok: false, schritt: `initialize ${init.status}` };
+    const sessionId = init.headers.get("mcp-session-id");
+    await init.text();
+    await rpc(
+      { jsonrpc: "2.0", method: "notifications/initialized" },
+      sessionId,
+      abbruch,
+    ).then((r) => r.text());
+    const res = await rpc(
+      {
+        jsonrpc: "2.0",
+        id: 2,
+        method: "tools/call",
+        params: {
+          name: "search_customers",
+          arguments: { query: "verbindungstest@dein-lab.invalid", limit: 1 },
+        },
+      },
+      sessionId,
+      abbruch,
+    );
+    if (!res.ok) return { ok: false, schritt: `tools/call ${res.status}` };
+    const antwort = leseRpc(await res.text(), res.headers.get("content-type"));
+    if (!antwort || antwort.error)
+      return {
+        ok: false,
+        schritt: `antwort ${antwort?.error?.message ?? "unlesbar"}`,
+      };
+    return toolDaten(antwort.result)
+      ? { ok: true }
+      : { ok: false, schritt: "tool-ergebnis leer" };
+  } catch (e) {
+    return { ok: false, schritt: e instanceof Error ? e.message : "unbekannt" };
+  }
+}
